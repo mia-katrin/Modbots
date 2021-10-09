@@ -21,4 +21,4 @@ video/
 videos/
 .vsconfig
 Assembly-CSharp.csproj
-
+*.sln
