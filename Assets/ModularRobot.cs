@@ -340,8 +340,12 @@ public class ModularRobot : Agent
         return childGO;
     }
 
+    //public float weirdSine = 0;
+
     public override void OnActionReceived(float[] vectorAction)
     {
+        //weirdSine += 0.01f;
+
         if (rootGO != null)
         {
             foreach (var module in allModules)
@@ -351,6 +355,7 @@ public class ModularRobot : Agent
                 tr.x = vectorAction[
                     module.GetComponent<ModuleParameterized>().index
                 ];
+                //tr.x = Mathf.Sin(weirdSine);
                 joint.targetRotation = tr;
             }
         }

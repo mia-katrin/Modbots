@@ -101,7 +101,7 @@ public class ModuleParameterized : MonoBehaviour
 
         Rigidbody rb2 = collider2.GetComponent<Rigidbody>();
         rb2.angularDrag = 0.05f;
-        rb2.mass = 10 * scale; // not linear FIX
+        rb2.mass = 10 * (0.5f + scale/(scale + 1)); // Non-linear scaling using sigmoid
 
         // Configure joint collider 1
         ConfigurableJoint cj = collider1.GetComponent<ConfigurableJoint>();
@@ -118,8 +118,8 @@ public class ModuleParameterized : MonoBehaviour
 
         // Angular x drive
         JointDrive angularXdrive = cj.angularXDrive;
-        angularXdrive.positionSpring = 100;
-        angularXdrive.positionDamper = 1;
+        angularXdrive.positionSpring = 1000;
+        angularXdrive.positionDamper = 10;
         cj.angularXDrive = angularXdrive;
 
         // Angular limits
