@@ -22,11 +22,11 @@ from evaluate import get_env, evaluate, close_env, set_env_variables, N_STEPS
 # aka Unity neever gets my messages
 # Maybe finding a way to close the environments would help?
 
-NR_INDS = 3
-ROUNDS = 3
+NR_INDS = 8
+ROUNDS = 8
 NR_SEEDS = 1
 
-N_CORES = 3 # It seems this determines a factor in population size
+N_CORES = 8 # It seems this determines a factor in population size
 HEADLESS = True
 
 def get_pop(nr_inds:int, duplicates:int = 1, at_least_modules:int = 1, depth:int = 5) -> list:
