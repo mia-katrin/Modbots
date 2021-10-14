@@ -58,7 +58,7 @@ class Node:
             elif is_in(INTERVALS["add_node"], rand_num):
                 if len(self.open_spots_list()) != 0:
                     new_node = Node(init_mode="dwarf")
-                    node_to_mutate.children[np.random.choice(self.open_spots_list())] = new_node
+                    self.children[np.random.choice(self.open_spots_list())] = new_node
             elif is_in(INTERVALS["scale"], rand_num):
                 self.scale += (np.random.rand() - 0.5)*0.2
                 self.scale = bounce_back(self.scale, (0.1, 3))
