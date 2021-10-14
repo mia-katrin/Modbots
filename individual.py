@@ -55,7 +55,8 @@ class Node:
                 self.angle += -90 if np.random.rand() <= 0.5 else 90
                 self.angle = wrap_around(self.angle, [0, 270])
             elif is_in(INTERVALS["remove_node"], rand_num):
-                self.children[np.random.choice(self.occupied_spots_list())] = None
+                if len(self.occupied_spots_list()) != 0:
+                    self.children[np.random.choice(self.occupied_spots_list())] = None
             elif is_in(INTERVALS["add_node"], rand_num):
                 if len(self.open_spots_list()) != 0:
                     new_node = Node(init_mode="dwarf")
