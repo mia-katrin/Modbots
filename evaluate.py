@@ -29,15 +29,19 @@ SEED = None
 HEADLESS = False
 TIME_SCALE = None
 
-def set_env_variables(path, seed=42, headless=False, time_scale=None):
+def set_env_variables(path, seed=42, headless=False, time_scale=None, n_steps=1000, n_start_eval=250):
     global SEED
     global HEADLESS
     global TIME_SCALE
     global PATH
+    global N_STEPS
+    global N_START_EVAL
     PATH = path
     SEED = seed
     HEADLESS = headless
     TIME_SCALE = time_scale
+    N_STEPS = n_steps
+    N_START_EVAL = n_start_eval
 
 # singleton equivalent
 env = None
