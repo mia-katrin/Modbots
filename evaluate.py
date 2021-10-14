@@ -15,7 +15,7 @@ from tqdm import tqdm
 import copy
 import multiprocessing
 import time
-from gym_unity.envs import UnityToGymWrapper
+#from gym_unity.envs import UnityToGymWrapper
 
 # EA
 from deap import base,tools,algorithms
@@ -26,8 +26,13 @@ from sideChannelPythonside import SideChannelPythonside
 # Globals that are changable before start but not during run
 N_STEPS = 1000 # Should correspond to modularrobot.base.MaxStep but does not have to
 N_START_EVAL = 250
+<<<<<<< HEAD
 PATH = os.path.expanduser("~/Desktop/Skole/master_project/Modbots_v2/Build")
 #PATH = "/uio/hume/student-u22/mkkvalsu/master_project/Modbots_v2/LinuxBuild.x86_64"
+=======
+PATH = "/uio/hume/student-u22/mkkvalsu/master_project/Modbots_v2/LinuxBuild.x86_64"
+print(PATH)
+>>>>>>> 1f107e281f73badd889dc2b286a11a74140789a6
 # Default globals that can be changed during a run, but won't normally
 # Yes this is awful coding, it's needlessly hard to understand
 SEED = None
