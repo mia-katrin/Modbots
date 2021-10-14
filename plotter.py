@@ -49,8 +49,8 @@ class Plotter:
         for key in self.stats.keys():
             print()
             print(key+":")
-            print("Worst:",  self.stats[key][0][-1])
-            print("Mean:",   self.stats[key][1][-1])
-            print("Median:", self.stats[key][2][-1])
-            print("Best:",   self.stats[key][3][-1])
+            print("Min:",  self.stats[key][0][-1])
+            print("Max:",   self.stats[key][1][-1])
+            print("Mean:", self.stats[key][2][-1])
+            print("Median:",   self.stats[key][3][-1])
             print()

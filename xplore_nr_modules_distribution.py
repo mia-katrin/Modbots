@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from individual_snake import IndividualSnake
+from individual import Individual
 
 N_INDS = 100000
 DEPTH = 5
@@ -9,7 +9,7 @@ DEPTH = 5
 # Make histogram of robot number of modules
 histogram = np.zeros((DEPTH*DEPTH*DEPTH)).astype(np.int32)
 for _ in range(N_INDS):
-    i = IndividualSnake.random(depth=DEPTH).get_nr_expressed_modules()
+    i = Individual.random(depth=DEPTH).get_nr_expressed_modules()
     histogram[i] += 1
 
 # Find mean number of modules
