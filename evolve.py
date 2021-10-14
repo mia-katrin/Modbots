@@ -38,6 +38,11 @@ parser.add_argument(
     action="store_true",
     help='Wether to continue an evolution or not'
 )
+parser.add_argument(
+    '-s', '--statement',
+    type=str,
+    help="The statement to log."
+)
 
 args = parser.parse_args()
 
@@ -139,7 +144,10 @@ def evolve():
         os.makedirs(f"experiments/run{runNr}/population/")
 
         print("What has changed in this run?\n> ", end="")
-        change = input()
+        if args.statement != None:
+            change = args.statement
+        else:
+            change = input()
         with open(f"experiments/run{runNr}/statement.txt", "w") as file:
             file.write(change)
             file.close()
