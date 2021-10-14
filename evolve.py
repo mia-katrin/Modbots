@@ -17,23 +17,36 @@ import time
 # EA
 from deap import base,tools,algorithms
 
-from evaluate import get_env, evaluate, close_env, set_env_variables, N_STEPS
 from sideChannelPythonside import SideChannelPythonside
 
 from plotter import Plotter
 from individual import Individual
 individual_class = Individual
 
-MUT_RATE = 0.1
-N_GENERATIONS = 3
-POP_SIZE = 3
-HEADLESS = True
-N_CORES = 3
-SEED = 1
-IND_DEPTH = 5
-TOURNSIZE = 2
+import argparse
+from evaluate import get_env, evaluate, close_env, set_env_variables
 
-DOCUMENTATION = True
+# Add arguments
+parser = argparse.ArgumentParser(description='Evolve some boys')
+parser.add_argument(
+    'config_file',
+    type=str,
+    help='The config file to configure this evolution'
+)
+parser.add_argument(
+    '-c', '--continue',
+    action="store_true",
+    help='Wether to continue an evolution or not'
+)
+
+args = parser.parse_args()
+
+# Init config
+with open(args.config_file, "r") as file:
+    for line in file:
+        exec(line)
+        print(line)
+# End of init config
 
 def open_population(run_nr):
     population = []
@@ -145,9 +158,13 @@ def evolve():
             file.write("IND_DEPTH="+str(IND_DEPTH)+"\n")
             file.write("TOURNSIZE="+str(TOURNSIZE)+"\n")
             file.write("N_STEPS="+str(N_STEPS)+"\n")
+            file.write("N_START_EVAL="+str(N_START_EVAL)+"\n")
+            file.write("DOCUMENTATION=True\n")
+            file.write("TIME_SCALE="+str(TIME_SCALE)+"\n")
+            file.write("PATH="+str(PATH)+"\n")
             file.close()
 
-    set_env_variables(seed=SEED, headless=HEADLESS)
+    set_env_variables(PATH, seed=SEED, headless=HEADLESS)
 
     # init toolbox
     toolbox = init_toolbox()

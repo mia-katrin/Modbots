@@ -22,3 +22,5 @@ videos/
 .vsconfig
 Assembly-CSharp.csproj
 *.sln
+
+*_config.txt
