@@ -13,7 +13,6 @@ from tqdm import tqdm
 import copy
 import multiprocessing
 import time
-from gym_unity.envs import UnityToGymWrapper
 
 # EA
 from deap import base,tools,algorithms
