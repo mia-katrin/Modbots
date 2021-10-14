@@ -34,13 +34,14 @@ class Node:
             self.controller.freq = 0.0
             self.controller.phase = 0.0
             self.controller.offset = 0.0
+            self.angle = np.random.choice([0,90,180,270])
         elif init_mode == "random":
-            self.children = [None,None,None]
             self.angle = np.random.choice([0,90,180,270])
             self.scale = np.random.rand() * 2.9 + 0.1
             self.controller = Controller("Hei :)") # Not unique hash because I don't use it yet
         else:
             raise ValueError("No other mode supported")
+        self.children = [None,None,None]
 
     def mutate(self, mutation_rate):
         mutated = False
