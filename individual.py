@@ -62,7 +62,7 @@ class Node:
                     new_node = Node(init_mode="dwarf")
                     self.children[np.random.choice(self.open_spots_list())] = new_node
             elif is_in(INTERVALS["scale"], rand_num):
-                self.scale += (np.random.rand() - 0.5)*0.2
+                self.scale += (np.random.rand() - 0.5)
                 self.scale = bounce_back(self.scale, (0.1, 3))
 
         for child in self.children:
