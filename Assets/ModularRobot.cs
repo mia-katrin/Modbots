@@ -39,7 +39,7 @@ public class ModularRobot : Agent
         {
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.pythonCom.SendMessage($"I am MR {myIndex}, being destroyed");
+                //GameManager.Instance.pythonCom.SendMessage($"I am MR {myIndex}, being destroyed");
             }
             this.gameObject.SetActive(false);
             Destroy(this.gameObject);
@@ -146,7 +146,7 @@ public class ModularRobot : Agent
             GameObject toProcessGO = ConnectModuleTo(parentGO, site: site, toProcess.angle, toProcess.scale);
             if (toProcessGO == null)
             {
-                Debug.Log("ChildGO was null");
+                //Debug.Log("ChildGO was null");
                 continue;
             }
             if (HasCollided(toProcessGO))
@@ -187,7 +187,7 @@ public class ModularRobot : Agent
                 GameObject childGO = ConnectModuleTo(parentGO, site: i, geneNode.children[i].angle, geneNode.children[i].scale);
                 if (childGO == null)
                 {
-                    Debug.Log("ChildGO was null");
+                    //Debug.Log("ChildGO was null");
                     return;
                 }
                 childGO.GetComponent<ModuleParameterized>().SetIndex(geneNode.children[i].index);
@@ -294,7 +294,7 @@ public class ModularRobot : Agent
                     {
                         if (!colliderChildren.Contains(offenseCollider.gameObject.transform) && offenseCollider.gameObject.name != "ParentConnectionSite" && offenseCollider.gameObject.name != "Collider2")
                         {
-                            Debug.Log($"{child} has collided with {offenseCollider.gameObject}");
+                            //Debug.Log($"{child} has collided with {offenseCollider.gameObject}");
                             //GameManager.Instance.pythonCom.SendMessage($"{child} has collided with {offenseCollider.gameObject}");
                             didWeCollide = true;
                         }
@@ -318,7 +318,7 @@ public class ModularRobot : Agent
         Transform connectionTransform = parentModule.GetConnectionSite(site);
         if (connectionTransform == null)
         {
-            Debug.Log($"Could not attach to parent module because it does not support connection site {site}");
+            //Debug.Log($"Could not attach to parent module because it does not support connection site {site}");
             return null; 
         }
 
