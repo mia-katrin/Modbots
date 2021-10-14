@@ -10,17 +10,64 @@ import os
 from random import shuffle
 
 from custom_controller import Controller
-from evo_util import bounce_back
+from evo_util import bounce_back, wrap_around
 
 CREATION_MU = 0.75 # Higher means fewer average modules
 CREATION_STD = 0.35 # Higher means more variance in number of modules
 
+# Mutation proportions
+INTERVALS = {}
+INTERVALS["control"]     = [0,                           0.2]
+INTERVALS["angle"]       = [INTERVALS["control"][1],     0.3]
+INTERVALS["remove_node"] = [INTERVALS["angle"][1],       0.5]
+INTERVALS["add_node"]    = [INTERVALS["remove_node"][1], 0.8]
+INTERVALS["scale"]       = [INTERVALS["add_node"][1],      1]
+
+is_in = lambda interval, x: interval[0] <= x <= interval[1]
+
 class Node:
-    def __init__(self):
-        self.children = [None,None,None]
-        self.angle = np.random.choice([0,90,180,270])
-        self.scale = np.random.rand() * 2.9 + 0.1
-        self.controller = Controller("Hei :)") # Not unique hash because I don't use it yet
+    def __init__(self, init_mode="random"):
+        if init_mode == "dwarf":
+            self.scale = 0.1
+            self.controller = Controller("Hei :)")
+            self.controller.amp = 0.0
+            self.controller.freq = 0.0
+            self.controller.phase = 0.0
+            self.controller.offset = 0.0
+        elif init_mode == "random":
+            self.children = [None,None,None]
+            self.angle = np.random.choice([0,90,180,270])
+            self.scale = np.random.rand() * 2.9 + 0.1
+            self.controller = Controller("Hei :)") # Not unique hash because I don't use it yet
+        else:
+            raise ValueError("No other mode supported")
+
+    def mutate(self, mutation_rate):
+        mutated = False
+        if np.random.rand() < mutation_rate:
+            mutated = True
+            rand_num = np.random.rand()
+
+            if is_in(INTERVALS["control"], rand_num):
+                self.controller.mutate()
+            elif is_in(INTERVALS["angle"], rand_num):
+                self.angle += -90 if np.random.rand() <= 0.5 else 90
+                self.angle = wrap_around(self.angle, [0, 270])
+            elif is_in(INTERVALS["remove_node"], rand_num):
+                self.children[np.random.choice(self.occupied_spots_list())] = None
+            elif is_in(INTERVALS["add_node"], rand_num):
+                if len(self.open_spots_list()) != 0:
+                    new_node = Node(init_mode="dwarf")
+                    node_to_mutate.children[np.random.choice(self.open_spots_list())] = new_node
+            elif is_in(INTERVALS["scale"], rand_num):
+                self.scale += (np.random.rand() - 0.5)*0.2
+                self.scale = bounce_back(self.scale, (0.1, 3))
+
+        for child in self.children:
+            if child != None:
+                mutated = mutated or child.mutate(mutation_rate)
+
+        return mutated
 
     def open_spots_list(self):
         return self.get_indexes_of(lambda x: x is None)
@@ -49,16 +96,17 @@ class Individual:
         self.needs_evaluation = True
         self._nr_expressed_modules = -1
         if gene is not None:
-            gene = np.array(gene.split("|"))
-            root_info = np.array(gene[0].split(",")).astype(float)
-            self.genomeRoot.scale = root_info[0]
-            self.genomeRoot.controller.amp = root_info[1]
-            self.genomeRoot.controller.freq = root_info[2]
-            self.genomeRoot.controller.phase = root_info[3]
-            self.genomeRoot.controller.offset = root_info[4]
             self.interpret_string_gene(gene)
 
     def interpret_string_gene(self, gene):
+        gene = np.array(gene.split("|"))
+        root_info = np.array(gene[0].split(",")).astype(float)
+        self.genomeRoot.scale = root_info[0]
+        self.genomeRoot.controller.amp = root_info[1]
+        self.genomeRoot.controller.freq = root_info[2]
+        self.genomeRoot.controller.phase = root_info[3]
+        self.genomeRoot.controller.offset = root_info[4]
+
         pretend_stack = []
         node = self.genomeRoot
 
@@ -144,6 +192,15 @@ class Individual:
         return res
 
     def mutate(self, mutation_rate):
+        node_list = []
+        self.traverse_get_list(self.genomeRoot, node_list)
+        size = len(node_list)
+        mutated = self.genomeRoot.mutate(mutation_rate/size)
+        if mutated:
+            self.needs_evaluation = True
+            self._nr_expressed_modules = -1
+
+    def deprecated_mutate(self, mutation_rate):
         # Mutation rate on each cell?
         # Larger creatures will mutate more. Volatile?
         # Mutation rate on creature

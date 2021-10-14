@@ -27,7 +27,7 @@ from sideChannelPythonside import SideChannelPythonside
 N_STEPS = 1000 # Should correspond to modularrobot.base.MaxStep but does not have to
 N_START_EVAL = 250
 PATH = os.path.expanduser("~/Desktop/Skole/master_project/Modbots_v2/Build")
-
+#PATH = "/uio/hume/student-u22/mkkvalsu/master_project/Modbots_v2/LinuxBuild.x86_64"
 # Default globals that can be changed during a run, but won't normally
 # Yes this is awful coding, it's needlessly hard to understand
 SEED = None

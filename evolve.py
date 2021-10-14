@@ -26,8 +26,8 @@ from individual import Individual
 individual_class = Individual
 
 MUT_RATE = 0.1
-N_GENERATIONS = 99
-POP_SIZE = 33
+N_GENERATIONS = 3
+POP_SIZE = 3
 HEADLESS = True
 N_CORES = 3
 SEED = 1
