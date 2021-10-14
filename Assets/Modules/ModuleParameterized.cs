@@ -49,7 +49,7 @@ public class ModuleParameterized : MonoBehaviour
             connectionSites.Remove(collider1.transform.GetChild(1).gameObject);
 
             connectionSites.TrimExcess();
-            Debug.Log(connectionSites.Count);
+            //Debug.Log(connectionSites.Count);
 
             Destroy(collider1.transform.GetChild(0).gameObject); // CS1
             Destroy(collider1.transform.GetChild(1).gameObject); // CS2
@@ -162,7 +162,7 @@ public class ModuleParameterized : MonoBehaviour
         // CS3 transform (top) must be first in list for this to work
         if (connectionSiteNumber >= connectionSites.Count)
         {
-            Debug.Log("Trying to get a connection site which is not present. Returning null");
+            //Debug.Log("Trying to get a connection site which is not present. Returning null");
             return null;
         }
         return connectionSites[connectionSiteNumber].transform;

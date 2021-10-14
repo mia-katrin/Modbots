@@ -36,7 +36,7 @@ public class ComSideChannel : SideChannel
         }
         else
         {
-            SendMessage($"Got ping");
+            //SendMessage($"Got ping");
             OnReceivedEncoding.Invoke(receivedString);
         }
     }
