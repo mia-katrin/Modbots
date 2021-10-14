@@ -161,7 +161,7 @@ def evolve():
             file.write("N_START_EVAL="+str(N_START_EVAL)+"\n")
             file.write("DOCUMENTATION=True\n")
             file.write("TIME_SCALE="+str(TIME_SCALE)+"\n")
-            file.write("PATH="+str(PATH)+"\n")
+            #file.write("PATH="+str(PATH)+"\n")
             file.close()
 
     set_env_variables(PATH, seed=SEED, headless=HEADLESS)
@@ -222,7 +222,10 @@ def evolve():
     print(bestInd.genome_to_str())
     print("Recorded:",bestInd.fitness)
 
-    plotter.plot_stats(save_figs=True, folder=f"experiments/run{runNr}")
+    if DOCUMENTATION:
+        plotter.plot_stats(save_figs=True, folder=f"experiments/run{runNr}")
+    else:
+        plotter.plot_stats()
 
 if __name__ == "__main__":
     evolve()

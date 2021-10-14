@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
         if (instance != null && instance != this)
         {
             //Debug.Log($"GM {myIndex} destroyed");
-            instance.pythonCom.SendMessage($"I am GM {myIndex}, being destroyed");
+            //instance.pythonCom.SendMessage($"I am GM {myIndex}, being destroyed");
             this.gameObject.SetActive(false);
             Destroy(this.gameObject);
             return;
@@ -64,18 +64,18 @@ public class GameManager : MonoBehaviour
     private void SceneManagerSaysLoaded(Scene scene, LoadSceneMode LoadSceneMode)
     {
         //Debug.LogError($"Loaded scene {scene.name}");
-        pythonCom.SendMessage($"Loaded scene {scene.name}");
+        //pythonCom.SendMessage($"Loaded scene {scene.name}");
     }
 
     private void NewEncodingGot(string gene)
     {
         currentGene = gene;
-        pythonCom.SendMessage("GameManager got encoding");
+        //pythonCom.SendMessage("GameManager got encoding");
     }
 
     private void ResetHappened()
     {
-        pythonCom.SendMessage("GameManager resetting");
+        //pythonCom.SendMessage("GameManager resetting");
         if (resetting)
         {
             return;
@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
         resetting = true;
         if (SceneManager.GetActiveScene().isLoaded)
         {
-            pythonCom.SendMessage("Loading scene");
+            //pythonCom.SendMessage("Loading scene");
             SceneManager.LoadScene(0);
         }
 
@@ -96,7 +96,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator CreateRobot()
     {
-        pythonCom.SendMessage("GameManager starting coroutine");
+        //pythonCom.SendMessage("GameManager starting coroutine");
         Physics.autoSimulation = false;
         for (int i = 0; i < warmupFixedUpdates; i++)
         {
@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
         {
             indexes += go.GetComponent<ModuleParameterized>().index + ",";
         }
-        pythonCom.SendMessage(indexes);
+        //pythonCom.SendMessage(indexes);
         resetting = false;
     }
 
