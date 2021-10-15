@@ -118,7 +118,7 @@ public class ModuleParameterized : MonoBehaviour
 
         // Angular x drive
         JointDrive angularXdrive = cj.angularXDrive;
-        angularXdrive.positionSpring = 1000;
+        angularXdrive.positionSpring = 1500;
         angularXdrive.positionDamper = 10;
         cj.angularXDrive = angularXdrive;
 

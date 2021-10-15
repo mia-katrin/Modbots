@@ -143,6 +143,12 @@ class Individual:
 
         self.iterative_construct(self.genomeRoot, depth=depth-1, overall_depth=depth)
 
+        while self.get_nr_expressed_modules() <= 2 or \
+              (self.genomeRoot.scale < 1 and self.genomeRoot.children[0] == None) or \
+              (self.genomeRoot.scale < 1 and self.genomeRoot.children[0].scale < 1):
+            self = Individual()
+            self.iterative_construct(self.genomeRoot, depth=depth-1, overall_depth=depth)
+
         return self
 
     def iterative_construct(self, node, depth, overall_depth):
@@ -194,6 +200,7 @@ class Individual:
         return res
 
     def mutate(self, mutation_rate):
+        self.needs_evaluation = False
         node_list = []
         self.traverse_get_list(self.genomeRoot, node_list)
         size = len(node_list)

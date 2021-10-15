@@ -25,6 +25,9 @@ individual_class = Individual
 
 import argparse
 from evaluate import get_env, evaluate, close_env, set_env_variables
+from evo_util import sort_to_chunks
+
+from IPython import embed
 
 # Add arguments
 parser = argparse.ArgumentParser(description='Evolve some boys')
@@ -129,7 +132,7 @@ def init_toolbox():
 def evolve():
     assert POP_SIZE%N_CORES == 0, "Cannot run this POP_SIZE because it will cause non-deterministic evaluations"
 
-    print("Generations:", N_GENERATIONS,"\nPopulation:", POP_SIZE,"\nEstimated time:", POP_SIZE*N_STEPS*0.02/N_CORES+POP_SIZE*MUT_RATE*N_STEPS*0.02*N_GENERATIONS, "seconds")
+    print("Generations:", N_GENERATIONS,"\nPopulation:", POP_SIZE,"\nEstimated time:", POP_SIZE*N_STEPS*0.02/N_CORES+POP_SIZE*MUT_RATE*N_STEPS*0.02*N_GENERATIONS/N_CORES, "seconds")
 
     if DOCUMENTATION:
         runNr = 0
@@ -172,7 +175,7 @@ def evolve():
             #file.write("PATH="+str(PATH)+"\n")
             file.close()
 
-    set_env_variables(PATH, seed=SEED, headless=HEADLESS)
+    set_env_variables(PATH, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
 
     # init toolbox
     toolbox = init_toolbox()
@@ -196,6 +199,8 @@ def evolve():
 
             for o in offspring:
                 o.mutate(MUT_RATE)
+
+            offspring = sort_to_chunks(offspring, nr_chunks=N_CORES)
 
             fitnesses = toolbox.map(toolbox.evaluate, offspring)
             for ind, fit in zip(offspring, fitnesses):

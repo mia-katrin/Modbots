@@ -44,6 +44,7 @@ def set_env_variables(path, seed=42, headless=False, time_scale=None, n_steps=10
     N_START_EVAL = n_start_eval
 
 # singleton equivalent
+env_pid = None
 env = None
 side_channel = None
 def get_env():
@@ -53,10 +54,14 @@ def get_env():
     global HEADLESS
     global TIME_SCALE
     global PATH
+    global env_pid
     if SEED == None:
         SEED = 42
-    print("Using", SEED, HEADLESS, TIME_SCALE)
+    #print("Using", SEED, HEADLESS, TIME_SCALE)
     pid = multiprocessing.Process()._identity[0]
+    if env_pid == None:
+        env_pid = pid
+    print("Env is fetched:", env_pid, pid)
     if (side_channel == None):
         side_channel = SideChannelPythonside()
     if (env == None):

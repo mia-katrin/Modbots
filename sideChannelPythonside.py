@@ -23,7 +23,7 @@ class SideChannelPythonside(SideChannel):
                 self.created_modules.append(int(index))
 
     def send_string(self, data: str) -> None:
-        print("[Python]: Sending data")
+        #print("[Python]: Sending data")
         # Add the string to an OutgoingMessage
         msg = OutgoingMessage()
         msg.write_string(data)
