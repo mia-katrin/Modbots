@@ -15,18 +15,27 @@ import copy
 
 from sideChannelPythonside import SideChannelPythonside
 from individual import Individual
-from evaluate import get_env, evaluate, close_env, set_env_variables, N_STEPS
+from evaluate import get_env, evaluate, close_env, set_env_variables
 
-# Note to self: When not closing the environment with run_sequentially,
-# I get the same behavior as when I use run_multithreaded
-# aka Unity neever gets my messages
-# Maybe finding a way to close the environments would help?
+import argparse
+# Add arguments
+parser = argparse.ArgumentParser(description='Test determinism on some boys')
+parser.add_argument(
+    'config_file',
+    type=str,
+    help='The config file to configure this evolution'
+)
 
-NR_INDS = 8
-ROUNDS = 8
+with open(parser.parse_args().config_file, "r") as file:
+    for line in file:
+        exec(line)
+        print(line)
+
+NR_INDS = 16
+ROUNDS = 3
 NR_SEEDS = 1
 
-N_CORES = 8 # It seems this determines a factor in population size
+N_CORES = 16 # It seems this determines a factor in population size
 HEADLESS = True
 
 def get_pop(nr_inds:int, duplicates:int = 1, at_least_modules:int = 1, depth:int = 5) -> list:
@@ -66,7 +75,7 @@ def run_sequentially(pop:list, seed:int) -> list:
     sc = SideChannelPythonside()
 
     # We start the communication with the Unity Editor and pass the string_log side channel as input
-    set_env_variables(seed=seed, headless=HEADLESS)
+    set_env_variables(PATH, seed=seed, headless=HEADLESS)
 
     fitnesses = []
     for ind in pop:
@@ -77,7 +86,7 @@ def run_sequentially(pop:list, seed:int) -> list:
     return fitnesses
 
 def run_multithreaded(pop:list, seed:int) -> list:
-    set_env_variables(seed=seed, headless=HEADLESS)
+    set_env_variables(PATH, seed=seed, headless=HEADLESS)
 
     toolbox = base.Toolbox()
     toolbox.register("evaluate", evaluate)
