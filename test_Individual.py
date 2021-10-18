@@ -1,5 +1,6 @@
 from individual import Individual, Node
 import unittest
+import copy
 
 class TestIndNNode(unittest.TestCase):
     def test_init_Node(self):
@@ -7,6 +8,68 @@ class TestIndNNode(unittest.TestCase):
         assert node.angle % 90 == 0
         assert len(node.children) == 3
         assert node.children[0] == node.children[1] == node.children[2] == None
+
+    def test_node_mutate(self):
+        node = Node("random")
+        node.children = [Node("random"), Node("random"), None]
+        node.children[0].children = [Node("random"), None, Node("random")]
+        node.children[1].children = [Node("random"), None, Node("random")]
+
+        #   O
+        #   |\
+        #   o o
+        #  /\ /\
+        # o o o o
+
+        def is_all_equal(node1, node2):
+            fasit = [node1]
+            to_check = [node2]
+
+            while len(fasit) > 0 and len(to_check) > 0:
+                for elem1, elem2 in zip(fasit, to_check):
+                    fasit.remove(elem1)
+                    to_check.remove(elem2)
+
+                    if elem1 != None and elem2 != None and \
+                       ((elem1 == None and elem2 != None) or \
+                       (elem2 == None and elem1 != None) or \
+                       (elem1.scale != elem2.scale) or \
+                       (elem1.controller.amp != elem2.controller.amp) or \
+                       (elem1.controller.freq != elem2.controller.freq) or \
+                       (elem1.controller.phase != elem2.controller.phase) or \
+                       (elem1.controller.offset != elem2.controller.offset)):
+                        if elem1 == None and elem2 != None:
+                            print("Elem1 is None, elem2 is Ind")
+                        if elem2 == None and elem1 != None:
+                            print("Elem2 is None, elem1 is Ind")
+                        if elem1.scale != elem2.scale:
+                            print(f"Scale: {elem1.scale}, {elem2.scale}")
+                        if elem1.controller.amp != elem2.controller.amp:
+                            print(f"Amp: {elem1.controller.amp}, {elem2.controller.amp}")
+                        if elem1.controller.freq != elem2.controller.freq:
+                            print(f"Freq: {elem1.controller.freq}, {elem2.controller.freq}")
+                        if elem1.controller.phase != elem2.controller.phase:
+                            print(f"Phase: {elem1.controller.phase}, {elem2.controller.phase}")
+                        if elem1.controller.offset != elem2.controller.offset:
+                            print(f"Offset: {elem1.controller.offset}, {elem2.controller.offset}")
+                        return False
+
+                    if elem1 != None:
+                        for child in elem1.children:
+                            fasit.append(child)
+
+                    if elem2 != None:
+                        for child in elem2.children:
+                            to_check.append(child)
+            return True
+
+        matrix = [[0,0],[0,0]]
+        for i in range(100):
+            deepcopy_node = copy.deepcopy(node)
+            needs_muation = node.mutate(0.1)
+            matrix[needs_muation][is_all_equal(node, deepcopy_node)] += 1
+        print(matrix)
+        assert matrix[0][0] == 0 and matrix[1][1] == 0, matrix
 
     def test_spots_list_Node(self):
         node = Node()
@@ -33,7 +96,7 @@ class TestIndNNode(unittest.TestCase):
         # Init that's never really used
         ind = Individual()
 
-        assert ind.fitness == 0
+        assert ind.fitness == -1
         # At this time I don't require anything out of this version of init
 
         # Init with string input
@@ -62,13 +125,30 @@ class TestIndNNode(unittest.TestCase):
         ind = Individual(gene)
         assert ind.get_nr_expressed_modules() == 4
 
+    def test_order_mut_cross(self):
+        ind = Individual.random(5)
+        assert ind.needs_evaluation
+        assert ind.fitness == -1
+
+        ind.mutate(1)
+        assert ind.needs_evaluation
+        ind.needs_evaluation = False
+        ind.fitness = 10
+        child1, child2 = ind.crossover(Individual.random(5))
+
+        assert not ind.needs_evaluation
+        assert child1.needs_evaluation
+        assert child1.fitness == -1
+
     def test_mutation(self):
         ind = Individual()
-        ind.genomeRoot.children = [None, Node(), Node()]
-        ind.genomeRoot.children[1].children = [Node(), None, Node()]
-        ind.genomeRoot.children[2].children = [None, None, Node()]
-        ind.genomeRoot.children[2].children[2].children = [None, None, Node()]
+        ind.genomeRoot.children = [None, Node("random"), Node("random")]
+        ind.genomeRoot.children[1].children = [Node("random"), None, Node("random")]
+        ind.genomeRoot.children[2].children = [None, None, Node("random")]
+        ind.genomeRoot.children[2].children[2].children = [None, None, Node("random")]
 
+        ind.needs_evaluation = False
+        ind.fitness = 10
         ind.mutate(mutation_rate=0)
         assert ind.needs_evaluation == False
         ind.mutate(mutation_rate=1)

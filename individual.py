@@ -8,6 +8,7 @@ import numpy as np
 import uuid
 import os
 from random import shuffle
+import copy
 
 from custom_controller import Controller
 from evo_util import bounce_back, wrap_around
@@ -46,28 +47,33 @@ class Node:
     def mutate(self, mutation_rate):
         mutated = False
         if np.random.rand() < mutation_rate:
-            mutated = True
             rand_num = np.random.rand()
 
             if is_in(INTERVALS["control"], rand_num):
                 self.controller.mutate()
+                mutated = True
             elif is_in(INTERVALS["angle"], rand_num):
                 self.angle += -90 if np.random.rand() <= 0.5 else 90
                 self.angle = wrap_around(self.angle, [0, 270])
+                mutated = True
             elif is_in(INTERVALS["remove_node"], rand_num):
                 if len(self.occupied_spots_list()) != 0:
                     self.children[np.random.choice(self.occupied_spots_list())] = None
+                    mutated = True
             elif is_in(INTERVALS["add_node"], rand_num):
                 if len(self.open_spots_list()) != 0:
                     new_node = Node(init_mode="dwarf")
                     self.children[np.random.choice(self.open_spots_list())] = new_node
+                    mutated = True
             elif is_in(INTERVALS["scale"], rand_num):
-                self.scale += (np.random.rand() - 0.5)
-                self.scale = bounce_back(self.scale, (0.1, 3))
+                val = self.scale + (np.random.rand() - 0.5)
+                self.scale = bounce_back(val, (0.1, 3))
+                mutated = True
 
         for child in self.children:
             if child != None:
-                mutated = mutated or child.mutate(mutation_rate)
+                child_mut = child.mutate(mutation_rate)
+                mutated = mutated or child_mut
 
         return mutated
 
@@ -94,7 +100,7 @@ class Node:
 class Individual:
     def __init__(self, gene=None):
         self.genomeRoot = Node()
-        self.fitness = 0
+        self.fitness = -1
         self.needs_evaluation = True
         self._nr_expressed_modules = -1
         if gene is not None:
@@ -199,8 +205,23 @@ class Individual:
 
         return res
 
+    def crossover(self, other) -> tuple:
+        child1 = Individual()
+        child2 = Individual()
+        child1.genomeRoot = copy.deepcopy(self.genomeRoot)
+        child2.genomeRoot = copy.deepcopy(other.genomeRoot)
+
+        self_branch = np.random.choice([0,1,2])
+        other_branch = np.random.choice([0,1,2])
+
+        child1.genomeRoot.children[self_branch] = other.genomeRoot.children[other_branch]
+        child2.genomeRoot.children[other_branch] = self.genomeRoot.children[self_branch]
+
+        return child1, child2
+
     def mutate(self, mutation_rate):
-        self.needs_evaluation = False
+        if self.fitness >= 0:
+            self.needs_evaluation = False
         node_list = []
         self.traverse_get_list(self.genomeRoot, node_list)
         size = len(node_list)

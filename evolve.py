@@ -197,6 +197,13 @@ def evolve():
             offspring = toolbox.select(population, POP_SIZE)
             offspring = list(map(copy.deepcopy, offspring))
 
+            parents = toolbox.select(population, NR_PARENTS)
+            half = NR_PARENTS//2
+            for ind1, ind2 in zip(parents[:half], parents[half:]):
+                child1, child2 = ind1.crossover(ind2)
+                offspring.append(child2)
+                offspring.append(child1)
+
             for o in offspring:
                 o.mutate(MUT_RATE)
 
