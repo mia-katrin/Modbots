@@ -674,7 +674,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravityMultiplier: 1
   fixedDeltaTime: 0.02
-  maximumDeltaTime: 0.3
+  maximumDeltaTime: 0.02
   solverIterations: 6
   solverVelocityIterations: 1
   reuseCollisionCallbacks: 0
