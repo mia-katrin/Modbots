@@ -1,7 +1,11 @@
 def bounce_back(value, allowable_range):
     if value < allowable_range[0]:
+        if value + 2*(allowable_range[0] - value) > allowable_range[1]:
+            raise ValueError
         return value + 2*(allowable_range[0] - value)
     elif value > allowable_range[1]:
+        if value - 2*(value - allowable_range[1]) < allowable_range[0]:
+            raise ValueError
         return value - 2*(value - allowable_range[1])
     return value
 

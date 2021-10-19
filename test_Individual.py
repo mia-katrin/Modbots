@@ -26,19 +26,21 @@ class TestIndNNode(unittest.TestCase):
             to_check = [node2]
 
             while len(fasit) > 0 and len(to_check) > 0:
-                for elem1, elem2 in zip(fasit, to_check):
-                    fasit.remove(elem1)
-                    to_check.remove(elem2)
+                elem1 = fasit.pop(0)
+                elem2 = to_check.pop(0)
 
-                    if elem1 != None and elem2 != None and \
-                       ((elem1 == None and elem2 != None) or \
-                       (elem2 == None and elem1 != None) or \
-                       (elem1.scale != elem2.scale) or \
-                       (elem1.controller.amp != elem2.controller.amp) or \
-                       (elem1.controller.freq != elem2.controller.freq) or \
-                       (elem1.controller.phase != elem2.controller.phase) or \
-                       (elem1.controller.offset != elem2.controller.offset)):
-                        if elem1 == None and elem2 != None:
+                if elem1 == None and elem2 == None:
+                    continue
+
+                if (elem1 == None and elem2 != None) or \
+                    (elem2 == None and elem1 != None) or \
+                    (elem1.scale != elem2.scale) or \
+                    (elem1.angle != elem2.angle) or \
+                    (elem1.controller.amp != elem2.controller.amp) or \
+                    (elem1.controller.freq != elem2.controller.freq) or \
+                    (elem1.controller.phase != elem2.controller.phase) or \
+                    (elem1.controller.offset != elem2.controller.offset):
+                    """if elem1 == None and elem2 != None:
                             print("Elem1 is None, elem2 is Ind")
                         if elem2 == None and elem1 != None:
                             print("Elem2 is None, elem1 is Ind")
@@ -51,23 +53,38 @@ class TestIndNNode(unittest.TestCase):
                         if elem1.controller.phase != elem2.controller.phase:
                             print(f"Phase: {elem1.controller.phase}, {elem2.controller.phase}")
                         if elem1.controller.offset != elem2.controller.offset:
-                            print(f"Offset: {elem1.controller.offset}, {elem2.controller.offset}")
-                        return False
+                            print(f"Offset: {elem1.controller.offset}, {elem2.controller.offset}")"""
+                    return False
 
-                    if elem1 != None:
-                        for child in elem1.children:
-                            fasit.append(child)
+                if elem1 != None:
+                    for child in elem1.children:
+                        fasit.append(child)
 
-                    if elem2 != None:
-                        for child in elem2.children:
-                            to_check.append(child)
+                if elem2 != None:
+                    for child in elem2.children:
+                        to_check.append(child)
+
+            if len(fasit) != len(to_check):
+                return False
             return True
+
+        for _ in range(100):
+            node = Node("random")
+            deepcopy_node = copy.deepcopy(node)
+            node.mutate()
+            assert is_all_equal(deepcopy_node, node) == False
 
         matrix = [[0,0],[0,0]]
         for i in range(100):
             deepcopy_node = copy.deepcopy(node)
-            needs_muation = node.mutate(0.1)
-            matrix[needs_muation][is_all_equal(node, deepcopy_node)] += 1
+            needs_muation = node.mutate_breadth(0.1/7)
+            matrix[needs_muation][is_all_equal(deepcopy_node, node)] += 1
+
+            if needs_muation and is_all_equal(node, deepcopy_node):
+                print(node.__dict__)
+                print(node.__dict__["controller"].__dict__)
+                print(deepcopy_node.__dict__)
+                print(deepcopy_node.__dict__["controller"].__dict__)
         print(matrix)
         assert matrix[0][0] == 0 and matrix[1][1] == 0, matrix
 
@@ -151,7 +168,7 @@ class TestIndNNode(unittest.TestCase):
         ind.fitness = 10
         ind.mutate(mutation_rate=0)
         assert ind.needs_evaluation == False
-        ind.mutate(mutation_rate=1)
+        ind.mutate(mutation_rate=100)
         assert ind.needs_evaluation == True
 
     def traverse_get_list(self):

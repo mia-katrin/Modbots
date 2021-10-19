@@ -44,9 +44,27 @@ class Node:
             raise ValueError("No other mode supported")
         self.children = [None,None,None]
 
-    def mutate(self, mutation_rate):
+    def mutate_breadth(self, mutation_rate):
         mutated = False
-        if np.random.rand() < mutation_rate:
+
+        current_nodes = [self]
+
+        while len(current_nodes) > 0:
+            node = current_nodes.pop(0)
+
+            if np.random.rand() < mutation_rate:
+                mutated = True
+                node.mutate()
+
+            for child in node.children:
+                if child != None:
+                    current_nodes.append(child)
+
+        return mutated
+
+    def mutate(self):
+        mutated = False
+        while not mutated:
             rand_num = np.random.rand()
 
             if is_in(INTERVALS["control"], rand_num):
@@ -69,13 +87,6 @@ class Node:
                 val = self.scale + (np.random.rand() - 0.5)
                 self.scale = bounce_back(val, (0.1, 3))
                 mutated = True
-
-        for child in self.children:
-            if child != None:
-                child_mut = child.mutate(mutation_rate)
-                mutated = mutated or child_mut
-
-        return mutated
 
     def open_spots_list(self):
         return self.get_indexes_of(lambda x: x is None)
@@ -222,10 +233,8 @@ class Individual:
     def mutate(self, mutation_rate):
         if self.fitness >= 0:
             self.needs_evaluation = False
-        node_list = []
-        self.traverse_get_list(self.genomeRoot, node_list)
-        size = len(node_list)
-        mutated = self.genomeRoot.mutate(mutation_rate/size)
+        size = self.get_nr_expressed_modules()
+        mutated = self.genomeRoot.mutate_breadth(mutation_rate/size)
         if mutated:
             self.needs_evaluation = True
             self._nr_expressed_modules = -1
