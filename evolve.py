@@ -29,32 +29,13 @@ from evo_util import sort_to_chunks
 
 from IPython import embed
 
-# Add arguments
-parser = argparse.ArgumentParser(description='Evolve some boys')
-parser.add_argument(
-    'config_file',
-    type=str,
-    help='The config file to configure this evolution'
-)
-parser.add_argument(
-    '-c', '--continue',
-    action="store_true",
-    help='Wether to continue an evolution or not'
-)
-parser.add_argument(
-    '-s', '--statement',
-    type=str,
-    help="The statement to log."
-)
-
-args = parser.parse_args()
-
-# Init config
-with open(args.config_file, "r") as file:
-    for line in file:
-        exec(line)
-        print(line)
-# End of init config
+def save_population(population, folder):
+    for i, ind in enumerate(population):
+        with open(f"{folder}/ind{i}.txt", "w") as file:
+            file.write(ind.genome_to_str())
+            file.write("\n")
+            file.write(str(ind.fitness))
+            file.close()
 
 def open_population(run_nr):
     population = []
@@ -72,14 +53,6 @@ def open_population(run_nr):
             cont = False
             print(f"Run nr {run_nr} ind {i} does not exist, this might be an error, but otherwise we just move on")
     return population
-
-def save_population(population, folder):
-    for i, ind in enumerate(population):
-        with open(f"{folder}/ind{i}.txt", "w") as file:
-            file.write(ind.genome_to_str())
-            file.write("\n")
-            file.write(str(ind.fitness))
-            file.close()
 
 # Not functional yet
 def continue_experiment(run_nr):
@@ -195,7 +168,7 @@ def evolve():
             print("Generation:",gen)
 
             offspring = toolbox.select(population, POP_SIZE)
-            offspring = list(map(copy.deepcopy, offspring))
+            offspring = list(map(toolbox.clone, offspring))
 
             parents = toolbox.select(population, NR_PARENTS)
             half = NR_PARENTS//2
@@ -248,4 +221,31 @@ def evolve():
         plotter.plot_stats()
 
 if __name__ == "__main__":
+    # Add arguments
+    parser = argparse.ArgumentParser(description='Evolve some boys')
+    parser.add_argument(
+        'config_file',
+        type=str,
+        help='The config file to configure this evolution'
+    )
+    parser.add_argument(
+        '-c', '--continue',
+        action="store_true",
+        help='Wether to continue an evolution or not'
+    )
+    parser.add_argument(
+        '-s', '--statement',
+        type=str,
+        help="The statement to log."
+    )
+
+    args = parser.parse_args()
+
+    # Init config
+    with open(args.config_file, "r") as file:
+        for line in file:
+            exec(line)
+            print(line)
+    # End of init config
+
     evolve()

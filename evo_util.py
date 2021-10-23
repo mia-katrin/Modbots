@@ -1,3 +1,5 @@
+import numpy as np
+
 def bounce_back(value, allowable_range):
     if value < allowable_range[0]:
         if value + 2*(allowable_range[0] - value) > allowable_range[1]:
@@ -44,3 +46,11 @@ def sort_to_chunks(offspring, nr_chunks):
         chunk = chunk-1 if chunk-1 >= 0 else nr_chunks-1
 
     return sorted
+
+def bool_from_distribution(type, threshold=None, c_mu=None, c_std=None, depth=None, o_depth=None):
+    if type == "gaussian":
+        return np.random.normal(c_mu, c_std) < depth/o_depth
+    elif type == "uniform":
+        return np.random.rand() < threshold
+    else:
+        raise ValueError("You've not stated the type of distribution!")

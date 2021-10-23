@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from utvikle_diversity_measure import diversity
+
 class Plotter:
     def __init__(self):
         self.stats = {}
@@ -11,10 +13,17 @@ class Plotter:
         for ind in population:
             nr_modules.append(ind.get_nr_expressed_modules())
             fitnesses.append(ind.fitness)
-        self._save_stats(nr_modules, "Nr Modules")
-        self._save_stats(fitnesses, "Fitness")
+        self._save_min_max(nr_modules, "Nr Modules")
+        self._save_min_max(fitnesses, "Fitness")
+        self._save_stat(diversity(population), "Diversity")
 
-    def _save_stats(self, liste, internal_name):
+    def _save_stat(self, value, internal_name):
+        if internal_name not in self.stats:
+            self.stats[internal_name] = [[]]
+
+        self.stats[internal_name][0].append(value)
+
+    def _save_min_max(self, liste, internal_name):
         if internal_name not in self.stats:
             self.stats[internal_name] = [[],[],[],[]]
         self.stats[internal_name][0].append(
@@ -34,10 +43,13 @@ class Plotter:
         for key in self.stats.keys():
             plt.figure()
             plt.title(key)
-            plt.plot(self.stats[key][0], label="Mins")
-            plt.plot(self.stats[key][1], label="Maxs")
-            plt.plot(self.stats[key][2], label="Means")
-            plt.plot(self.stats[key][3], label="Median")
+            if len(self.stats[key]) == 4:
+                plt.plot(self.stats[key][0], label="Mins")
+                plt.plot(self.stats[key][1], label="Maxs")
+                plt.plot(self.stats[key][2], label="Means")
+                plt.plot(self.stats[key][3], label="Median")
+            elif len(self.stats[key]) == 1:
+                plt.plot(self.stats[key][0])
             plt.legend()
 
             if save_figs:
@@ -48,9 +60,12 @@ class Plotter:
     def print_stats(self):
         for key in self.stats.keys():
             print()
-            print(key+":")
-            print("Min:",  self.stats[key][0][-1])
-            print("Max:",   self.stats[key][1][-1])
-            print("Mean:", self.stats[key][2][-1])
-            print("Median:",   self.stats[key][3][-1])
+            if len(self.stats[key]) == 4:
+                print(key+":")
+                print("Min:",  self.stats[key][0][-1])
+                print("Max:",   self.stats[key][1][-1])
+                print("Mean:", self.stats[key][2][-1])
+                print("Median:",   self.stats[key][3][-1])
+            elif len(self.stats[key]) == 1:
+                print(key+":",self.stats[key][0][-1])
             print()

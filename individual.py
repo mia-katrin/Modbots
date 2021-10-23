@@ -11,7 +11,7 @@ from random import shuffle
 import copy
 
 from custom_controller import Controller
-from evo_util import bounce_back, wrap_around
+from evo_util import bounce_back, wrap_around, bool_from_distribution
 
 CREATION_MU = 0.75 # Higher means fewer average modules
 CREATION_STD = 0.35 # Higher means more variance in number of modules
@@ -28,7 +28,10 @@ is_in = lambda interval, x: interval[0] <= x <= interval[1]
 
 class Node:
     def __init__(self, init_mode="random"):
-        if init_mode == "dwarf":
+        if init_mode == "empty":
+            self.scale = 1
+            self.angle = 0
+        elif init_mode == "dwarf":
             self.scale = 0.1
             self.controller = Controller("Hei :)")
             self.controller.amp = 0.0
@@ -38,7 +41,7 @@ class Node:
             self.angle = np.random.choice([0,90,180,270])
         elif init_mode == "random":
             self.angle = np.random.choice([0,90,180,270])
-            self.scale = np.random.rand() * 2. + 1.
+            self.scale = 1#np.random.rand() * 2. + 1.
             self.controller = Controller("Hei :)") # Not unique hash because I don't use it yet
         else:
             raise ValueError("No other mode supported")
@@ -111,6 +114,7 @@ class Node:
 class Individual:
     def __init__(self, gene=None):
         self.genomeRoot = Node()
+        self.genomeRoot.angle = 0
         self.fitness = -1
         self.needs_evaluation = True
         self._nr_expressed_modules = -1
@@ -131,7 +135,7 @@ class Individual:
 
         for info in gene:
             if info == "":
-                print("Found empty string")
+                pass
             elif info[0] == "M":
                 # Construct module
                 child_info = np.array(info[1:].split(",")).astype(float)
@@ -173,8 +177,8 @@ class Individual:
             return
 
         for i in range(len(node.children)):
-            if np.random.normal(CREATION_MU, CREATION_STD) < depth/overall_depth:
-                node.children[i] = Node() #0R 1L 2F
+            if bool_from_distribution("uniform", threshold=0.5):
+                node.children[i] = Node() #0F 1R 2L
                 self.iterative_construct(node.children[i], depth-1, overall_depth)
 
     def get_nr_expressed_modules(self):
