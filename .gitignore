@@ -9,5 +9,13 @@ videos/
 *_config.txt
 nohup.out
 
-Modbots_v2/
-!Modbots_v2/Assets/
+Modbots_v2/Library
+Modbots_v2/Logs
+Modbots_v2/obj
+Modbots_v2/Packages
+Modbots_v2/ProjectSettings
+Modbots_v2/Temp
+Modbots_v2/UserSettings
+Modbots_v2/.*
+Modbots_v2/Assembly*
+Modbots_v2/Modbots*
