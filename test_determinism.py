@@ -31,11 +31,11 @@ with open(parser.parse_args().config_file, "r") as file:
         exec(line)
         print(line)
 
-NR_INDS = 16
-ROUNDS = 3
+NR_INDS = 1
+ROUNDS = 1
 NR_SEEDS = 1
 
-N_CORES = 16 # It seems this determines a factor in population size
+N_CORES = 1 # It seems this determines a factor in population size
 HEADLESS = True
 
 def get_pop(nr_inds:int, duplicates:int = 1, at_least_modules:int = 1, depth:int = 5) -> list:

@@ -11,10 +11,28 @@ from sideChannelPythonside import SideChannelPythonside
 from test_determinism import get_pop
 from evaluate import evaluate, set_env_variables, close_env
 
+import argparse
+# Add arguments
+parser = argparse.ArgumentParser(description='Evolve some boys')
+parser.add_argument(
+    'config_file',
+    type=str,
+    help='The config file to configure this evolution'
+)
+
+args = parser.parse_args()
+
+# Init config
+with open(args.config_file, "r") as file:
+    for line in file:
+        exec(line)
+        print(line)
+# End of init config
+
 NR_INDS = 5
 population = get_pop(nr_inds=NR_INDS, duplicates = 1, at_least_modules = 3, depth = 5)
 
-time_scales_to_test = [1.0, 2.0, 4.0, 10.0, 100.0]
+time_scales_to_test = [1.0, 2.0, 5.0, 10.0, 100.0]
 no_graphics = [True]
 
 def get_fitnesses(population, time_scale=1.0, no_graphics=False) -> list:
