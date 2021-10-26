@@ -7,6 +7,8 @@ from mlagents_envs.environment import UnityEnvironment
 
 from individual import Individual
 from sideChannelPythonside import SideChannelPythonside
+from deap import base,tools,algorithms
+import multiprocessing
 
 from test_determinism import get_pop
 from evaluate import evaluate, set_env_variables, close_env
@@ -29,7 +31,8 @@ with open(args.config_file, "r") as file:
         print(line)
 # End of init config
 
-NR_INDS = 5
+NR_INDS = 16
+N_CORES = 16
 population = get_pop(nr_inds=NR_INDS, duplicates = 1, at_least_modules = 3, depth = 5)
 
 time_scales_to_test = [1.0, 2.0, 5.0, 10.0, 100.0]
@@ -40,11 +43,18 @@ def get_fitnesses(population, time_scale=1.0, no_graphics=False) -> list:
 
     set_env_variables(PATH, seed=42, headless=no_graphics, time_scale=time_scale)
 
-    for ind in population:
-        fitnesses.append(
-            evaluate(ind)
-        )
-    close_env()
+    toolbox = base.Toolbox()
+    toolbox.register("evaluate", evaluate)
+
+    # create multiprocessing pool
+    pool = multiprocessing.Pool(N_CORES)
+    cs = int(np.ceil(float(len(population)/float(N_CORES))))
+
+    # register the map function in toolbox, toolbox.map can be used to evaluate a population of len(pop)
+    toolbox.register("map", pool.map, chunksize=cs)
+    fitnesses = toolbox.map(toolbox.evaluate, population)
+
+    pool.close()
 
     return fitnesses
 
