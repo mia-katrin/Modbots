@@ -35,7 +35,7 @@ NR_INDS = 16
 N_CORES = 16
 population = get_pop(nr_inds=NR_INDS, duplicates = 1, at_least_modules = 3, depth = 5)
 
-time_scales_to_test = [10.0, 100.0]
+time_scales_to_test = [1.0, 2.0, 5.0, 8.0, 10.0, 100.0]
 no_graphics = [True]
 
 def get_fitnesses(population, time_scale=1.0, no_graphics=False) -> list:
