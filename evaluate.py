@@ -89,7 +89,6 @@ def close_env():
 
 # Evaluate function uses variables of different env instances
 def evaluate(ind:Individual, force_evaluate=True):
-    print(ind)
     if not force_evaluate and not ind.needs_evaluation:
         return ind.fitness
     env, side_channel = get_env()
