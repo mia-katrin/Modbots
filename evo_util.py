@@ -1,5 +1,16 @@
 import numpy as np
 
+def calc_time_evolution(pop_size, n_cores, mut_rate, nr_parents, n_steps, n_gen, time_scale=None):
+    avg_one_ind_time = n_steps*0.02/(n_cores * time_scale if time_scale != None else 1)
+
+    round0 = pop_size*avg_one_ind_time
+    inds_geni = (pop_size*mut_rate)+nr_parents
+    roundi = inds_geni*avg_one_ind_time
+
+    all_gen = roundi*n_gen
+
+    return all_gen + round0
+
 def bounce_back(value, allowable_range):
     if value < allowable_range[0]:
         if value + 2*(allowable_range[0] - value) > allowable_range[1]:

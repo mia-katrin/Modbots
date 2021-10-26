@@ -70,7 +70,7 @@ def get_env():
     if (env == None):
         if TIME_SCALE != None:
             ec = EngineConfigurationChannel()
-            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, ec],no_graphics = HEADLESS, worker_id=pid)
+            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, ec],no_graphics = HEADLESS, worker_id=pid, log_folder=LOG_FOLDER)
             ec.set_configuration_parameters(time_scale=TIME_SCALE)
             env.reset()
         else:

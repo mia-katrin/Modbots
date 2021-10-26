@@ -25,7 +25,7 @@ individual_class = Individual
 
 import argparse
 from evaluate import get_env, evaluate, close_env, set_env_variables
-from evo_util import sort_to_chunks
+from evo_util import sort_to_chunks, calc_time_evolution
 
 from IPython import embed
 
@@ -105,7 +105,7 @@ def init_toolbox():
 def evolve():
     assert POP_SIZE%N_CORES == 0, "Cannot run this POP_SIZE because it will cause non-deterministic evaluations"
 
-    print("Generations:", N_GENERATIONS,"\nPopulation:", POP_SIZE,"\nEstimated time:", POP_SIZE*N_STEPS*0.02/N_CORES+POP_SIZE*MUT_RATE*N_STEPS*0.02*N_GENERATIONS/N_CORES, "seconds")
+    print("Generations:", N_GENERATIONS,"\nPopulation:", POP_SIZE,"\nEstimated time:", calc_time_evolution(POP_SIZE, N_CORES, MUT_RATE, NR_PARENTS, N_STEPS, N_GENERATIONS, TIME_SCALE), "seconds")
 
     if DOCUMENTATION:
         runNr = 0
@@ -148,7 +148,7 @@ def evolve():
             #file.write("PATH="+str(PATH)+"\n")
             file.close()
 
-    set_env_variables(PATH, LOG_FOLDER, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
+    set_env_variables(PATH, LOG_FOLDER, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL, time_scale=TIME_SCALE)
 
     # init toolbox
     toolbox = init_toolbox()
