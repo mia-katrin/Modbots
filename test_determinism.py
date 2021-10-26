@@ -75,7 +75,7 @@ def run_sequentially(pop:list, seed:int) -> list:
     sc = SideChannelPythonside()
 
     # We start the communication with the Unity Editor and pass the string_log side channel as input
-    set_env_variables(PATH, seed=seed, headless=HEADLESS)
+    set_env_variables(PATH, LOG_FOLDER, seed=seed, headless=HEADLESS)
 
     fitnesses = []
     for ind in pop:
@@ -86,7 +86,7 @@ def run_sequentially(pop:list, seed:int) -> list:
     return fitnesses
 
 def run_multithreaded(pop:list, seed:int) -> list:
-    set_env_variables(PATH, seed=seed, headless=HEADLESS)
+    set_env_variables(PATH, LOG_FOLDER, seed=seed, headless=HEADLESS)
 
     toolbox = base.Toolbox()
     toolbox.register("evaluate", evaluate)

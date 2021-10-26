@@ -148,7 +148,7 @@ def evolve():
             #file.write("PATH="+str(PATH)+"\n")
             file.close()
 
-    set_env_variables(PATH, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
+    set_env_variables(PATH, LOG_FOLDER, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
 
     # init toolbox
     toolbox = init_toolbox()

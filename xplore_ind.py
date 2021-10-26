@@ -28,7 +28,7 @@ with open(args.config_file, "r") as file:
 print("We start")
 start = time.time()
 ind = Individual(args.gene)
-set_env_variables(PATH, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
+set_env_variables(PATH, LOG_FOLDER, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
 print("Starting:", time.time()-start)
 
 start = time.time()

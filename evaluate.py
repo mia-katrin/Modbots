@@ -29,19 +29,21 @@ HEADLESS = False
 TIME_SCALE = None
 
 # Method to set static variables
-def set_env_variables(path, seed=42, headless=False, time_scale=None, n_steps=1000, n_start_eval=250):
+def set_env_variables(path, log_folder, seed=42, headless=False, time_scale=None, n_steps=1000, n_start_eval=250):
     global SEED
     global HEADLESS
     global TIME_SCALE
     global PATH
     global N_STEPS
     global N_START_EVAL
+    global LOG_FOLDER
     PATH = path
     SEED = seed
     HEADLESS = headless
     TIME_SCALE = time_scale
     N_STEPS = n_steps
     N_START_EVAL = n_start_eval
+    LOG_FOLDER = log_folder
 
 # singleton equivalent (unsure if this is true, pool map will spawn several envs
 # on different adresses with different variables)
@@ -72,7 +74,7 @@ def get_env():
             ec.set_configuration_parameters(time_scale=TIME_SCALE)
             env.reset()
         else:
-            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel],no_graphics = HEADLESS, worker_id=pid)
+            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel],no_graphics = HEADLESS, worker_id=pid, log_folder=LOG_FOLDER)
             env.reset()
     return env, side_channel
 

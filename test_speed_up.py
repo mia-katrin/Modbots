@@ -41,7 +41,7 @@ no_graphics = [True]
 def get_fitnesses(population, time_scale=1.0, no_graphics=False) -> list:
     fitnesses = []
 
-    set_env_variables(PATH, seed=42, headless=no_graphics, time_scale=time_scale)
+    set_env_variables(PATH, LOG_FOLDER, seed=42, headless=no_graphics, time_scale=time_scale)
 
     toolbox = base.Toolbox()
     toolbox.register("evaluate", evaluate)

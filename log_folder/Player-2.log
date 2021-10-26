@@ -1,0 +1,84 @@
+Mono path[0] = '/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Resources/Data/Managed'
+Mono config path = '/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/MonoBleedingEdge/etc'
+Initialize engine version: 2020.3.2f1 (8fd9074bf66c)
+[Subsystems] Discovering subsystems at path /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Resources/Data/UnitySubsystems
+Forcing GfxDevice: Null
+GfxDevice: creating device client; threaded=0
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Begin MonoManager ReloadAssembly
+- Completed reload, in  0.089 seconds
+ERROR: Shader Sprites/Default shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Sprites/Mask shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+ERROR: Shader Legacy Shaders/VertexLit shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+ERROR: Shader Standard shader is not supported on this GPU (none of subshaders/fallbacks are suitable)
+WARNING: Shader Unsupported: 'Standard' - All subshaders removed
+WARNING: Shader Did you use #pragma only_renderers and omit this platform?
+WARNING: Shader If subshaders removal was intentional, you may have forgotten turning Fallback off?
+UnloadTime: 1.197930 ms
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so.dylib
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so.bundle
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so.dylib
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so.bundle
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so.dylib
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so.bundle
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libcoreclr.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so.dylib
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so.bundle
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libdl.so
+WARNING: The communication API versions between Unity and python differ at the minor version level. Python API: 1.5.0, Unity API: 1.0.0 Python Library Version: 0.27.0 .
+This means that some features may not work unless you upgrade the package with the lower version.Please find the versions that work best together from our release page.
+https://github.com/Unity-Technologies/ml-agents/releases
+
+Python package version (0.27.0) is out of the supported range or not from an official release. It is strongly recommended that you use a Python package between 0.16.1 and 0.20.0. Training will proceed, but the output format may be different.
+
+0.3333333
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.542319 ms
+
+Unloading 2 unused Assets to reduce memory usage. Loaded Objects now: 887.
+Total: 0.902032 ms (FindLiveObjects: 0.075801 ms CreateObjectMapping: 0.027782 ms MarkObjects: 0.786786 ms  DeleteObjects: 0.010955 ms)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.269630 ms
+
+Unloading 13 unused Assets to reduce memory usage. Loaded Objects now: 887.
+Total: 0.863946 ms (FindLiveObjects: 0.073108 ms CreateObjectMapping: 0.032201 ms MarkObjects: 0.730823 ms  DeleteObjects: 0.027150 ms)
+
+Setting up 4 worker threads for Enlighten.
+  Thread -> id: 70000c0aa000 -> priority: 1 
+  Thread -> id: 70000c233000 -> priority: 1 
+  Thread -> id: 70000c2b6000 -> priority: 1 
+  Thread -> id: 70000c3df000 -> priority: 1 
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dll
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dll.dylib
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dll.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dll.bundle
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/advapi32.dll
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dylib
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.bundle
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/advapi32
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dll
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dll.dylib
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dll.so
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dll.bundle
+Fallback handler could not load library /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Build.app/Contents/Frameworks/MonoEmbedRuntime/osx/libadvapi32.dll
+Waiting on threads to park on joinable thread list timed out.
