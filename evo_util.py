@@ -1,7 +1,7 @@
 import numpy as np
 
 def calc_time_evolution(pop_size, n_cores, mut_rate, nr_parents, n_steps, n_gen, time_scale=None):
-    avg_one_ind_time = n_steps*0.02/(n_cores * time_scale if time_scale != None else 1)
+    avg_one_ind_time = n_steps*0.02/(n_cores * (time_scale if time_scale != None else 1))
 
     round0 = pop_size*avg_one_ind_time
     inds_geni = (pop_size*mut_rate)+nr_parents
@@ -55,6 +55,8 @@ def sort_to_chunks(offspring, nr_chunks):
         sorted[indexes[chunk][1]] = n
         indexes[chunk][1] -= 1
         chunk = chunk-1 if chunk-1 >= 0 else nr_chunks-1
+
+    assert np.all(sorted != None), "Sorting has failed"
 
     return sorted
 
