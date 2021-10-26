@@ -57,7 +57,9 @@ for i, b in enumerate(no_graphics):
         end = time.time()
 
         times[i].append(end - start) # in seconds
-        fitnesses_over_all[int(b)].append(fitnesses)
+        fitnesses_over_all[i].append(fitnesses)
+
+fitnesses_over_all = np.array(fitnesses_over_all)
 
 with open("results.txt", "w") as file:
     file.write("Time used\n")
