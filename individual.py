@@ -177,7 +177,7 @@ class Individual:
             return
 
         for i in range(len(node.children)):
-            if bool_from_distribution("uniform", threshold=0.5):
+            if bool_from_distribution("gaussian", c_mu=CREATION_MU, c_std=CREATION_STD, depth=depth, o_depth=overall_depth):
                 node.children[i] = Node() #0F 1R 2L
                 self.iterative_construct(node.children[i], depth-1, overall_depth)
 

@@ -170,7 +170,7 @@ def evolve():
             offspring = toolbox.select(population, POP_SIZE)
             offspring = list(map(toolbox.clone, offspring))
 
-            parents = toolbox.select(population, NR_PARENTS)
+            parents = np.random.choice(offspring, size=NR_PARENTS)
             half = NR_PARENTS//2
             for ind1, ind2 in zip(parents[:half], parents[half:]):
                 child1, child2 = ind1.crossover(ind2)

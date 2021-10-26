@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib as mpl
+from skimage.color import hsv2rgb
 import seaborn as sns
 sns.set_theme()
 
@@ -67,7 +70,7 @@ def add_ind_recurse(image, node, index, orientation):
         add_ind_recurse(image, child, new_index.astype(int), orientationA)
 
 def add_ind(image, ind):
-    index = np.array([DEPTH,(DEPTH-1),(DEPTH-1),1])
+    index = np.array([DEPTH*2,(DEPTH*2-1),(DEPTH*2-1),1])
 
     orientation = np.array([
         [1, 0, 0, 0],
@@ -79,7 +82,7 @@ def add_ind(image, ind):
     add_ind_recurse(image, ind.genomeRoot, index, orientation)
 
 def get_image_of_pop(pop):
-    image = np.zeros((DEPTH*2,DEPTH*2-1,DEPTH*2-1)).astype(int)
+    image = np.zeros((DEPTH*4,DEPTH*4,DEPTH*4)).astype(int)
 
     ind = Individual.random(5)
 
@@ -89,17 +92,22 @@ def get_image_of_pop(pop):
     return image
 
 def hist(image, pop_size):
-    h = np.zeros(pop_size+20)
+    bins, counts = np.unique(image, return_counts=True)
 
-    for elem in image.ravel():
-        if elem != 0:
-            h[elem] += 1
+    h = np.zeros(int(bins[-1])+1).astype(int)
+
+    for bin, count in zip(bins, counts):
+        if int(bin) != 0:
+            h[int(bin)] = count
 
     return h
 
-def plot_hist(h):
-    plt.plot(h)
-    plt.show()
+def plot_hist(image, label=None, elim_0=True):
+    bins, counts = np.unique(image, return_counts=True)
+    if elim_0:
+        counts = counts[1:]
+        bins = bins[1:]
+    plt.bar(bins, counts, label=label)
 
 def diversity(pop):
     pop_size = len(pop)
@@ -151,24 +159,54 @@ def show_random_vs_evolved():
     pop = open_population(123)
     pop_size = len(pop)
 
-    h = np.array(hist(get_image_of_pop(pop), pop_size))
+    img = get_image_of_pop(pop)
+    h = np.array(hist(img, pop_size))
 
     plt.figure()
-    plt.plot(h, label="evolved")
+    plot_hist(img, label="evolved")
 
     # random
-    pop_size = 100
+    pop_size = 10
     pop = [Individual.random(5) for _ in range(pop_size)]
 
-    h = np.array(hist(get_image_of_pop(pop), pop_size))
+    img2 = get_image_of_pop(pop)
+    h = np.array(hist(img2, pop_size))
 
-    plt.plot(h, label="random")
+    plot_hist(img2, label="random")
     plt.legend()
     plt.show()
 
+    plot_voxels(img)
+    plot_voxels(img2)
+
 def plot_voxels(image):
-    ax = plt.figure().add_subplot(projection='3d')
-    ax.voxels(image, edgecolor='k')
+    colors = np.where(image == 0, "#000000ff", "#ffffffff")
+    hues = ["#000000ff"]
+    for i in range(1, int(np.max(image))+1):
+        hue = i/(np.max(image)) * 0.9 + 0.1
+        rgb = hsv2rgb([[[hue, 1.0, 1.0]]])[0][0]*255
+        rgb_hex = [hex(int(elem))[2:] for elem in rgb]
+        for j in range(3):
+            if len(rgb_hex[j]) == 1:
+                rgb_hex[j] = '0' + rgb_hex[j]
+
+        string = f"#{rgb_hex[0]}{rgb_hex[1]}{rgb_hex[2]}88"
+        colors[np.where(image == i)] = string
+
+        hues.append(string)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, gridspec_kw = {'width_ratios':[19, 1]})
+    ax = fig.add_subplot(1,2,1, projection='3d')
+    ax.voxels(image, facecolors=colors, edgecolor='k')
+
+    cmap = mpl.colors.ListedColormap(hues)
+    norm = mpl.colors.Normalize(vmin=0, vmax=np.max(image))
+    ax2 = fig.add_subplot(1,2,2)
+    cb1 = mpl.colorbar.ColorbarBase(
+        ax2, cmap=cmap,
+        norm=norm,
+        orientation='vertical'
+    )
 
     plt.show()
 
@@ -178,5 +216,11 @@ def show_random_ind():
     image = get_image_of_pop([ind])
     plot_voxels(image)
 
+def test_voxel_colors():
+    image = np.zeros((50,10,10))
+    for i in range(0, 50):
+        image[i:50,4:8,1] = i
+    plot_voxels(image)
+
 if __name__ == "__main__":
-    show_random_ind()
+    test_voxel_colors()
