@@ -35,7 +35,7 @@ NR_INDS = 16
 N_CORES = 16
 population = get_pop(nr_inds=NR_INDS, duplicates = 1, at_least_modules = 3, depth = 5)
 
-time_scales_to_test = [1.0, 2.0, 5.0, 10.0, 100.0]
+time_scales_to_test = [10.0, 100.0]
 no_graphics = [True]
 
 def get_fitnesses(population, time_scale=1.0, no_graphics=False) -> list:
@@ -73,6 +73,8 @@ fitnesses_over_all = np.array(fitnesses_over_all)
 
 with open("results.txt", "w") as file:
     file.write("Time used\n")
+    for time in times[0]:
+        file.write(str(time) + "\n")
 
     file.write("\n\nTotal fitness difference from time scale 1\n")
     file.write("Time scale: No Graphics\n")
