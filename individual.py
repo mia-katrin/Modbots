@@ -41,7 +41,7 @@ class Node:
             self.angle = np.random.choice([0,90,180,270])
         elif init_mode == "random":
             self.angle = np.random.choice([0,90,180,270])
-            self.scale = 1#np.random.rand() * 2. + 1.
+            self.scale = np.random.rand() * 2. + 1.
             self.controller = Controller("Hei :)") # Not unique hash because I don't use it yet
         else:
             raise ValueError("No other mode supported")
