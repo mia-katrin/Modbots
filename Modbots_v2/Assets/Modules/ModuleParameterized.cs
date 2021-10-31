@@ -101,7 +101,7 @@ public class ModuleParameterized : MonoBehaviour
 
         Rigidbody rb2 = collider2.GetComponent<Rigidbody>();
         rb2.angularDrag = 0.05f;
-        rb2.mass = 10 * (0.5f + scale/(scale + 1)); // Non-linear scaling using sigmoid
+        rb2.mass = 10 * (0.5f + scale / (scale + 1)); // Non-linear scaling using sigmoid
 
         // Configure joint collider 1
         ConfigurableJoint cj = collider1.GetComponent<ConfigurableJoint>();
@@ -171,5 +171,33 @@ public class ModuleParameterized : MonoBehaviour
     public void RemoveFixedJoint()
     {
         Destroy(attachmentJoint);
+    }
+
+    // Debug values
+    public static Color[] colors = new Color[3] {Color.red, Color.blue, Color.green };
+    public float[] sensorValues;
+    public float[] CollectSensorData()
+    {
+        float[] sensorMeasurements = new float[3] { -1f, -1f, -1f };
+
+        for (int i = 0; i < connectionSites.Count; i++)
+        {
+            // Make a ray outwards
+            // 0:green 1:red 2:-red
+            Vector3 dir = connectionSites[i].transform.up;
+            Vector3 origin = connectionSites[i].transform.position - dir/10;
+            Ray outwardsRay = new Ray(origin, dir);
+
+            // Check if ray hit anything
+            RaycastHit hit;
+            if (Physics.Raycast(outwardsRay, out hit))
+            {
+                //Debug.Log($"Site {i} detects object {hit.distance} with collider {hit.collider}");
+                sensorMeasurements[i] = hit.distance;
+            }
+            Debug.DrawRay(origin, dir, colors[i], duration:1.0f, depthTest:true);
+        }
+        sensorValues = sensorMeasurements;
+        return sensorMeasurements;
     }
 }

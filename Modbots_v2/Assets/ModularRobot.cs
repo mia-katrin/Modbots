@@ -68,7 +68,46 @@ public class ModularRobot : Agent
     {
         Vector3 pos = GetPosition();
         sensor.AddObservation(pos);
+
+        if (allModules.Count > 0)
+        {
+            float[] sensorValues = Enumerable.Repeat(0.0f, 150).ToArray();
+            foreach (var moduleGO in allModules)
+            {
+                ModuleParameterized m = moduleGO.GetComponent<ModuleParameterized>();
+                float[] data = m.CollectSensorData();
+                sensorValues[m.index * 3] = data[0];
+                sensorValues[m.index * 3 + 1] = data[1];
+                sensorValues[m.index * 3 + 2] = data[2];
+            }
+            sensor.AddObservation(sensorValues);
+        }
+        
         RequestDecision();
+    }
+
+    public override void OnActionReceived(float[] vectorAction)
+    {
+        //weirdSine += 0.01f;
+
+        if (rootGO != null)
+        {
+            foreach (var module in allModules)
+            {
+                ConfigurableJoint joint = module.transform.GetChild(0).GetComponent<ConfigurableJoint>();
+                Quaternion tr = joint.targetRotation;
+                tr.x = vectorAction[
+                    module.GetComponent<ModuleParameterized>().index
+                ];
+                //tr.x = Mathf.Sin(weirdSine);
+                joint.targetRotation = tr;
+            }
+        }
+    }
+
+    public override void Heuristic(float[] actionsOut)
+    {
+
     }
 
     private void FixedUpdate()
@@ -338,31 +377,5 @@ public class ModularRobot : Agent
         childModule.attachmentJoint.connectedBody = parentGO.transform.GetChild(0).gameObject.GetComponent<Rigidbody>();
 
         return childGO;
-    }
-
-    //public float weirdSine = 0;
-
-    public override void OnActionReceived(float[] vectorAction)
-    {
-        //weirdSine += 0.01f;
-
-        if (rootGO != null)
-        {
-            foreach (var module in allModules)
-            {
-                ConfigurableJoint joint = module.transform.GetChild(0).GetComponent<ConfigurableJoint>();
-                Quaternion tr = joint.targetRotation;
-                tr.x = vectorAction[
-                    module.GetComponent<ModuleParameterized>().index
-                ];
-                //tr.x = Mathf.Sin(weirdSine);
-                joint.targetRotation = tr;
-            }
-        }
-    }
-
-    public override void Heuristic(float[] actionsOut)
-    {
-        
     }
 }

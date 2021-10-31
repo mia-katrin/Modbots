@@ -10,7 +10,7 @@ import os
 from random import shuffle
 import copy
 
-from custom_controller import Controller
+from controllers.sine_controller import Controller
 from evo_util import bounce_back, wrap_around, bool_from_distribution
 
 CREATION_MU = 0.75 # Higher means fewer average modules
@@ -38,9 +38,9 @@ class Node:
             self.controller.freq = 0.0
             self.controller.phase = 0.0
             self.controller.offset = 0.0
-            self.angle = np.random.choice([0,90,180,270])
+            self.angle = np.random.choice([0,90,180,270]).item() # to int
         elif init_mode == "random":
-            self.angle = np.random.choice([0,90,180,270])
+            self.angle = np.random.choice([0,90,180,270]).item() # to int
             self.scale = np.random.rand() * 2. + 1.
             self.controller = Controller("Hei :)") # Not unique hash because I don't use it yet
         else:
@@ -113,8 +113,8 @@ class Node:
 
 class Individual:
     def __init__(self, gene=None):
-        self.genomeRoot = Node()
-        self.genomeRoot.angle = 0
+        self.bodyRoot = Node()
+        self.bodyRoot.angle = 0
         self.fitness = -1
         self.needs_evaluation = True
         self._nr_expressed_modules = -1
@@ -124,14 +124,14 @@ class Individual:
     def interpret_string_gene(self, gene):
         gene = np.array(gene.split("|"))
         root_info = np.array(gene[0].split(",")).astype(float)
-        self.genomeRoot.scale = root_info[0]
-        self.genomeRoot.controller.amp = root_info[1]
-        self.genomeRoot.controller.freq = root_info[2]
-        self.genomeRoot.controller.phase = root_info[3]
-        self.genomeRoot.controller.offset = root_info[4]
+        self.bodyRoot.scale = root_info[0]
+        self.bodyRoot.controller.amp = root_info[1]
+        self.bodyRoot.controller.freq = root_info[2]
+        self.bodyRoot.controller.phase = root_info[3]
+        self.bodyRoot.controller.offset = root_info[4]
 
         pretend_stack = []
-        node = self.genomeRoot
+        node = self.bodyRoot
 
         for info in gene:
             if info == "":
@@ -158,17 +158,29 @@ class Individual:
                 # Node off stack
                 node = pretend_stack.pop()
 
+    def get_actions(self, observation):
+        actions = np.zeros(shape=(1,50),dtype=np.float32)
+
+        allNodes = []
+        self.traverse_get_list(self.bodyRoot, allNodes)
+
+        for j, node in enumerate(allNodes):  # All controllers
+            action = node.controller.update(0.05)
+            actions[0,j] = action
+
+        return actions
+
     @staticmethod
     def random(depth):
         self = Individual()
 
-        self.iterative_construct(self.genomeRoot, depth=depth-1, overall_depth=depth)
+        self.iterative_construct(self.bodyRoot, depth=depth-1, overall_depth=depth)
 
         while self.get_nr_expressed_modules() <= 2 or \
-              (self.genomeRoot.scale < 1 and self.genomeRoot.children[0] == None) or \
-              (self.genomeRoot.scale < 1 and self.genomeRoot.children[0].scale < 1):
+              (self.bodyRoot.scale < 1 and self.bodyRoot.children[0] == None) or \
+              (self.bodyRoot.scale < 1 and self.bodyRoot.children[0].scale < 1):
             self = Individual()
-            self.iterative_construct(self.genomeRoot, depth=depth-1, overall_depth=depth)
+            self.iterative_construct(self.bodyRoot, depth=depth-1, overall_depth=depth)
 
         return self
 
@@ -183,7 +195,7 @@ class Individual:
 
     def get_nr_expressed_modules(self):
         if self._nr_expressed_modules == -1:
-            self._nr_expressed_modules = self.recursive_counting(self.genomeRoot)
+            self._nr_expressed_modules = self.recursive_counting(self.bodyRoot)
         return self._nr_expressed_modules
 
     def recursive_counting(self, node) -> int:
@@ -196,10 +208,10 @@ class Individual:
 
     def genome_to_str(self):
         res = ""
-        res += f"{self.genomeRoot.scale},{self.genomeRoot.controller.amp},{self.genomeRoot.controller.freq},{self.genomeRoot.controller.phase},{self.genomeRoot.controller.offset}"
+        res += f"{self.bodyRoot.scale},{self.bodyRoot.controller.amp},{self.bodyRoot.controller.freq},{self.bodyRoot.controller.phase},{self.bodyRoot.controller.offset}"
         res += "|"
 
-        child_strings = self.iterative_to_string(self.genomeRoot)
+        child_strings = self.iterative_to_string(self.bodyRoot)
         child_strings = child_strings[:-2]
         return res + child_strings
 
@@ -223,14 +235,14 @@ class Individual:
     def crossover(self, other) -> tuple:
         child1 = Individual()
         child2 = Individual()
-        child1.genomeRoot = copy.deepcopy(self.genomeRoot)
-        child2.genomeRoot = copy.deepcopy(other.genomeRoot)
+        child1.bodyRoot = copy.deepcopy(self.bodyRoot)
+        child2.bodyRoot = copy.deepcopy(other.bodyRoot)
 
         self_branch = np.random.choice([0,1,2])
         other_branch = np.random.choice([0,1,2])
 
-        child1.genomeRoot.children[self_branch] = other.genomeRoot.children[other_branch]
-        child2.genomeRoot.children[other_branch] = self.genomeRoot.children[self_branch]
+        child1.bodyRoot.children[self_branch] = other.bodyRoot.children[other_branch]
+        child2.bodyRoot.children[other_branch] = self.bodyRoot.children[self_branch]
 
         return child1, child2
 
@@ -238,65 +250,8 @@ class Individual:
         if self.fitness >= 0:
             self.needs_evaluation = False
         size = self.get_nr_expressed_modules()
-        mutated = self.genomeRoot.mutate_breadth(mutation_rate/size)
+        mutated = self.bodyRoot.mutate_breadth(mutation_rate/size)
         if mutated:
-            self.needs_evaluation = True
-            self._nr_expressed_modules = -1
-
-    def deprecated_mutate(self, mutation_rate):
-        # Mutation rate on each cell?
-        # Larger creatures will mutate more. Volatile?
-        # Mutation rate on creature
-        # Larger creature will mutate less. Safer?
-
-        self.needs_evaluation = False
-        if np.random.rand() < mutation_rate:
-            node_list = []
-
-            intervals = {}
-            intervals["control"]     = [0,                           0.2]
-            intervals["angle"]       = [intervals["control"][1],     0.3]
-            intervals["remove_node"] = [intervals["angle"][1],       0.5]
-            intervals["add_node"]    = [intervals["remove_node"][1], 0.8]
-            intervals["scale"]       = [intervals["add_node"][1],      1]
-
-            is_in = lambda interval, x: interval[0] <= x <= interval[1]
-
-            rand_num = np.random.rand()
-            if is_in(intervals["control"], rand_num):
-                self.traverse_get_list(self.genomeRoot, node_list)
-                node_to_mutate = np.random.choice(node_list)
-                if node_to_mutate.scale < 1: return
-                node_to_mutate.controller.mutate()
-            elif is_in(intervals["angle"], rand_num):
-                self.traverse_get_list(self.genomeRoot, node_list)
-                node_to_mutate = np.random.choice(node_list)
-                node_to_mutate.angle += -90 if np.random.rand() <= 0.5 else 90
-                if node_to_mutate.angle < 0:
-                    node_to_mutate.angle = 270
-                elif node_to_mutate.angle > 270:
-                    node_to_mutate.angle = 0
-            elif is_in(intervals["remove_node"], rand_num):
-                self.get_almost_leaf_nodes(self.genomeRoot, node_list)
-                if len(node_list) == 0: return
-                node_to_mutate = np.random.choice(node_list)
-                node_to_mutate.children[np.random.choice(node_to_mutate.occupied_spots_list())] = None
-            elif is_in(intervals["add_node"], rand_num):
-                self.get_not_filled_nodes(self.genomeRoot, node_list)
-                node_to_mutate = np.random.choice(node_list)
-                new_node = Node()
-                node_to_mutate.children[np.random.choice(node_to_mutate.open_spots_list())] = new_node
-                new_node.scale = 0.1
-                new_node.controller.amp = 0.0
-                new_node.controller.freq = 0.0
-                new_node.controller.phase = 0.0
-                new_node.controller.offset = 0.0
-            elif is_in(intervals["scale"], rand_num):
-                self.traverse_get_list(self.genomeRoot, node_list)
-                node_to_mutate = np.random.choice(node_list)
-                node_to_mutate.scale += (np.random.rand() - 0.5)*0.2
-                node_to_mutate.scale = bounce_back(node_to_mutate.scale, (0.1, 3))
-
             self.needs_evaluation = True
             self._nr_expressed_modules = -1
 

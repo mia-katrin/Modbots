@@ -106,24 +106,18 @@ def evaluate(ind:Individual, force_evaluate=True):
 
     save_pos = [0,0,0]
     for i in range(N_STEPS):
-        # Get env observation space. It contains only current fitness
+        # Get env observation space. It is the current position + sensor data
         obs,other = env.get_steps(list(env._env_specs)[0])
-        index = list(obs.agent_id_to_index)
 
         if i == N_START_EVAL:
-            save_pos = obs[index[0]][0][0]
+            index = list(obs.agent_id_to_index)
+            save_pos = obs[index[0]][0][0][:3]
 
         # Make action array
-        # Zeros over ndarray because ndarray initializes with very small numbers
-        # instead of zeros. Unsure if it matters, but it helps for clarity
-        actions = np.zeros(shape=(1,50),dtype=np.float32)
         if (i >= 100):
-            allNodes = []
-            ind.traverse_get_list(ind.genomeRoot, allNodes)
-
-            for j, node in enumerate(allNodes):  # All controllers
-                action = node.controller.update(0.05)
-                actions[0,j] = action
+            actions = ind.get_actions(obs[index[0]][0][0][3:])
+        else:
+            actions = np.zeros(shape=(1,50),dtype=np.float32)
 
         # Send actions
         env.set_action_for_agent("ModularBehavior?team=0",0,ActionTuple(actions))
@@ -131,7 +125,7 @@ def evaluate(ind:Individual, force_evaluate=True):
 
     # Get fitness
     index = list(obs.agent_id_to_index)
-    current_pos = obs[index[0]][0][0]
+    current_pos = obs[index[0]][0][0][:3]
 
     distance_vec = np.array(current_pos) - np.array(save_pos)
     fitness = np.sqrt(distance_vec[0]**2 + distance_vec[2]**2)

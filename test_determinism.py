@@ -31,11 +31,11 @@ with open(parser.parse_args().config_file, "r") as file:
         exec(line)
         print(line)
 
-NR_INDS = 1
-ROUNDS = 1
-NR_SEEDS = 1
+NR_INDS = 5
+ROUNDS = 5
+NR_SEEDS = 2
 
-N_CORES = 1 # It seems this determines a factor in population size
+N_CORES = 2 # It seems this determines a factor in population size
 HEADLESS = True
 
 def get_pop(nr_inds:int, duplicates:int = 1, at_least_modules:int = 1, depth:int = 5) -> list:
@@ -86,7 +86,7 @@ def run_sequentially(pop:list, seed:int) -> list:
     return fitnesses
 
 def run_multithreaded(pop:list, seed:int) -> list:
-    set_env_variables(PATH, LOG_FOLDER, seed=seed, headless=HEADLESS)
+    set_env_variables(PATH, LOG_FOLDER, seed=seed, headless=HEADLESS, time_scale=TIME_SCALE, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
 
     toolbox = base.Toolbox()
     toolbox.register("evaluate", evaluate)

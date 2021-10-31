@@ -8,6 +8,8 @@ sns.set_theme()
 
 from individual import Individual, Node
 
+### R and L is likely swapped
+
 DEPTH = 5
 
 def rotx(theta):
@@ -174,12 +176,15 @@ def show_random_vs_evolved():
 
     plot_hist(img2, label="random")
     plt.legend()
+    plt.title("Histogram of evolved versus random population images")
+    plt.xlabel("Bins: Pixel values")
+    plt.ylabel("Counts: Pixel value i occured in image")
     plt.show()
 
-    plot_voxels(img)
-    plot_voxels(img2)
+    plot_voxels(img, "Accumulated image of an evolved population")
+    plot_voxels(img2, "Accumulated image of a random population")
 
-def plot_voxels(image):
+def plot_voxels(image, title="Plotted voxels"):
     colors = np.where(image == 0, "#000000ff", "#ffffffff")
     hues = ["#000000ff"]
     for i in range(1, int(np.max(image))+1):
@@ -196,6 +201,7 @@ def plot_voxels(image):
         hues.append(string)
 
     fig, (ax1, ax2) = plt.subplots(1, 2, gridspec_kw = {'width_ratios':[19, 1]})
+
     ax = fig.add_subplot(1,2,1, projection='3d')
     ax.voxels(image, facecolors=colors, edgecolor='k')
 
@@ -207,14 +213,14 @@ def plot_voxels(image):
         norm=norm,
         orientation='vertical'
     )
-
+    fig.suptitle(title, fontsize=16)
     plt.show()
 
 def show_random_ind():
-    ind = Individual.random(5)
+    ind = Individual.random(10)
 
     image = get_image_of_pop([ind])
-    plot_voxels(image)
+    plot_voxels(image, "A random individual")
 
 def test_voxel_colors():
     image = np.zeros((50,10,10))
@@ -223,4 +229,4 @@ def test_voxel_colors():
     plot_voxels(image)
 
 if __name__ == "__main__":
-    test_voxel_colors()
+    show_random_ind()

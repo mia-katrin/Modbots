@@ -51,9 +51,12 @@ class Plotter:
             elif len(self.stats[key]) == 1:
                 plt.plot(self.stats[key][0])
             plt.legend()
+            plt.xlabel("Generation")
+            plt.ylabel(key)
 
             if save_figs:
-                plt.savefig(f"{folder}/{key}.png")
+                name = key.replace(" ", "_")
+                plt.savefig(f"{folder}/{name}.png")
 
         plt.show()
 
