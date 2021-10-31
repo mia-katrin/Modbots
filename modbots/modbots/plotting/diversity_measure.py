@@ -1,43 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import matplotlib as mpl
-from skimage.color import hsv2rgb
 import seaborn as sns
 sns.set_theme()
 
-from individual import Individual, Node
+from modbots.plotting import plot_voxels, plot_hist
+
+from modbots.creature_types.string_ind import Individual
+from modbots.creature_types.node import Node
+from modbots.util import rotx, roty, rotz
 
 ### R and L is likely swapped
 
 DEPTH = 5
-
-def rotx(theta):
-    t = theta*np.pi/180
-    return np.array([
-        [1, 0, 0, 0],
-        [0, np.cos(t),-np.sin(t), 0],
-        [0, np.sin(t), np.cos(t), 0],
-        [0, 0, 0, 1]
-    ]).astype(int)
-
-def roty(theta):
-    t = theta*np.pi/180
-    return np.array([
-        [np.cos(t), 0, -np.sin(t), 0],
-        [0, 1, 0, 0],
-        [np.sin(t), 0, np.cos(t), 0],
-        [0, 0, 0, 1]
-    ]).astype(int)
-
-def rotz(theta):
-    t = theta*np.pi/180
-    return np.array([
-        [np.cos(t),-np.sin(t), 0, 0],
-        [np.sin(t), np.cos(t), 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1]
-    ]).astype(int)
 
 def add_ind_recurse(image, node, index, orientation):
     image[index[0], index[1], index[2]] += 1
@@ -81,7 +55,7 @@ def add_ind(image, ind):
         [0, 0, 0, 1]
     ])
 
-    add_ind_recurse(image, ind.genomeRoot, index, orientation)
+    add_ind_recurse(image, ind.bodyRoot, index, orientation)
 
 def get_image_of_pop(pop):
     image = np.zeros((DEPTH*4,DEPTH*4,DEPTH*4)).astype(int)
@@ -104,13 +78,6 @@ def hist(image, pop_size):
 
     return h
 
-def plot_hist(image, label=None, elim_0=True):
-    bins, counts = np.unique(image, return_counts=True)
-    if elim_0:
-        counts = counts[1:]
-        bins = bins[1:]
-    plt.bar(bins, counts, label=label)
-
 def diversity(pop):
     pop_size = len(pop)
     image = get_image_of_pop(pop)
@@ -119,16 +86,16 @@ def diversity(pop):
 
 def test_work():
     ind = Individual()
-    ind.genomeRoot = Node("empty")
-    ind.genomeRoot.children = [Node("empty"), Node("empty"), Node("empty")]
-    ind.genomeRoot.children[1].angle = 90
-    ind.genomeRoot.children[1].children = [Node("empty"), Node("empty"), Node("empty")]
-    ind.genomeRoot.children[2].angle = 90
-    ind.genomeRoot.children[2].children = [Node("empty"), Node("empty"), Node("empty")]
-    ind.genomeRoot.children[2].children[2].children = [Node("empty"), None, None]
-    ind.genomeRoot.children[2].children[2].children[0].angle = 90
-    ind.genomeRoot.children[2].children[2].children[0].children = [Node("empty"), None, None]
-    endBoy = ind.genomeRoot.children[2].children[2].children[0].children[0]
+    ind.bodyRoot = Node("empty")
+    ind.bodyRoot.children = [Node("empty"), Node("empty"), Node("empty")]
+    ind.bodyRoot.children[1].angle = 90
+    ind.bodyRoot.children[1].children = [Node("empty"), Node("empty"), Node("empty")]
+    ind.bodyRoot.children[2].angle = 90
+    ind.bodyRoot.children[2].children = [Node("empty"), Node("empty"), Node("empty")]
+    ind.bodyRoot.children[2].children[2].children = [Node("empty"), None, None]
+    ind.bodyRoot.children[2].children[2].children[0].angle = 90
+    ind.bodyRoot.children[2].children[2].children[0].children = [Node("empty"), None, None]
+    endBoy = ind.bodyRoot.children[2].children[2].children[0].children[0]
     endBoy.angle = 180
     endBoy.children = [Node("empty"), Node("empty"), Node("empty")]
     endBoy.children[2].children = [Node("empty"), None, None]
@@ -150,10 +117,11 @@ def test_work():
     ])
     image = np.zeros((10,8,9)).astype(int)
 
-    add_ind_recurse(image, ind.genomeRoot, index, orientation)
+    add_ind_recurse(image, ind.bodyRoot, index, orientation)
 
     print(image)
     plot_voxels(image)
+    plt.show()
 
 def show_random_vs_evolved():
     from evolve import open_population
@@ -182,38 +150,8 @@ def show_random_vs_evolved():
     plt.show()
 
     plot_voxels(img, "Accumulated image of an evolved population")
+    plt.show()
     plot_voxels(img2, "Accumulated image of a random population")
-
-def plot_voxels(image, title="Plotted voxels"):
-    colors = np.where(image == 0, "#000000ff", "#ffffffff")
-    hues = ["#000000ff"]
-    for i in range(1, int(np.max(image))+1):
-        hue = i/(np.max(image)) * 0.9 + 0.1
-        rgb = hsv2rgb([[[hue, 1.0, 1.0]]])[0][0]*255
-        rgb_hex = [hex(int(elem))[2:] for elem in rgb]
-        for j in range(3):
-            if len(rgb_hex[j]) == 1:
-                rgb_hex[j] = '0' + rgb_hex[j]
-
-        string = f"#{rgb_hex[0]}{rgb_hex[1]}{rgb_hex[2]}88"
-        colors[np.where(image == i)] = string
-
-        hues.append(string)
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, gridspec_kw = {'width_ratios':[19, 1]})
-
-    ax = fig.add_subplot(1,2,1, projection='3d')
-    ax.voxels(image, facecolors=colors, edgecolor='k')
-
-    cmap = mpl.colors.ListedColormap(hues)
-    norm = mpl.colors.Normalize(vmin=0, vmax=np.max(image))
-    ax2 = fig.add_subplot(1,2,2)
-    cb1 = mpl.colorbar.ColorbarBase(
-        ax2, cmap=cmap,
-        norm=norm,
-        orientation='vertical'
-    )
-    fig.suptitle(title, fontsize=16)
     plt.show()
 
 def show_random_ind():
@@ -221,12 +159,14 @@ def show_random_ind():
 
     image = get_image_of_pop([ind])
     plot_voxels(image, "A random individual")
+    plt.show()
 
 def test_voxel_colors():
     image = np.zeros((50,10,10))
     for i in range(0, 50):
         image[i:50,4:8,1] = i
     plot_voxels(image)
+    plt.show()
 
 if __name__ == "__main__":
     show_random_ind()

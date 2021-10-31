@@ -1,10 +1,8 @@
-from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.side_channel import (
     SideChannel,
     IncomingMessage,
     OutgoingMessage,
 )
-import numpy as np
 import uuid
 
 class SideChannelPythonside(SideChannel):

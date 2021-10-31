@@ -32,7 +32,7 @@ from IPython import embed
 def save_population(population, folder):
     for i, ind in enumerate(population):
         with open(f"{folder}/ind{i}.txt", "w") as file:
-            file.write(ind.genome_to_str())
+            file.write(ind.body_to_str())
             file.write("\n")
             file.write(str(ind.fitness))
             file.close()
@@ -197,7 +197,7 @@ def evolve():
 
             if DOCUMENTATION:
                 with open(f"experiments/run{runNr}/bestInd{gen}.txt", "w") as file:
-                    file.write(bestInd.genome_to_str())
+                    file.write(bestInd.body_to_str())
                     file.close()
 
                 save_population(population, folder=f"experiments/run{runNr}/population")
@@ -212,7 +212,7 @@ def evolve():
             raise KeyboardInterrupt("You chose to simply exit")
     close_env()
 
-    print(bestInd.genome_to_str())
+    print(bestInd.body_to_str())
     print("Recorded:",bestInd.fitness)
 
     if DOCUMENTATION:

@@ -1,26 +1,12 @@
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.side_channel.side_channel import (
-    SideChannel,
-    IncomingMessage,
-    OutgoingMessage,
-)
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from mlagents_envs.base_env import ActionTuple
 
 import numpy as np
-import uuid
 import os
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-import copy
 import multiprocessing
-import time
 
-# EA
-from deap import base,tools,algorithms
-
-from individual import Individual
-from sideChannelPythonside import SideChannelPythonside
+from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
 
 # Static across all instances of class
 PATH = None
@@ -88,25 +74,20 @@ def close_env():
     sc = None
 
 # Evaluate function uses variables of different env instances
-def evaluate(ind:Individual, force_evaluate=True):
+def evaluate(ind, force_evaluate=True):
     if not force_evaluate and not ind.needs_evaluation:
         return ind.fitness
+
+    ind.prepare_for_evaluation()
+
     env, side_channel = get_env()
 
-    side_channel.send_string(ind.genome_to_str())
+    side_channel.send_string(ind.body_to_str())
     env.reset()
-
-    # Get all nodes of the individual blueprint
-    allNodes = []
-    ind.traverse_get_list(ind.genomeRoot, allNodes)
-
-    # Ensure all controllers are reset
-    for node in allNodes:  # All controllers
-        node.controller.reset()
 
     save_pos = [0,0,0]
     for i in range(N_STEPS):
-        # Get env observation space. It is the current position + sensor data
+        # Get env observation space
         obs,other = env.get_steps(list(env._env_specs)[0])
 
         if i == N_START_EVAL:

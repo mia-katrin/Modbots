@@ -121,20 +121,20 @@ class TestIndNNode(unittest.TestCase):
         gene = "1.0,9.0,8.0,7.0,6.0|[|M0,90,1.0,0.0,0.0,0.0,0.0|]|M1,0,1.0,1.0,2.0,3.0,4.0|M2,0,1.0,1.0,2.0,3.0,4.0|"
         ind = Individual(gene)
 
-        ind.genomeRoot.scale == 1.0
-        ind.genomeRoot.controller.phase == 7.0
-        ind.genomeRoot.children[0].angle == 90
-        ind.genomeRoot.children[1].angle == 0
-        ind.genomeRoot.children[1].controller.freq == 2.0
+        ind.bodyRoot.scale == 1.0
+        ind.bodyRoot.controller.phase == 7.0
+        ind.bodyRoot.children[0].angle == 90
+        ind.bodyRoot.children[1].angle == 0
+        ind.bodyRoot.children[1].controller.freq == 2.0
 
-        assert ind.genome_to_str() == gene
+        assert ind.body_to_str() == gene
 
     def test_get_nr_expressed_modules(self):
         ind = Individual()
-        ind.genomeRoot.children = [None, Node(), Node()]
-        ind.genomeRoot.children[1].children = [Node(), None, Node()]
-        ind.genomeRoot.children[2].children = [None, None, Node()]
-        ind.genomeRoot.children[2].children[2].children = [None, None, Node()]
+        ind.bodyRoot.children = [None, Node(), Node()]
+        ind.bodyRoot.children[1].children = [Node(), None, Node()]
+        ind.bodyRoot.children[2].children = [None, None, Node()]
+        ind.bodyRoot.children[2].children[2].children = [None, None, Node()]
 
         assert ind.get_nr_expressed_modules() == 7
 
@@ -159,10 +159,10 @@ class TestIndNNode(unittest.TestCase):
 
     def test_mutation(self):
         ind = Individual()
-        ind.genomeRoot.children = [None, Node("random"), Node("random")]
-        ind.genomeRoot.children[1].children = [Node("random"), None, Node("random")]
-        ind.genomeRoot.children[2].children = [None, None, Node("random")]
-        ind.genomeRoot.children[2].children[2].children = [None, None, Node("random")]
+        ind.bodyRoot.children = [None, Node("random"), Node("random")]
+        ind.bodyRoot.children[1].children = [Node("random"), None, Node("random")]
+        ind.bodyRoot.children[2].children = [None, None, Node("random")]
+        ind.bodyRoot.children[2].children[2].children = [None, None, Node("random")]
 
         ind.needs_evaluation = False
         ind.fitness = 10
@@ -173,13 +173,13 @@ class TestIndNNode(unittest.TestCase):
 
     def traverse_get_list(self):
         ind = Individual()
-        ind.genomeRoot.children = [None, Node(), Node()]
-        ind.genomeRoot.children[1].children = [Node(), None, Node()]
-        ind.genomeRoot.children[2].children = [None, None, Node()]
-        ind.genomeRoot.children[2].children[2].children = [None, None, Node()]
+        ind.bodyRoot.children = [None, Node(), Node()]
+        ind.bodyRoot.children[1].children = [Node(), None, Node()]
+        ind.bodyRoot.children[2].children = [None, None, Node()]
+        ind.bodyRoot.children[2].children[2].children = [None, None, Node()]
 
         node_list = []
-        ind.traverse_get_list(ind.genomeRoot)
+        ind.traverse_get_list(ind.bodyRoot)
 
 
 if __name__ == '__main__':

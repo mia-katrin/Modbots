@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_theme()
 
-from utvikle_diversity_measure import diversity
+from modbots.plotting.diversity_measure import diversity
 
 class Plotter:
     def __init__(self):

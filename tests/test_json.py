@@ -25,7 +25,7 @@ def node_to_list(root):
     return liste
 
 """ind = Individual.random(5)
-liste = node_to_list(ind.genomeRoot)"""
+liste = node_to_list(ind.bodyRoot)"""
 
 liste = [[[1,2,3],[4,5,6]], [1,2,3,4,5,6,7,8]]
 

@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-from evo_util import bounce_back
+from modbots.util import bounce_back
 
 class Controller():
 	allowable_amp = (0.0, 6.0)

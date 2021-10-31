@@ -67,3 +67,30 @@ def bool_from_distribution(type, threshold=None, c_mu=None, c_std=None, depth=No
         return np.random.rand() < threshold
     else:
         raise ValueError("You've not stated the type of distribution!")
+
+def rotx(theta):
+    t = theta*np.pi/180
+    return np.array([
+        [1, 0, 0, 0],
+        [0, np.cos(t),-np.sin(t), 0],
+        [0, np.sin(t), np.cos(t), 0],
+        [0, 0, 0, 1]
+    ]).astype(int)
+
+def roty(theta):
+    t = theta*np.pi/180
+    return np.array([
+        [np.cos(t), 0, -np.sin(t), 0],
+        [0, 1, 0, 0],
+        [np.sin(t), 0, np.cos(t), 0],
+        [0, 0, 0, 1]
+    ]).astype(int)
+
+def rotz(theta):
+    t = theta*np.pi/180
+    return np.array([
+        [np.cos(t),-np.sin(t), 0, 0],
+        [np.sin(t), np.cos(t), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ]).astype(int)
