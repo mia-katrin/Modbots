@@ -1,6 +1,5 @@
 import numpy as np
 
-from modbots.controllers.sine_controller import Controller
 from modbots.util import bounce_back, wrap_around
 
 # Mutation proportions
@@ -14,13 +13,13 @@ INTERVALS["scale"]       = [INTERVALS["add_node"][1],      1]
 is_in = lambda interval, x: interval[0] <= x <= interval[1]
 
 class Node:
-    def __init__(self, init_mode="random"):
+    def __init__(self, init_mode="random", controller=None):
         if init_mode == "empty":
             self.scale = 1
             self.angle = 0
         elif init_mode == "dwarf":
             self.scale = 0.1
-            self.controller = Controller("Hei :)")
+            self.controller = controller
             self.controller.amp = 0.0
             self.controller.freq = 0.0
             self.controller.phase = 0.0
@@ -29,7 +28,7 @@ class Node:
         elif init_mode == "random":
             self.angle = np.random.choice([0,90,180,270]).item() # to int
             self.scale = np.random.rand() * 2. + 1.
-            self.controller = Controller("Hei :)") # Not unique hash because I don't use it yet
+            self.controller = controller
         else:
             raise ValueError("No other mode supported")
         self.children = [None,None,None]

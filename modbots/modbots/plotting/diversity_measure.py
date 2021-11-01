@@ -11,8 +11,6 @@ from modbots.util import rotx, roty, rotz
 
 ### R and L is likely swapped
 
-DEPTH = 5
-
 def add_ind_recurse(image, node, index, orientation):
     image[index[0], index[1], index[2]] += 1
 

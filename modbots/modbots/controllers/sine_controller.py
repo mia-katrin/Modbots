@@ -11,7 +11,7 @@ class Controller():
 	allowable_phase = (-np.inf, np.inf)
 	allowable_offset = (-1, 1)
 
-	def __init__(self, hash):
+	def __init__(self, hash="Hei :)"):
 		self.nodeid = hash
 		self.state = 0.0
 		self.amp = random.uniform(0.0,1.0)
