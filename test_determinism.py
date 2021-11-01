@@ -1,21 +1,12 @@
-from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
-from mlagents_envs.side_channel.side_channel import (
-    SideChannel,
-    IncomingMessage,
-    OutgoingMessage,
-)
-from mlagents_envs.base_env import ActionTuple
-
 from deap import base,tools,algorithms,creator
 import multiprocessing
 import numpy as np
 import time
 import copy
 
-from sideChannelPythonside import SideChannelPythonside
-from individual import Individual
-from evaluate import get_env, evaluate, close_env, set_env_variables
+from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
+from modbots.creature_types.string_ind import Individual
+from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 
 import argparse
 # Add arguments
@@ -42,7 +33,7 @@ def get_pop(nr_inds:int, duplicates:int = 1, at_least_modules:int = 1, depth:int
     pop = []
     for _ in range(nr_inds):
         ind = Individual.random(depth)
-        while ind.get_nr_expressed_modules() <at_least_modules:
+        while ind.get_nr_modules() <at_least_modules:
             ind = Individual.random(depth)
         for _ in range(duplicates):
             pop.append(ind)

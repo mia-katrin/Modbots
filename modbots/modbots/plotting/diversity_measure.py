@@ -44,7 +44,7 @@ def add_ind_recurse(image, node, index, orientation):
         add_ind_recurse(image, child, new_index.astype(int), orientationA)
 
 def add_ind(image, ind):
-    index = np.array([DEPTH*2,(DEPTH*2-1),(DEPTH*2-1),1])
+    index = np.array([10,9,9,1])
 
     orientation = np.array([
         [1, 0, 0, 0],
@@ -56,9 +56,7 @@ def add_ind(image, ind):
     add_ind_recurse(image, ind.bodyRoot, index, orientation)
 
 def get_image_of_pop(pop):
-    image = np.zeros((DEPTH*4,DEPTH*4,DEPTH*4)).astype(int)
-
-    ind = Individual.random(5)
+    image = np.zeros((20,20,20)).astype(int)
 
     for ind in pop:
         add_ind(image, ind)

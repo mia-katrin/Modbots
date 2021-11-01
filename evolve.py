@@ -1,38 +1,24 @@
-from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.side_channel.side_channel import (
-    SideChannel,
-    IncomingMessage,
-    OutgoingMessage,
-)
-from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 import numpy as np
-import uuid
 import os
-import matplotlib.pyplot as plt
 from tqdm import tqdm
-import copy
 import multiprocessing
 import time
 
 # EA
 from deap import base,tools,algorithms
 
-from sideChannelPythonside import SideChannelPythonside
-
-from plotter import Plotter
-from individual import Individual
+from modbots.plotting.plotter import Plotter
+from modbots.creature_types.string_ind import Individual
 individual_class = Individual
 
 import argparse
-from evaluate import get_env, evaluate, close_env, set_env_variables
-from evo_util import sort_to_chunks, calc_time_evolution
-
-from IPython import embed
+from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
+from modbots.util import sort_to_chunks, calc_time_evolution
 
 def save_population(population, folder):
     for i, ind in enumerate(population):
         with open(f"{folder}/ind{i}.txt", "w") as file:
-            file.write(ind.body_to_str())
+            file.write(ind.ind_to_str())
             file.write("\n")
             file.write(str(ind.fitness))
             file.close()
@@ -84,7 +70,7 @@ def init_pop(toolbox):
 
     for ind, fit in zip(population, fitnesses):
         ind.fitness = fit
-        print(f"Fitness: {fit}, Modules: {ind.get_nr_expressed_modules()}")
+        print(f"Fitness: {fit}, Modules: {ind.get_nr_modules()}")
     return population
 
 def init_toolbox():
@@ -193,11 +179,11 @@ def evolve():
 
             population = offspring
 
-            print(f"Best has {bestInd.get_nr_expressed_modules()} modules")
+            print(f"Best has {bestInd.get_nr_modules()} modules")
 
             if DOCUMENTATION:
                 with open(f"experiments/run{runNr}/bestInd{gen}.txt", "w") as file:
-                    file.write(bestInd.body_to_str())
+                    file.write(bestInd.ind_to_str())
                     file.close()
 
                 save_population(population, folder=f"experiments/run{runNr}/population")
@@ -212,7 +198,7 @@ def evolve():
             raise KeyboardInterrupt("You chose to simply exit")
     close_env()
 
-    print(bestInd.body_to_str())
+    print(bestInd.ind_to_str())
     print("Recorded:",bestInd.fitness)
 
     if DOCUMENTATION:

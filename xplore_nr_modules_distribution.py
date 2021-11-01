@@ -1,15 +1,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import tqdm
 
-from individual import Individual
+from modbots.creature_types.string_ind import Individual
 
-N_INDS = 100000
+N_INDS = 10000
 DEPTH = 5
 
 # Make histogram of robot number of modules
 histogram = np.zeros((DEPTH*DEPTH*DEPTH)).astype(np.int32)
-for _ in range(N_INDS):
-    i = Individual.random(depth=DEPTH).get_nr_expressed_modules()
+for _ in tqdm(range(N_INDS)):
+    i = Individual.random(depth=DEPTH).get_nr_modules()
     histogram[i] += 1
 
 # Find mean number of modules

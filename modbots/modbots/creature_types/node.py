@@ -69,7 +69,7 @@ class Node:
                     mutated = True
             elif is_in(INTERVALS["add_node"], rand_num):
                 if len(self.open_spots_list()) != 0:
-                    new_node = Node(init_mode="dwarf")
+                    new_node = Node(init_mode="dwarf", controller=type(self.controller)())
                     self.children[np.random.choice(self.open_spots_list())] = new_node
                     mutated = True
             elif is_in(INTERVALS["scale"], rand_num):

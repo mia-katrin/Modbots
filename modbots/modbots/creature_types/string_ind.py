@@ -9,13 +9,13 @@ from modbots.creature_types.abstract_individual import AbstractIndividual
 
 class Individual(AbstractIndividual):
     def __init__(self, gene=None):
-        super(Individual, self).__init__(controller_class=Controller)
+        super(Individual, self).__init__(gene=gene, controller_class=Controller)
 
     @staticmethod
     def random(depth):
         self = Individual()
 
-        self.random_ind(depth, controller_class=Controller)
+        self = self.random_ind(depth, controller_class=Controller)
 
         return self
 

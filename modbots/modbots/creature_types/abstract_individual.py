@@ -18,12 +18,17 @@ class AbstractIndividual:
             self.interpret_string_gene(gene)
 
     def random_ind(self, depth, controller_class=None):
+        print(depth)
         self._iterative_construct(self.bodyRoot, depth=depth-1, overall_depth=depth, controller_class=controller_class)
-
+        print(depth, self.get_nr_modules())
         while self.get_nr_modules() <= 2 or \
-              (self.bodyRoot.scale < 1 and self.bodyRoot.children[0] == None) or \
-              (self.bodyRoot.scale < 1 and self.bodyRoot.children[0].scale < 1):
+            (self.bodyRoot.scale < 1 and self.bodyRoot.children[0] == None) or \
+            (self.bodyRoot.scale < 1 and self.bodyRoot.children[0].scale < 1):
+            print(self.get_nr_modules())
+            self = type(self)()
             self._iterative_construct(self.bodyRoot, depth=depth-1, overall_depth=depth, controller_class=controller_class)
+
+        return self
 
     def _iterative_construct(self, node, depth, overall_depth, controller_class=None):
         if depth <= 0:

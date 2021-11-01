@@ -13,7 +13,7 @@ class Plotter:
         nr_modules = []
         fitnesses = []
         for ind in population:
-            nr_modules.append(ind.get_nr_expressed_modules())
+            nr_modules.append(ind.get_nr_modules())
             fitnesses.append(ind.fitness)
         self._save_min_max(nr_modules, "Nr Modules")
         self._save_min_max(fitnesses, "Fitness")

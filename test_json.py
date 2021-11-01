@@ -18,9 +18,9 @@ with open(args.config_file, "r") as file:
         print(line)
 
 ind = Individual.random(5)
-set_env_variables(PATH, LOG_FOLDER, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
+"""set_env_variables(PATH, LOG_FOLDER, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
 fitness = evaluate(ind)
-close_env()
+close_env()"""
 
 """liste = node_to_list(ind.bodyRoot)
 

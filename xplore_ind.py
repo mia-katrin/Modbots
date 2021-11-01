@@ -7,9 +7,9 @@ from modbots.creature_types.string_ind import Individual
 import argparse
 import re
 
-def get_type(gene):
+"""def get_type(gene):
     float_pat = rf""
-    pattern = rf"()"
+    pattern = rf"()"""
 
 # Add arguments
 parser = argparse.ArgumentParser(description='Explore some boys')
@@ -30,7 +30,7 @@ with open(args.config_file, "r") as file:
         exec(line)
         print(line)
 
-ind_type = get_type(args.gene)
+#ind_type = get_type(args.gene)
 
 print("We start")
 start = time.time()
