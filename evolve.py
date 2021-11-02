@@ -8,7 +8,7 @@ import time
 from deap import base,tools,algorithms
 
 from modbots.plotting.plotter import Plotter
-from modbots.creature_types.string_ind import Individual
+from modbots.creature_types.decentralized_sensor_ind import Individual
 individual_class = Individual
 
 import argparse

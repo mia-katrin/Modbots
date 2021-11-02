@@ -11,6 +11,7 @@ setup(
         "mlagents-envs==0.27.0",
         "numpy==1.19.2",
         "matplotlib==3.4.2",
-        "seaborn==0.11.2"
+        "seaborn==0.11.2",
+        "scikit-image==0.18.3"
     ]
 )

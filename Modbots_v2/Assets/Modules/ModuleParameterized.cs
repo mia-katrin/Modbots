@@ -195,7 +195,7 @@ public class ModuleParameterized : MonoBehaviour
                 //Debug.Log($"Site {i} detects object {hit.distance} with collider {hit.collider}");
                 sensorMeasurements[i] = hit.distance;
             }
-            Debug.DrawRay(origin, dir, colors[i], duration:1.0f, depthTest:true);
+            Debug.DrawRay(origin, dir, colors[i], duration:10.0f, depthTest:true);
         }
         sensorValues = sensorMeasurements;
         return sensorMeasurements;

@@ -123,9 +123,9 @@ class AbstractIndividual:
 
     def to_str(self, with_control=True):
         res = ""
-        res += f"{self.bodyRoot.scale},{self.bodyRoot.controller.amp}"
+        res += f"{self.bodyRoot.scale}"
         if with_control:
-            res += f",{self.bodyRoot.controller.freq},{self.bodyRoot.controller.phase},{self.bodyRoot.controller.offset}"
+            res += f",{self.bodyRoot.controller.amp},{self.bodyRoot.controller.freq},{self.bodyRoot.controller.phase},{self.bodyRoot.controller.offset}"
         res += "|"
 
         child_strings = self.iterative_to_string(self.bodyRoot, with_control)
@@ -144,7 +144,7 @@ class AbstractIndividual:
             res += f"M{i},{child.angle},{child.scale}"
             if with_control:
                 res += f",{child.controller.amp},{child.controller.freq},{child.controller.phase},{child.controller.offset}"
-            res += "|" + self.iterative_to_string(child)
+            res += "|" + self.iterative_to_string(child, with_control)
 
         if num_children == 0:
             res += "]|"
