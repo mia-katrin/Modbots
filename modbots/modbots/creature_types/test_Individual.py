@@ -15,7 +15,7 @@ class TestIndNNode(unittest.TestCase):
         node.children[0].children = [Node("random"), None, Node("random")]
         node.children[1].children = [Node("random"), None, Node("random")]
 
-        #   O
+        #   o
         #   |\
         #   o o
         #  /\ /\

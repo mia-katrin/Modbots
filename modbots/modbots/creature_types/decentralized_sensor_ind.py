@@ -25,7 +25,11 @@ class Individual(AbstractIndividual):
         self.traverse_get_list(self.bodyRoot, allNodes)
 
         for j, node in enumerate(allNodes):  # All controllers
-            action = node.controller(observation[j*3:j*3+3])
+            o = observation[j*3:j*3+3]
+            for i in range(3):
+                if o[i] == -1:
+                    o[i] = 100
+            action = node.controller(o)
             actions[0,j] = action
 
         return actions
