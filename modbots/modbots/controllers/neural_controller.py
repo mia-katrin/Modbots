@@ -54,7 +54,7 @@ class NeuralController:
             for neuron in layer:
                 neuron.calc_value()
 
-        return self.out.value * 90
+        return self.out.value
 
     def mutate(self):
         layer = self.neurons[1+int(np.random.rand()*(len(self.neurons)-2))]
