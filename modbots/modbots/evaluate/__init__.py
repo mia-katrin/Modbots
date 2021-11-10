@@ -1,5 +1,6 @@
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
+from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
 from mlagents_envs.base_env import ActionTuple
 
 import numpy as np
@@ -15,7 +16,7 @@ HEADLESS = False
 TIME_SCALE = None
 
 # Method to set static variables
-def set_env_variables(path, log_folder, seed=42, headless=False, time_scale=None, n_steps=1000, n_start_eval=250):
+def set_env_variables(path, log_folder, seed=42, headless=False, time_scale=None, n_steps=1000, n_start_eval=250, torque=0.0):
     global SEED
     global HEADLESS
     global TIME_SCALE
@@ -23,6 +24,7 @@ def set_env_variables(path, log_folder, seed=42, headless=False, time_scale=None
     global N_STEPS
     global N_START_EVAL
     global LOG_FOLDER
+    global TORQUE
     PATH = path
     SEED = seed
     HEADLESS = headless
@@ -30,6 +32,7 @@ def set_env_variables(path, log_folder, seed=42, headless=False, time_scale=None
     N_STEPS = n_steps
     N_START_EVAL = n_start_eval
     LOG_FOLDER = log_folder
+    TORQUE = torque
 
 # singleton equivalent (unsure if this is true, pool map will spawn several envs
 # on different adresses with different variables)
@@ -43,6 +46,7 @@ def get_env():
     global HEADLESS
     global TIME_SCALE
     global PATH
+    global TORQUE
     global env_pid
     if SEED == None:
         SEED = 42
@@ -54,14 +58,16 @@ def get_env():
     if (side_channel == None):
         side_channel = SideChannelPythonside()
     if (env == None):
+        param_channel = EnvironmentParametersChannel()
         if TIME_SCALE != None:
             ec = EngineConfigurationChannel()
-            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, ec],no_graphics = HEADLESS, worker_id=pid, log_folder=LOG_FOLDER)
+            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, ec, param_channel],no_graphics = HEADLESS, worker_id=pid, log_folder=LOG_FOLDER)
             ec.set_configuration_parameters(time_scale=TIME_SCALE)
             env.reset()
         else:
-            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel],no_graphics = HEADLESS, worker_id=pid, log_folder=LOG_FOLDER)
+            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, param_channel],no_graphics = HEADLESS, worker_id=pid, log_folder=LOG_FOLDER)
             env.reset()
+        param_channel.set_float_parameter("torque", TORQUE)
     return env, side_channel
 
 # Likely won't be able to run this because pool keeps its own copies of envs

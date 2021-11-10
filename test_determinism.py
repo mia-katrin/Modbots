@@ -5,7 +5,7 @@ import time
 import copy
 
 from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
-from modbots.creature_types.string_ind import Individual
+from modbots.creature_types.decentralized_sensor_ind import Individual
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 
 import argparse
@@ -22,8 +22,8 @@ with open(parser.parse_args().config_file, "r") as file:
         exec(line)
         print(line)
 
-NR_INDS = 5
-ROUNDS = 5
+NR_INDS = 2
+ROUNDS = 2
 NR_SEEDS = 2
 
 N_CORES = 2 # It seems this determines a factor in population size

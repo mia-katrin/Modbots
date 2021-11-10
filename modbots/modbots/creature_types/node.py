@@ -16,7 +16,7 @@ is_in = lambda interval, x: interval[0] <= x <= interval[1]
 class Node:
     def __init__(self, init_mode="random", controller=None):
         if init_mode == "empty":
-            self.scale = 1
+            self.scale = 1.0
             self.angle = 0
         elif init_mode == "dwarf":
             self.scale = 0.1
@@ -28,7 +28,7 @@ class Node:
             self.angle = np.random.choice([0,90,180,270]).item() # to int
         elif init_mode == "random":
             self.angle = np.random.choice([0,90,180,270]).item() # to int
-            self.scale = 1#np.random.rand() * 2. + 1.
+            self.scale = 1.0#np.random.rand() * 2. + 1.
             self.controller = controller
         else:
             raise ValueError("No other mode supported")

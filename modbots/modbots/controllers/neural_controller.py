@@ -46,6 +46,32 @@ class NeuralController:
 
         self.neurons.append([self.out])
 
+    @staticmethod
+    def build_from_string(string):
+        self = NeuralController(1,1)
+
+        self.input = [Neuron(), Neuron(), Neuron()]
+        self.neurons = [self.input]
+
+        layers = string[1:-1].split("|")
+
+        for layer in layers:
+            self.neurons.append([])
+
+            weights_in_layer = layer[1:-1].split(")(")
+
+            for neuron_weights in weights_in_layer:
+
+                n = Neuron()
+                self.neurons[-1].append(n)
+                n.neuron_in = self.neurons[-2]
+                for weight in neuron_weights.split(","):
+                    n.weights.append(float(weight))
+
+        self.out = self.neurons[-1][0]
+
+        return self
+
     def __call__(self, obs):
         for i, o in enumerate(obs):
             self.input[i].value = o
@@ -60,6 +86,22 @@ class NeuralController:
         layer = self.neurons[1+int(np.random.rand()*(len(self.neurons)-2))]
         neuron = layer[int(np.random.rand()*(len(layer)-1))]
         neuron.weights[int(np.random.rand()*(len(neuron.weights)-1))] += np.random.rand()
+
+    def info_to_str(self):
+        info = "["
+
+        for layer in self.neurons[1:]:
+            for neuron in layer:
+                info += "("
+                for weight in neuron.weights:
+                    info += str(weight) + ","
+                info = info[:-1] + ")"
+            info += "|"
+
+        info = info[:-1] + "]"
+
+        return info
+
 
 if __name__ == "__main__":
     for _ in range(20):
