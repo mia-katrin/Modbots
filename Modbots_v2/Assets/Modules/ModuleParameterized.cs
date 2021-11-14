@@ -173,6 +173,12 @@ public class ModuleParameterized : MonoBehaviour
         Destroy(attachmentJoint);
     }
 
+    private void FixedUpdate()
+    {
+
+        CollectSensorData();
+    }
+
     // Debug values
     public static Color[] colors = new Color[3] {Color.red, Color.blue, Color.green };
     public float[] sensorValues;
@@ -192,10 +198,10 @@ public class ModuleParameterized : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(outwardsRay, out hit))
             {
-                //Debug.Log($"Site {i} detects object {hit.distance} with collider {hit.collider}");
+                Debug.Log($"Site {i} detects object {hit.distance} with collider {hit.collider}");
                 sensorMeasurements[i] = hit.distance;
             }
-            Debug.DrawRay(origin, dir, colors[i], duration:10.0f, depthTest:true);
+            Debug.DrawRay(origin, dir, colors[i], duration:0.5f, depthTest:true);
         }
         sensorValues = sensorMeasurements;
         return sensorMeasurements;

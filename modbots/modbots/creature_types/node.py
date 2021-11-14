@@ -4,9 +4,9 @@ from modbots.util import bounce_back, wrap_around
 
 # Mutation proportions
 INTERVALS = {}
-INTERVALS["control"]     = [0,                           0.5]
-INTERVALS["angle"]       = [INTERVALS["control"][1],     0.6]
-INTERVALS["remove_node"] = [INTERVALS["angle"][1],       0.8]
+INTERVALS["control"]     = [0,                           0]
+INTERVALS["angle"]       = [INTERVALS["control"][1],     0.2]
+INTERVALS["remove_node"] = [INTERVALS["angle"][1],       0.6]
 INTERVALS["add_node"]    = [INTERVALS["remove_node"][1],   1]
 INTERVALS["scale"]       = [INTERVALS["add_node"][1],      1]
 INTERVALS["copy_branch"] = [INTERVALS["scale"][1],         1]
@@ -57,7 +57,7 @@ class Node:
         while not mutated:
             rand_num = np.random.rand()
 
-            if is_in(INTERVALS["control"], rand_num):
+            if is_in(INTERVALS["control"], rand_num) and self.controller is not None:
                 self.controller.mutate()
                 mutated = True
             elif is_in(INTERVALS["angle"], rand_num):
@@ -70,7 +70,7 @@ class Node:
                     mutated = True
             elif is_in(INTERVALS["add_node"], rand_num):
                 if len(self.open_spots_list()) != 0:
-                    new_node = Node(init_mode="dwarf", controller=type(self.controller)())
+                    new_node = Node(controller=type(self.controller)())
                     self.children[np.random.choice(self.open_spots_list())] = new_node
                     mutated = True
             elif is_in(INTERVALS["scale"], rand_num):

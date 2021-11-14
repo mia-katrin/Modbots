@@ -1,12 +1,8 @@
 from modbots.evaluate import evaluate, set_env_variables, close_env
-from modbots.creature_types.decentralized_sensor_ind import Individual
+from modbots.creature_types.decentral_ctrnn_ind import Individual
 
 import argparse
 import numpy as np
-
-from modbots.controllers.neural_controller import NeuralController
-
-cont = NeuralController()
 
 # Add arguments
 parser = argparse.ArgumentParser(description='Explore some boys')
@@ -23,13 +19,14 @@ with open(args.config_file, "r") as file:
         print(line)
 
 ind = Individual.random(5)
-ind2 = Individual(ind.ind_to_str())
+for _ in range(50):
+    actions = ind.get_actions(np.random.rand(150))
+    print(actions)
 
-set_env_variables(PATH, LOG_FOLDER, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
+"""set_env_variables(PATH, LOG_FOLDER, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL, torque=TORQUE)
 
 fit1 = evaluate(ind)
-fit2 = evaluate(ind2)
 
-print(fit1, fit2)
+print(fit1)
 
-close_env()
+close_env()"""

@@ -92,15 +92,35 @@ public class ModularRobot : Agent
 
         if (rootGO != null)
         {
-            foreach (var module in allModules)
+            var envParameters = Academy.Instance.EnvironmentParameters;
+            float torque = envParameters.GetWithDefault("torque", 0.0f);
+
+            if (torque == 1.0f)
             {
-                ConfigurableJoint joint = module.transform.GetChild(0).GetComponent<ConfigurableJoint>();
-                Quaternion tr = joint.targetRotation;
-                tr.x = vectorAction[
-                    module.GetComponent<ModuleParameterized>().index
-                ];
-                //tr.x = Mathf.Sin(weirdSine);
-                joint.targetRotation = tr;
+                foreach (var module in allModules)
+                {
+                    ConfigurableJoint joint = module.transform.GetChild(0).GetComponent<ConfigurableJoint>();
+                    Vector3 tr = joint.targetAngularVelocity;
+                    
+                    tr.x = vectorAction[
+                        module.GetComponent<ModuleParameterized>().index
+                    ];
+                    //tr.x = Mathf.Sin(weirdSine);
+                    joint.targetAngularVelocity = tr;
+                }
+            }
+            else
+            {
+                foreach (var module in allModules)
+                {
+                    ConfigurableJoint joint = module.transform.GetChild(0).GetComponent<ConfigurableJoint>();
+                    Quaternion tr = joint.targetRotation;
+                    tr.x = vectorAction[
+                        module.GetComponent<ModuleParameterized>().index
+                    ];
+                    //tr.x = Mathf.Sin(weirdSine);
+                    joint.targetRotation = tr;
+                }
             }
         }
     }

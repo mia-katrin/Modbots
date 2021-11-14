@@ -2,7 +2,7 @@ import time
 
 from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
-from modbots.creature_types.string_ind import Individual
+from modbots.creature_types.central_ctrnn_ind import Individual
 
 import argparse
 import re

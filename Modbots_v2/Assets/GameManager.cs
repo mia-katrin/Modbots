@@ -122,19 +122,28 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public bool robotElseModule = true;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            NewEncodingGot("Random");
-            ResetHappened();
-            modularRobot.MaxStep = 10000000;
-            //GameObject module = Instantiate(ModularRobot.Instance.modulePrefab);
-            //ModuleParameterized rootModule = module.GetComponent<ModuleParameterized>();
-            //rootModule.SetIndex(0);
+            if (robotElseModule)
+            {
+                NewEncodingGot("Random");
+                ResetHappened();
+            }
+            else
+            {
+                modularRobot.DestroyContents();
+                GameObject module = Instantiate(ModularRobot.Instance.modulePrefab);
+                ModuleParameterized rootModule = module.GetComponent<ModuleParameterized>();
+                rootModule.SetIndex(0);
 
-            //rootModule.SetSize(1f);
-            //rootModule.RemoveFixedJoint();
+                rootModule.SetSize(1f);
+                rootModule.RemoveFixedJoint();
+            }
+
+            modularRobot.MaxStep = 10000000;
         }
     }
 }
