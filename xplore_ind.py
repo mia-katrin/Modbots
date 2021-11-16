@@ -46,9 +46,10 @@ set_env_variables(
     time_scale=config.evaluation.time_scale
 )
 
-print("Flushing ind")
-evaluate(Individual.random(config))
-
+fitness = evaluate(ind)
+print(f"We got fitness {fitness}")
+fitness = evaluate(ind)
+print(f"We got fitness {fitness}")
 fitness = evaluate(ind)
 print(f"We got fitness {fitness}")
 
