@@ -22,12 +22,23 @@ public class ModuleParameterized : MonoBehaviour
     {
         index = i;
 
-        float r = i / 15f;
-        float g = (15 - i) / 15f;
-        float b = (15 - i) / 15f;
+        float r = 1.0f;
+        float g;
+        float b;
+        if (i <= 7)
+        {
+            g = 0f;
+            b = (7 - i) / 7f;
+        } else
+        {
+            g = (i-7) / 7f; 
+            b = 0f;
+        }
+        
         transform.GetChild(0).GetChild(3).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
         transform.GetChild(0).GetChild(4).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
         transform.GetChild(0).GetChild(5).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
+        transform.GetChild(1).GetChild(1).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
     }
 
     private void Awake()
@@ -120,6 +131,7 @@ public class ModuleParameterized : MonoBehaviour
         JointDrive angularXdrive = cj.angularXDrive;
         angularXdrive.positionSpring = 1500;
         angularXdrive.positionDamper = 10;
+        angularXdrive.maximumForce = 1000;
         cj.angularXDrive = angularXdrive;
 
         // Angular limits

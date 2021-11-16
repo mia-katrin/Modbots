@@ -5,7 +5,7 @@ import numpy as np
 
 from modbots.util import bounce_back
 
-class Controller():
+class SineController():
 	allowable_amp = (0.0, 6.0)
 	allowable_freq = (0.0, 6.0)
 	allowable_phase = (-np.inf, np.inf)
@@ -19,7 +19,7 @@ class Controller():
 		self.phase = random.uniform(-1,1)
 		self.offset = random.uniform(-1,1)
 
-	def update(self, deltaTime):
+	def advance(self, observation, deltaTime):
 		self.state += deltaTime
 		return self.amp * math.sin(self.freq * self.state + self.phase) + self.offset
 
@@ -30,7 +30,7 @@ class Controller():
 		rand_choice = ["amp", "freq", "phase", "offset"][random.choice([0,1,2,3])]
 		to_mutate = "self."+rand_choice
 		exec(to_mutate + f"+= {random.uniform(-1,1)*0.5}")
-		exec(f"{to_mutate} = bounce_back({to_mutate}, Controller.allowable_{rand_choice})")
+		exec(f"{to_mutate} = bounce_back({to_mutate}, SineController.allowable_{rand_choice})")
 
 if __name__ == "__main__":
 	d = []

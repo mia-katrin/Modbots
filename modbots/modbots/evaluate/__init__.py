@@ -102,6 +102,7 @@ def evaluate(ind, force_evaluate=True):
 
         # Make action array
         if (i >= 100):
+            index = list(obs.agent_id_to_index)
             actions = ind.get_actions(obs[index[0]][0][0][3:])
         else:
             actions = np.zeros(shape=(1,50),dtype=np.float32)

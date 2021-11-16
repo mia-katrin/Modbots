@@ -157,8 +157,8 @@ public class ModularRobot : Agent
         }
         else
         {
-            string[] rootControl = gene.Substring(0, gene.IndexOf('|')).Split(',');
-            geneRoot.scale = float.Parse(rootControl[0]);
+            string[] rootInfo = gene.Substring(0, gene.IndexOf('|')).Split(',');
+            geneRoot.scale = float.Parse(rootInfo[0]);
             InterpretStringGene(gene, new Stack<Node>(), geneRoot);
             //GameManager.Instance.pythonCom.SendMessage("Modular Robot string interpreted");
         }

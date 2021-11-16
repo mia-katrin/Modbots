@@ -12,6 +12,7 @@ setup(
         "numpy==1.19.2",
         "matplotlib==3.4.2",
         "seaborn==0.11.2",
-        "scikit-image==0.18.3"
+        "scikit-image==0.18.3",
+        "neat-python==0.92"
     ]
 )

@@ -3,44 +3,37 @@ import os
 from tqdm import tqdm
 import multiprocessing
 import time
+from shutil import copyfile
+import pickle
+
+from IPython import embed
+
+# Config
+import argparse
+from localconfig import config
+from config_util import get_local_config
 
 # EA
 from deap import base,tools,algorithms
 
+# Modbots
 from modbots.plotting.plotter import Plotter
-from modbots.creature_types.central_ctrnn_ind import Individual
+from modbots.creature_types.configurable_individual import Individual
 individual_class = Individual
-
-import argparse
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 from modbots.util import sort_to_chunks, calc_time_evolution
 
-def save_population(population, folder):
-    for i, ind in enumerate(population):
-        with open(f"{folder}/ind{i}.txt", "w") as file:
-            file.write(ind.ind_to_str())
-            file.write("\n")
-            file.write(str(ind.fitness))
-            file.close()
+def save_population(population, filename):
+    with open(filename, 'wb') as file:
+        pickle.dump(population, file)
 
 def open_population(run_nr):
-    population = []
-    cont = True
-    i = 0
-    while cont:
-        try:
-            with open(f"experiments/run{run_nr}/population/ind{i}.txt", "r") as file:
-                info = file.read().split("\n")
-                ind = Individual(info[0])
-                ind.fitness = info[1]
-                population.append(ind)
-                i += 1
-        except FileNotFoundError:
-            cont = False
-            print(f"Run nr {run_nr} ind {i} does not exist, this might be an error, but otherwise we just move on")
+    with open(f"experiments/run{run_nr}/population", 'rb') as file:
+        population = pickle.load(file)
+
     return population
 
-# Not functional yet
+# Not functional
 def continue_experiment(run_nr):
     population = open_population(run_nr)
 
@@ -63,8 +56,8 @@ def continue_experiment(run_nr):
 
     start_gen = last_gen + 1
 
-def init_pop(toolbox):
-    population = toolbox.population(n=POP_SIZE)
+def init_pop(toolbox, config):
+    population = toolbox.population(n=config.ea.pop_size)
 
     fitnesses = toolbox.map(toolbox.evaluate, population) # Lazy execution
 
@@ -73,27 +66,31 @@ def init_pop(toolbox):
         print(f"Fitness: {fit}, Modules: {ind.get_nr_modules()}")
     return population
 
-def init_toolbox():
+def init_toolbox(config):
     toolbox = base.Toolbox()
-    toolbox.register("individual", individual_class.random, depth=IND_DEPTH)
+    toolbox.register("individual", individual_class.random, config=config)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("evaluate", evaluate, force_evaluate=False)
-    toolbox.register("mutate", individual_class.mutate, mutation_rate=MUT_RATE)
-    toolbox.register("select", tools.selTournament, tournsize = TOURNSIZE)
+    toolbox.register("mutate", individual_class.mutate, mutation_rate=config.ea.mut_rate)
+    toolbox.register("select", tools.selTournament, tournsize = config.ea.tournsize)
 
-    if N_CORES > 1:
-        print("Starting deap with " , N_CORES , " cores")
-        pool = multiprocessing.Pool(N_CORES)
-        cs = int(np.ceil(float(POP_SIZE)/float(N_CORES)))
+    if config.experiment.n_cores > 1:
+        print("Starting deap with ", config.experiment.n_cores, " cores")
+        pool = multiprocessing.Pool(config.experiment.n_cores)
+        cs = int(np.ceil(float(config.ea.pop_size)/float(config.experiment.n_cores)))
         toolbox.register("map", pool.map, chunksize=cs)
     return toolbox
 
-def evolve():
-    assert POP_SIZE%N_CORES == 0, "Cannot run this POP_SIZE because it will cause non-deterministic evaluations"
+def evolve(config):
+    assert config.ea.pop_size%config.experiment.n_cores == 0, "Cannot run this POP_SIZE because it will cause non-deterministic evaluations"
 
-    print("Generations:", N_GENERATIONS,"\nPopulation:", POP_SIZE,"\nEstimated time:", calc_time_evolution(POP_SIZE, N_CORES, MUT_RATE, NR_PARENTS, N_STEPS, N_GENERATIONS, TIME_SCALE), "seconds")
+    print(
+        "Generations:", config.ea.n_generations,
+        "\nPopulation:", config.ea.pop_size,
+        "\nEstimated time:", calc_time_evolution(config.ea.pop_size, config.experiment.n_cores, config.ea.mut_rate, config.ea.nr_parents, config.evaluation.n_steps, config.ea.n_generations, config.evaluation.time_scale), "seconds"
+    )
 
-    if DOCUMENTATION:
+    if config.experiment.documentation:
         runNr = 0
         with open("experiments/runNr.txt", "r") as file:
             stringNr = file.read()
@@ -103,70 +100,62 @@ def evolve():
             file.close()
 
         os.makedirs(f"experiments/run{runNr}/")
-        os.makedirs(f"experiments/run{runNr}/population/")
 
-        print("What has changed in this run?\n> ", end="")
+        # Save statement
         if args.statement != None:
             change = args.statement
         else:
+            print("What has changed in this run?\n> ", end="")
             change = input()
         with open(f"experiments/run{runNr}/statement.txt", "w") as file:
             file.write(change)
-            file.close()
         with open(f"experiments/all_statements.txt", "a") as file:
-            file.write(f"\nRun {runNr}: ")
-            file.write(change)
-            file.close()
+            file.write(f"\nRun {runNr}: {change}")
 
-        with open(f"experiments/run{runNr}/parameters.txt", "w") as file:
-            file.write("POP_SIZE="+str(POP_SIZE)+"\n")
-            file.write("N_GENERATIONS="+str(N_GENERATIONS)+"\n")
-            file.write("MUT_RATE="+str(MUT_RATE)+"\n")
-            file.write("HEADLESS="+str(HEADLESS)+"\n")
-            file.write("N_CORES="+str(N_CORES)+"\n")
-            file.write("SEED="+str(SEED)+"\n")
-            file.write("IND_DEPTH="+str(IND_DEPTH)+"\n")
-            file.write("TOURNSIZE="+str(TOURNSIZE)+"\n")
-            file.write("N_STEPS="+str(N_STEPS)+"\n")
-            file.write("N_START_EVAL="+str(N_START_EVAL)+"\n")
-            file.write("DOCUMENTATION=True\n")
-            file.write("TIME_SCALE="+str(TIME_SCALE)+"\n")
-            #file.write("PATH="+str(PATH)+"\n")
-            file.close()
+        # Save config
+        config.save(f"experiments/run{runNr}/{config.filename}")
 
-    set_env_variables(PATH, LOG_FOLDER, seed=SEED, headless=HEADLESS, n_steps=N_STEPS, n_start_eval=N_START_EVAL, time_scale=TIME_SCALE)
+    set_env_variables(
+        config.files.build_path,
+        config.files.log_folder,
+        seed=config.experiment.seed,
+        headless=config.experiment.headless,
+        n_steps=config.evaluation.n_steps,
+        n_start_eval=config.evaluation.n_start_eval,
+        time_scale=config.evaluation.time_scale
+    )
 
     # init toolbox
-    toolbox = init_toolbox()
+    toolbox = init_toolbox(config)
 
     # Init pop
-    population = init_pop(toolbox)
+    population = init_pop(toolbox, config)
 
-    if DOCUMENTATION:
-        save_population(population, folder=f"experiments/run{runNr}/population")
+    if config.experiment.documentation:
+        save_population(population, filename=f"experiments/run{runNr}/population")
 
     plotter = Plotter()
     plotter.save_stats(population)
     plotter.print_stats()
 
     try:
-        for gen in tqdm(range(N_GENERATIONS)):
+        for gen in tqdm(range(config.ea.n_generations)):
             print("Generation:",gen)
 
-            offspring = toolbox.select(population, POP_SIZE)
+            offspring = toolbox.select(population, config.ea.pop_size)
             offspring = list(map(toolbox.clone, offspring))
 
-            parents = np.random.choice(offspring, size=NR_PARENTS)
-            half = NR_PARENTS//2
+            parents = np.random.choice(offspring, size=config.ea.nr_parents)
+            half = config.ea.nr_parents//2
             for ind1, ind2 in zip(parents[:half], parents[half:]):
                 child1, child2 = ind1.crossover(ind2)
                 offspring.append(child2)
                 offspring.append(child1)
 
             for o in offspring:
-                o.mutate(MUT_RATE)
+                o.mutate(config)
 
-            offspring = sort_to_chunks(offspring, nr_chunks=N_CORES)
+            offspring = sort_to_chunks(offspring, nr_chunks=config.experiment.n_cores)
 
             fitnesses = toolbox.map(toolbox.evaluate, offspring)
             for ind, fit in zip(offspring, fitnesses):
@@ -181,12 +170,9 @@ def evolve():
 
             print(f"Best has {bestInd.get_nr_modules()} modules")
 
-            if DOCUMENTATION:
-                with open(f"experiments/run{runNr}/bestInd{gen}.txt", "w") as file:
-                    file.write(bestInd.ind_to_str())
-                    file.close()
-
-                save_population(population, folder=f"experiments/run{runNr}/population")
+            if config.experiment.documentation:
+                bestInd.save_individual(f"experiments/run{runNr}/bestInd{gen}.txt")
+                save_population(population, filename=f"experiments/run{runNr}/population")
 
             plotter.save_stats(population)
             plotter.print_stats()
@@ -198,10 +184,10 @@ def evolve():
             raise KeyboardInterrupt("You chose to simply exit")
     close_env()
 
-    print(bestInd.ind_to_str())
+    bestInd.save_individual("bestInd/ind")
     print("Recorded:",bestInd.fitness)
 
-    if DOCUMENTATION:
+    if config.experiment.documentation:
         plotter.plot_stats(save_figs=True, folder=f"experiments/run{runNr}")
     else:
         plotter.plot_stats()
@@ -210,9 +196,10 @@ if __name__ == "__main__":
     # Add arguments
     parser = argparse.ArgumentParser(description='Evolve some boys')
     parser.add_argument(
-        'config_file',
-        type=str,
-        help='The config file to configure this evolution'
+        '--config_file',
+        type = str,
+        help='The config file to configure this evolution',
+        default=get_local_config()
     )
     parser.add_argument(
         '-c', '--continue',
@@ -227,11 +214,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # Init config
-    with open(args.config_file, "r") as file:
-        for line in file:
-            exec(line)
-            print(line)
-    # End of init config
+    config.read(args.config_file)
+    config.filename = args.config_file
 
-    evolve()
+    evolve(config)

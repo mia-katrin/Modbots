@@ -4,7 +4,8 @@ Build.app
 .pytest_cache
 __pycache__
 
-*_config.txt
+*_config.cfg
+bestInd
 nohup.out
 
 Modbots_v2/Library

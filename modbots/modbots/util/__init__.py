@@ -1,5 +1,12 @@
 import numpy as np
 
+def traverse_get_list(node, node_list_out):
+    node_list_out.append(node)
+
+    for child in node.children:
+        if child is not None:
+            traverse_get_list(child, node_list_out)
+
 def calc_time_evolution(pop_size, n_cores, mut_rate, nr_parents, n_steps, n_gen, time_scale=None):
     avg_one_ind_time = n_steps*0.02/(n_cores * (time_scale if time_scale != None else 1))
 

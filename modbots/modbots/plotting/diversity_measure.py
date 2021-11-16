@@ -5,7 +5,7 @@ sns.set_theme()
 
 from modbots.plotting import plot_voxels, plot_hist
 
-from modbots.creature_types.string_ind import Individual
+from modbots.creature_types.configurable_individual import Individual
 from modbots.creature_types.node import Node
 from modbots.util import rotx, roty, rotz
 
@@ -53,7 +53,7 @@ def add_ind(image, ind):
         [0, 0, 0, 1]
     ])
 
-    add_ind_recurse(image, ind.bodyRoot, index, orientation)
+    add_ind_recurse(image, ind.body.root, index, orientation)
 
 def get_image_of_pop(pop):
     image = np.zeros((20,20,20)).astype(int)
