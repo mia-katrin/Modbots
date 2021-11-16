@@ -34,7 +34,6 @@ args = parser.parse_args()
 config.read(args.config_file)
 
 print("We start")
-start = time.time()
 ind = Individual.unpack_ind(args.gene, config)
 
 set_env_variables(
@@ -47,13 +46,10 @@ set_env_variables(
     time_scale=config.evaluation.time_scale
 )
 
-print("Starting:", time.time()-start)
+print("Flushing ind")
+evaluate(Individual.random(config))
 
-start = time.time()
 fitness = evaluate(ind)
-print("Evaluating:", time.time()-start)
 print(f"We got fitness {fitness}")
 
-start = time.time()
 close_env()
-print("Closing:", time.time()-start)
