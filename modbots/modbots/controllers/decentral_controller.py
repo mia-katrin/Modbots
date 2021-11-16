@@ -44,6 +44,8 @@ class DecentralController:
         return actions
 
     def mutate(self):
+        self._check_lack_of_control()
+
         allNodes = []
         traverse_get_list(self.body.root, allNodes)
 
