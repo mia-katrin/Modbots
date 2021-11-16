@@ -5,42 +5,31 @@ import time
 import copy
 
 from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
-from modbots.creature_types.decentralized_sensor_ind import Individual
+from modbots.creature_types.configurable_individual import Individual
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 
-import argparse
-# Add arguments
-parser = argparse.ArgumentParser(description='Test determinism on some boys')
-parser.add_argument(
-    'config_file',
-    type=str,
-    help='The config file to configure this evolution'
-)
+from config_util import get_config
 
-with open(parser.parse_args().config_file, "r") as file:
-    for line in file:
-        exec(line)
-        print(line)
+NR_INDS = 8
+ROUNDS = 8
+NR_SEEDS = 3
 
-NR_INDS = 2
-ROUNDS = 2
-NR_SEEDS = 2
-
-N_CORES = 2 # It seems this determines a factor in population size
+N_CORES = 8 # It seems this determines a factor in population size
 HEADLESS = True
+TIME_SCALE = None
 
-def get_pop(nr_inds:int, duplicates:int = 1, at_least_modules:int = 1, depth:int = 5) -> list:
+def get_pop(nr_inds:int, config, duplicates:int = 1, at_least_modules:int = 1) -> list:
     pop = []
     for _ in range(nr_inds):
-        ind = Individual.random(depth)
-        while ind.get_nr_modules() <at_least_modules:
-            ind = Individual.random(depth)
+        ind = Individual.random(config)
+        while ind.get_nr_modules() < at_least_modules:
+            ind = Individual.random(config)
         for _ in range(duplicates):
             pop.append(ind)
     return pop
 
-def test_determinism(fitness_map_function):
-    inds = get_pop(NR_INDS, duplicates=ROUNDS, at_least_modules=4)
+def test_determinism(fitness_map_function, config):
+    inds = get_pop(NR_INDS, config, duplicates=ROUNDS, at_least_modules=4)
 
     all_fitnesses = {}
     for i in range(NR_INDS):
@@ -49,7 +38,7 @@ def test_determinism(fitness_map_function):
     for s in [np.random.randint(100) for _ in range(NR_SEEDS)]:
         print(f"Seed: {s}")
 
-        fitnesses = fitness_map_function(inds, s)
+        fitnesses = fitness_map_function(inds, s, config)
 
         for i in range(NR_INDS):
             for j in range(ROUNDS):
@@ -61,12 +50,12 @@ def test_determinism(fitness_map_function):
     for ind in all_fitnesses:
         assert np.all(all_fitnesses[ind] == all_fitnesses[ind][0]), str(all_fitnesses[ind])
 
-def run_sequentially(pop:list, seed:int) -> list:
+def run_sequentially(pop:list, seed:int, config) -> list:
     # Create the channel
     sc = SideChannelPythonside()
 
     # We start the communication with the Unity Editor and pass the string_log side channel as input
-    set_env_variables(PATH, LOG_FOLDER, seed=seed, headless=HEADLESS)
+    set_env_variables(config.files.build_path, config.files.log_folder, seed=seed, headless=HEADLESS, time_scale=TIME_SCALE, n_steps=config.evaluation.n_steps, n_start_eval=config.evaluation.n_start_eval)
 
     fitnesses = []
     for ind in pop:
@@ -76,8 +65,8 @@ def run_sequentially(pop:list, seed:int) -> list:
     close_env()
     return fitnesses
 
-def run_multithreaded(pop:list, seed:int) -> list:
-    set_env_variables(PATH, LOG_FOLDER, seed=seed, headless=HEADLESS, time_scale=TIME_SCALE, n_steps=N_STEPS, n_start_eval=N_START_EVAL)
+def run_multithreaded(pop:list, seed:int, config) -> list:
+    set_env_variables(config.files.build_path, config.files.log_folder, seed=seed, headless=HEADLESS, time_scale=TIME_SCALE, n_steps=config.evaluation.n_steps, n_start_eval=config.evaluation.n_start_eval)
 
     toolbox = base.Toolbox()
     toolbox.register("evaluate", evaluate)
@@ -99,8 +88,10 @@ def run_multithreaded(pop:list, seed:int) -> list:
     return fitnesses2
 
 if __name__ == "__main__":
-    print(f"This will take above {ROUNDS*NR_INDS*NR_SEEDS*(N_STEPS*0.02)/N_CORES} seconds")
+    config = get_config()
+
+    print(f"This will take above {ROUNDS*NR_INDS*NR_SEEDS*(config.evaluation.n_steps*0.02)/N_CORES} seconds")
     input()
     start = time.time()
-    test_determinism(run_multithreaded)
+    test_determinism(run_multithreaded, config)
     print("It took", time.time()-start, "seconds")
