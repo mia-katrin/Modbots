@@ -10,6 +10,9 @@ import re
 from config_util import get_local_config
 from localconfig import config
 
+import numpy as np
+np.random.seed(42)
+
 """def get_type(gene):
     float_pat = rf""
     pattern = rf"()"""
