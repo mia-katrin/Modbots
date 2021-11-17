@@ -25,7 +25,8 @@ class Individual:
         elif config.control.ctrnn:
             self.controller = CTRNNInterface(advance_time=0.02, central=True, time_step=0.02)
         else:
-            raise ValueError("Nothing else is supported rn!")
+            self.controller = None
+            print("You have chosen no controller")
 
         return self
 
@@ -37,10 +38,13 @@ class Individual:
         return self
 
     def prepare_for_evaluation(self):
-        self.controller.prepare_for_evaluation()
+        if self.controller != None:
+            self.controller.prepare_for_evaluation()
 
     def get_actions(self, observation):
-        return self.controller.get_actions(observation)
+        if self.controller != None:
+            return self.controller.get_actions(observation)
+        return np.zeros((1,50), dtype=float)
 
     def save_individual(self, filename):
         with open(filename, 'wb') as file:
@@ -60,7 +64,7 @@ class Individual:
             self.needs_evaluation = False
 
         rand_num = np.random.rand()
-        if rand_num < config.ea.mut_rate*config.mutation.control:
+        if rand_num < config.ea.mut_rate*config.mutation.control and self.controller != None:
             self.controller.mutate() # Force mut if central else very likely but not always
             mutated = True
         elif rand_num < config.ea.mut_rate:

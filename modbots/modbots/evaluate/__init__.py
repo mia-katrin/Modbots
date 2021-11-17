@@ -95,6 +95,7 @@ def evaluate(ind, force_evaluate=True):
     for i in range(N_STEPS):
         # Get env observation space
         obs,other = env.get_steps(list(env._env_specs)[0])
+        assert len(obs.agent_id) > 0
 
         if i == N_START_EVAL:
             index = list(obs.agent_id_to_index)
