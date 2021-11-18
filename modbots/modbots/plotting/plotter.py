@@ -27,29 +27,31 @@ class Plotter:
 
     def _save_min_max(self, liste, internal_name):
         if internal_name not in self.stats:
-            self.stats[internal_name] = [[],[],[],[]]
-        self.stats[internal_name][0].append(
+            self.stats[internal_name] = {"Mins":[], "Maxs":[], "Means":[], "Medians":[]}
+        self.stats[internal_name]["Mins"].append(
             np.min(liste)
         )
-        self.stats[internal_name][1].append(
+        self.stats[internal_name]["Maxs"].append(
             np.max(liste)
         )
-        self.stats[internal_name][2].append(
+        self.stats[internal_name]["Means"].append(
             np.mean(liste)
         )
-        self.stats[internal_name][3].append(
+        self.stats[internal_name]["Medians"].append(
             np.median(liste)
         )
 
     def plot_stats(self, save_figs=False, folder="."):
+        if save_figs:
+            with open(folder+"/data", "wb") as file:
+                pickle.dump(self.stats, file)
+
         for key in self.stats.keys():
             plt.figure()
             plt.title(key)
-            if len(self.stats[key]) == 4:
-                plt.plot(self.stats[key][0], label="Mins")
-                plt.plot(self.stats[key][1], label="Maxs")
-                plt.plot(self.stats[key][2], label="Means")
-                plt.plot(self.stats[key][3], label="Median")
+            if len(self.stats[key]) > 1:
+                for key2 in self.stats[key].keys():
+                    plt.plot(self.stats[key][key2], label=key2)
             elif len(self.stats[key]) == 1:
                 plt.plot(self.stats[key][0])
             plt.legend()
@@ -65,12 +67,10 @@ class Plotter:
     def print_stats(self):
         for key in self.stats.keys():
             print()
-            if len(self.stats[key]) == 4:
+            if len(self.stats[key]) > 1:
                 print(key+":")
-                print("Min:",  self.stats[key][0][-1])
-                print("Max:",   self.stats[key][1][-1])
-                print("Mean:", self.stats[key][2][-1])
-                print("Median:",   self.stats[key][3][-1])
+                for key2 in self.stats[key].keys():
+                    print(key2+":", self.stats[key][key2][-1])
             elif len(self.stats[key]) == 1:
                 print(key+":",self.stats[key][0][-1])
             print()

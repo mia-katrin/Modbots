@@ -84,10 +84,15 @@ def init_toolbox(config):
 def evolve(config):
     assert config.ea.pop_size%config.experiment.n_cores == 0, "Cannot run this POP_SIZE because it will cause non-deterministic evaluations"
 
+    calc_time = calc_time_evolution(config.ea.pop_size, config.experiment.n_cores, config.ea.mut_rate, config.ea.nr_parents, config.evaluation.n_steps, config.ea.n_generations, config.evaluation.time_scale)
+    minutes = calc_time / 60
+    hours = minutes / 60
     print(
         "Generations:", config.ea.n_generations,
         "\nPopulation:", config.ea.pop_size,
-        "\nEstimated time:", calc_time_evolution(config.ea.pop_size, config.experiment.n_cores, config.ea.mut_rate, config.ea.nr_parents, config.evaluation.n_steps, config.ea.n_generations, config.evaluation.time_scale), "seconds"
+        "\nEstimated time:", calc_time, "seconds or",
+        "\n               ", minutes, "minutes or",
+        "\n               ", hours, "hours",
     )
 
     if config.experiment.documentation:

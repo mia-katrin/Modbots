@@ -10,11 +10,11 @@ from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 
 from config_util import get_config
 
-NR_INDS = 8
-ROUNDS = 8
-NR_SEEDS = 3
+NR_INDS = 1
+ROUNDS = 10
+NR_SEEDS = 1
 
-N_CORES = 8 # It seems this determines a factor in population size
+N_CORES = 1 # It seems this determines a factor in population size
 HEADLESS = True
 TIME_SCALE = None
 
