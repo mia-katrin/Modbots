@@ -23,6 +23,11 @@ individual_class = Individual
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 from modbots.util import sort_to_chunks, calc_time_evolution
 
+def get_runNr():
+    with open("experiments/runNr.txt", "r") as file:
+        nr = file.read()
+    return int(nr)
+
 def save_population(population, filename):
     with open(filename, 'wb') as file:
         pickle.dump(population, file)
@@ -74,14 +79,15 @@ def init_toolbox(config):
     toolbox.register("mutate", individual_class.mutate, mutation_rate=config.ea.mut_rate)
     toolbox.register("select", tools.selTournament, tournsize = config.ea.tournsize)
 
+    pool = None
     if config.experiment.n_cores > 1:
         print("Starting deap with ", config.experiment.n_cores, " cores")
         pool = multiprocessing.Pool(config.experiment.n_cores)
         cs = int(np.ceil(float(config.ea.pop_size)/float(config.experiment.n_cores)))
         toolbox.register("map", pool.map, chunksize=cs)
-    return toolbox
+    return toolbox, pool
 
-def evolve(config):
+def evolve(config, statement=None, show_figs=True):
     assert config.ea.pop_size%config.experiment.n_cores == 0, "Cannot run this POP_SIZE because it will cause non-deterministic evaluations"
 
     calc_time = calc_time_evolution(config.ea.pop_size, config.experiment.n_cores, config.ea.mut_rate, config.ea.nr_parents, config.evaluation.n_steps, config.ea.n_generations, config.evaluation.time_scale)
@@ -96,10 +102,7 @@ def evolve(config):
     )
 
     if config.experiment.documentation:
-        runNr = 0
-        with open("experiments/runNr.txt", "r") as file:
-            stringNr = file.read()
-            runNr = int(stringNr)
+        runNr = get_runNr()
         with open("experiments/runNr.txt", "w") as file:
             file.write(f"{runNr + 1}")
             file.close()
@@ -107,7 +110,9 @@ def evolve(config):
         os.makedirs(f"experiments/run{runNr}/")
 
         # Save statement
-        if args.statement != None:
+        if statement != None:
+            change = statement
+        elif args.statement != None:
             change = args.statement
         else:
             print("What has changed in this run?\n> ", end="")
@@ -131,7 +136,7 @@ def evolve(config):
     )
 
     # init toolbox
-    toolbox = init_toolbox(config)
+    toolbox, pool = init_toolbox(config)
 
     # Init pop
     population = init_pop(toolbox, config)
@@ -183,17 +188,19 @@ def evolve(config):
             plotter.print_stats()
     except KeyboardInterrupt:
         close_env()
+        pool.close()
 
         inp = input("Do you want to generate plots?")
         if inp != "y":
             raise KeyboardInterrupt("You chose to simply exit")
     close_env()
+    pool.close()
 
     bestInd.save_individual("bestInd/ind")
     print("Recorded:",bestInd.fitness)
 
     if config.experiment.documentation:
-        plotter.plot_stats(save_figs=True, folder=f"experiments/run{runNr}")
+        plotter.plot_stats(save_figs=True, show_figs=show_figs, folder=f"experiments/run{runNr}")
     else:
         plotter.plot_stats()
 

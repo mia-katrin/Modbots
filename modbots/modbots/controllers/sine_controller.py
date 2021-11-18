@@ -26,9 +26,9 @@ class SineController():
 		self.state = 0
 
 	def mutate(self):
-		rand_choice = ["amp", "freq", "phase", "offset"][random.choice([0,1,2,3])]
+		rand_choice = ["amp", "freq", "phase", "offset"][np.random.choice([0,1,2,3])]
 		to_mutate = "self."+rand_choice
-		exec(to_mutate + f"+= {random.uniform(-1,1)*0.5}")
+		exec(to_mutate + f"+= {np.random.uniform(-1,1)*0.5}")
 		exec(f"{to_mutate} = bounce_back({to_mutate}, SineController.allowable_{rand_choice})")
 
 if __name__ == "__main__":

@@ -42,7 +42,7 @@ class Plotter:
             np.median(liste)
         )
 
-    def plot_stats(self, save_figs=False, folder="."):
+    def plot_stats(self, save_figs=False, show_figs=True, folder="."):
         if save_figs:
             with open(folder+"/data", "wb") as file:
                 pickle.dump(self.stats, file)
@@ -63,7 +63,8 @@ class Plotter:
                 name = key.replace(" ", "_")
                 plt.savefig(f"{folder}/{name}.png")
 
-        plt.show()
+        if show_figs:
+            plt.show()
 
     def print_stats(self):
         for key in self.stats.keys():
