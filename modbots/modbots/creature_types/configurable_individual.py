@@ -5,6 +5,7 @@ from modbots.creature_types.body import Body
 from modbots.controllers.decentral_controller import DecentralController
 from modbots.controllers.sine_controller import SineController
 from modbots.controllers.ctrnn_interface import CTRNNInterface
+from modbots.controllers.copy_decentral import CopyDecentralController
 
 class Individual:
     def __init__(self, config = None):
@@ -18,8 +19,12 @@ class Individual:
         self = Individual(config) # This gives me an interesting body
 
         # Select controller from config
-        if config.control.oscillatory:
+        if config.control.oscillatory and not config.control.copy_decentral:
             self.controller = DecentralController(SineController, self.body, deltaTime=0.1)
+        elif config.control.oscillatory and config.control.copy_decentral:
+            self.controller = CopyDecentralController(SineController, self.body, deltaTime=0.1)
+        elif config.control.ctrnn and config.control.copy_decentral:
+            self.controller = CopyDecentralController(CTRNNInterface, self.body, advance_time=0.02, time_step=0.02)
         elif config.control.ctrnn and config.control.decentral:
             self.controller = DecentralController(CTRNNInterface, self.body, advance_time=0.02, time_step=0.02)
         elif config.control.ctrnn:

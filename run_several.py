@@ -7,7 +7,7 @@ parser.add_argument("-l", "--label", type=str, default=input("Label your run\n> 
 args = parser.parse_args()
 run_label = args.label
 
-ROUNDS = 5
+ROUNDS = 10
 
 def append_runNr(key):
     valid_intervals[run_label][key].append(get_runNr()-1)
@@ -31,6 +31,11 @@ valid_intervals[run_label] = {
     "Start runNr": get_runNr(),
 }
 
+run_on_config("copy_ctrnn_growing.cfg")
+run_on_config("sine_growing.cfg")
+run_on_config("ctrnn_growing.cfg")
+run_on_config("decentr_ctrnn_growing.cfg")
+run_on_config("copy_ctrnn.cfg")
 run_on_config("sine.cfg")
 run_on_config("ctrnn.cfg")
 run_on_config("decentr_ctrnn.cfg")
