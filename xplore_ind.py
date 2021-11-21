@@ -13,10 +13,6 @@ from localconfig import config
 import numpy as np
 np.random.seed(42)
 
-"""def get_type(gene):
-    float_pat = rf""
-    pattern = rf"()"""
-
 # Add arguments
 parser = argparse.ArgumentParser(description='Explore some boys')
 parser.add_argument(
@@ -49,10 +45,6 @@ set_env_variables(
     time_scale=config.evaluation.time_scale
 )
 
-fitness = evaluate(ind)
-print(f"We got fitness {fitness}")
-fitness = evaluate(ind)
-print(f"We got fitness {fitness}")
 fitness = evaluate(ind)
 print(f"We got fitness {fitness}")
 

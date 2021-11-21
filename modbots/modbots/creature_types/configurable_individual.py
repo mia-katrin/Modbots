@@ -66,9 +66,11 @@ class Individual:
         rand_num = np.random.rand()
         if rand_num < config.ea.mut_rate*config.mutation.control and self.controller != None:
             self.controller.mutate() # Force mut if central else very likely but not always
+            print("Controller mutate")
             mutated = True
         elif rand_num < config.ea.mut_rate:
             mutated = self.body.mutate(config)
+            print("Body mutate")
         else:
             mutated = False
 

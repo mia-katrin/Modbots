@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 from modbots.util import traverse_get_list
 
@@ -30,7 +31,14 @@ class DecentralController:
 
         for node in allNodes:
             if "controller" not in node.__dict__.keys():
-                node.controller = self.control_type()
+                print("This happened")
+
+                parent = None
+                for i in range(len(allNodes)-1, -1, -1):
+                    if node in allNodes[i].children:
+                        parent = allNodes[i]
+
+                node.controller = copy.deepcopy(parent.controller)
 
     def get_actions(self, observation):
         allNodes = []
@@ -51,6 +59,11 @@ class DecentralController:
 
         individual_likelihood = 1/len(allNodes)
 
+        mutated = False
         for node in allNodes:
             if np.random.rand() < individual_likelihood:
                 node.controller.mutate()
+                mutated = True
+
+        if not mutated:
+            self.mutate()
