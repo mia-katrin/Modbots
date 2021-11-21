@@ -3,9 +3,12 @@ from evolve import evolve, get_runNr
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-l", "--label", type=str, default=input("Label your run\n> "))
+parser.add_argument("-l", "--label", type=str, default=None)
 args = parser.parse_args()
-run_label = args.label
+if args.label == None:
+    run_label = input("Label your run\n> ")
+else:
+    run_label = args.label
 
 ROUNDS = 10
 
