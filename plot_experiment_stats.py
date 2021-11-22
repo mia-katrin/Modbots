@@ -99,7 +99,7 @@ def plot_runs(dataname, stat="Means"):
     plt.xlabel("Generation")
     plt.ylabel(dataname.title())
 
-    plt.savefig(title)
+    plt.savefig(title.replace(" ", "_"))
 
     plt.figure()
     for avg, label, cfg in zip(averages, labels, configs):
@@ -109,6 +109,8 @@ def plot_runs(dataname, stat="Means"):
     plt.xlabel("Generation")
     plt.ylabel(dataname.title())
     plt.legend()
+
+    plt.savefig((title + " only Averages").replace(" ", "_"))
 
 def plot_mutation():
     changes_cfgs = pd.DataFrame()
@@ -154,6 +156,7 @@ def plot_mutation():
     plt.xlabel("Controller")
     plt.ylabel("Percentage of generations")
     plt.title("Percentage of generations that resulted in a new max individual")
+    plt.savefig("Percent_of_Generations")
 
     plt.figure()
     box_plot(
@@ -165,6 +168,7 @@ def plot_mutation():
     plt.xlabel("Controller")
     plt.ylabel("Size of change")
     plt.title("The average size of changes")
+    plt.savefig("Average_Size")
 
 def box_plot(data, edge_color, fill_color, labels):
     bp = plt.boxplot(data, patch_artist=True, showmeans=True, labels=labels)
