@@ -13,8 +13,8 @@ config.experiment.headless = True
 
 # EA
 config.ea.mut_rate = 0.1
-config.ea.n_generations = 40
-config.ea.pop_size = 10
+config.ea.n_generations = 4
+config.ea.pop_size = 4
 config.ea.nr_parents = 0
 config.ea.tournsize = 2
 

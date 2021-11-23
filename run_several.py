@@ -1,6 +1,7 @@
 import json
 from evolve import evolve, get_runNr
 import argparse
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-l", "--label", type=str, default=None)
@@ -10,7 +11,10 @@ if args.label == None:
 else:
     run_label = args.label
 
-ROUNDS = 10
+ROUNDS = 2
+
+def delete_log_folder_content():
+    os.system("rm log_folder/*")
 
 def append_runNr(key):
     valid_intervals[run_label][key].append(get_runNr()-1)
@@ -27,6 +31,10 @@ def run_on_config(conf_name):
         evolve(config, run_label, show_figs=False)
         append_runNr(conf_name)
 
+        # In order to not usee all our memory on rudolph,
+        # Delete log_folder content underway
+        delete_log_folder_content()
+
 with open("experiments/valid_intervals", "r") as file:
     valid_intervals = json.load(file)
 
@@ -37,11 +45,11 @@ valid_intervals[run_label] = {
 run_on_config("copy_ctrnn_growing.cfg")
 run_on_config("sine_growing.cfg")
 run_on_config("ctrnn_growing.cfg")
-run_on_config("decentr_ctrnn_growing.cfg")
+run_on_config("decentral_ctrnn_growing.cfg")
 run_on_config("copy_ctrnn.cfg")
 run_on_config("sine.cfg")
 run_on_config("ctrnn.cfg")
-run_on_config("decentr_ctrnn.cfg")
+run_on_config("decentral_ctrnn.cfg")
 
 valid_intervals[run_label]["End runNr"] = get_runNr()-1
 with open("experiments/valid_intervals", "w") as file:
