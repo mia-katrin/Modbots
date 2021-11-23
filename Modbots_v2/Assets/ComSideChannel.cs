@@ -14,7 +14,8 @@ public class ComSideChannel : SideChannel
 
     bool connectionEstablished = false;
     public static event Action<string> OnReceivedEncoding;
-    public static event Action RecordingRequested;
+    public static event Action<string> RecordingRequested;
+    public static event Action StopRecordingRequested;
 
     public ComSideChannel()
     {
@@ -25,18 +26,22 @@ public class ComSideChannel : SideChannel
     {
         connectionEstablished = true;
         var receivedString = msg.ReadString();
-        //Debug.LogError($"Got {receivedString}");
+
         if (receivedString == "Hello")
         {
             SendMessage("Hello back!");
         }
-        else if (receivedString == "Record")
+        else if (receivedString.StartsWith("Record"))
         {
-            RecordingRequested.Invoke();
+            string filename = receivedString.Split(',')[1].Trim('_');
+            RecordingRequested.Invoke(filename);
+        }
+        else if (receivedString == "Stop recording")
+        {
+            //StopRecordingRequested.Invoke();
         }
         else
         {
-            //SendMessage($"Got ping");
             OnReceivedEncoding.Invoke(receivedString);
         }
     }

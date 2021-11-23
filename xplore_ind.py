@@ -34,6 +34,7 @@ config.read(args.config_file)
 
 print("We start")
 ind = Individual.unpack_ind(args.gene, config)
+print("Stored fitness:", ind.fitness)
 
 set_env_variables(
     config.files.build_path,
