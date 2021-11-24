@@ -7,12 +7,12 @@ import pandas as pd
 configs = [
     'sine.cfg',
     'ctrnn.cfg',
-    'decentr_ctrnn.cfg',
+    'decentral_ctrnn.cfg',
     'copy_ctrnn.cfg',
 
     'sine_growing.cfg',
     'ctrnn_growing.cfg',
-    'decentr_ctrnn_growing.cfg',
+    'decentral_ctrnn_growing.cfg',
     'copy_ctrnn_growing.cfg',
 ]
 
@@ -21,8 +21,8 @@ colors = {
     'sine.cfg_avg':"orange",
     'ctrnn.cfg':"paleturquoise",
     'ctrnn.cfg_avg':"dodgerblue",
-    'decentr_ctrnn.cfg':"thistle",
-    'decentr_ctrnn.cfg_avg':"magenta",
+    'decentral_ctrnn.cfg':"thistle",
+    'decentral_ctrnn.cfg_avg':"magenta",
     'copy_ctrnn.cfg':"palegreen",
     'copy_ctrnn.cfg_avg':"limegreen",
 
@@ -30,8 +30,8 @@ colors = {
     'sine_growing.cfg_avg':"goldenrod",
     'ctrnn_growing.cfg':"lightskyblue",
     'ctrnn_growing.cfg_avg':"blue",
-    'decentr_ctrnn_growing.cfg':"pink",
-    'decentr_ctrnn_growing.cfg_avg':"deeppink",
+    'decentral_ctrnn_growing.cfg':"pink",
+    'decentral_ctrnn_growing.cfg_avg':"deeppink",
     'copy_ctrnn_growing.cfg':"yellowgreen",
     'copy_ctrnn_growing.cfg_avg':"forestgreen",
 }
@@ -39,22 +39,22 @@ colors = {
 linestyles = {
     'sine.cfg':"dashed",
     'ctrnn.cfg':"dashed",
-    'decentr_ctrnn.cfg':"dashed",
+    'decentral_ctrnn.cfg':"dashed",
     'copy_ctrnn.cfg':"dashed",
 
     'sine_growing.cfg':"dotted",
     'ctrnn_growing.cfg':"dotted",
-    'decentr_ctrnn_growing.cfg':"dotted",
+    'decentral_ctrnn_growing.cfg':"dotted",
     'copy_ctrnn_growing.cfg':"dotted",
 
     'sine.cfg_avg':"solid",
     'ctrnn.cfg_avg':"solid",
-    'decentr_ctrnn.cfg_avg':"solid",
+    'decentral_ctrnn.cfg_avg':"solid",
     'copy_ctrnn.cfg_avg':"solid",
 
     'sine_growing.cfg_avg':"dashdot",
     'ctrnn_growing.cfg_avg':"dashdot",
-    'decentr_ctrnn_growing.cfg_avg':"dashdot",
+    'decentral_ctrnn_growing.cfg_avg':"dashdot",
     'copy_ctrnn_growing.cfg_avg':"dashdot",
 }
 

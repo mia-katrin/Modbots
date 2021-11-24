@@ -11,7 +11,7 @@ if args.label == None:
 else:
     run_label = args.label
 
-ROUNDS = 2
+ROUNDS = 8
 
 def delete_log_folder_content():
     os.system("rm log_folder/*")
