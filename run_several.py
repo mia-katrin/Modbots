@@ -38,6 +38,9 @@ def run_on_config(conf_name):
 with open("experiments/valid_intervals", "r") as file:
     valid_intervals = json.load(file)
 
+if run_label in valid_intervals:
+    raise ValueError("You've named the experiment as something that is already named in valid_intervals. Please choose a different name.")
+
 valid_intervals[run_label] = {
     "Start runNr": get_runNr(),
 }
