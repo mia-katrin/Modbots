@@ -52,7 +52,7 @@ def get_env():
         SEED = 42
     #print("Using", SEED, HEADLESS, TIME_SCALE)
     #pid = multiprocessing.Process()._identity[0]
-    pid = os.getpid() % 10000 # Steinar fix
+    pid = os.getpid() % 65535 # Steinar fix
     if env_pid == None:
         env_pid = pid
     print("Env is fetched:", env_pid, pid)
