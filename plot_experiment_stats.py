@@ -3,6 +3,17 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import argparse
+
+# Add arguments
+parser = argparse.ArgumentParser(description='Find outliers')
+parser.add_argument(
+    'label',
+    type = str,
+    help='The label to check'
+)
+
+args = parser.parse_args()
 
 configs = [
     'sine.cfg',
@@ -61,7 +72,7 @@ linestyles = {
 with open("experiments/valid_intervals", "r") as file:
     valid_intervals = json.load(file)
 
-experiment = valid_intervals["Test run 13"]
+experiment = valid_intervals[args.label]
 
 def plot_runs(dataname, stat="Means"):
     fig = plt.figure(figsize=(8,4.5))
