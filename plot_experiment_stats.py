@@ -18,12 +18,12 @@ args = parser.parse_args()
 configs = [
     'sine.cfg',
     'ctrnn.cfg',
-    'decentr_ctrnn.cfg',
+    'decentral_ctrnn.cfg',
     'copy_ctrnn.cfg',
 
     'sine_growing.cfg',
     'ctrnn_growing.cfg',
-    'decentr_ctrnn_growing.cfg',
+    'decentral_ctrnn_growing.cfg',
     'copy_ctrnn_growing.cfg',
 ]
 
@@ -32,8 +32,8 @@ colors = {
     'sine.cfg_avg':"orange",
     'ctrnn.cfg':"paleturquoise",
     'ctrnn.cfg_avg':"dodgerblue",
-    'decentr_ctrnn.cfg':"thistle",
-    'decentr_ctrnn.cfg_avg':"magenta",
+    'decentral_ctrnn.cfg':"thistle",
+    'decentral_ctrnn.cfg_avg':"magenta",
     'copy_ctrnn.cfg':"palegreen",
     'copy_ctrnn.cfg_avg':"limegreen",
 
@@ -41,8 +41,8 @@ colors = {
     'sine_growing.cfg_avg':"goldenrod",
     'ctrnn_growing.cfg':"lightskyblue",
     'ctrnn_growing.cfg_avg':"blue",
-    'decentr_ctrnn_growing.cfg':"pink",
-    'decentr_ctrnn_growing.cfg_avg':"deeppink",
+    'decentral_ctrnn_growing.cfg':"pink",
+    'decentral_ctrnn_growing.cfg_avg':"deeppink",
     'copy_ctrnn_growing.cfg':"yellowgreen",
     'copy_ctrnn_growing.cfg_avg':"forestgreen",
 }
@@ -50,22 +50,22 @@ colors = {
 linestyles = {
     'sine.cfg':"dashed",
     'ctrnn.cfg':"dashed",
-    'decentr_ctrnn.cfg':"dashed",
+    'decentral_ctrnn.cfg':"dashed",
     'copy_ctrnn.cfg':"dashed",
 
     'sine_growing.cfg':"dotted",
     'ctrnn_growing.cfg':"dotted",
-    'decentr_ctrnn_growing.cfg':"dotted",
+    'decentral_ctrnn_growing.cfg':"dotted",
     'copy_ctrnn_growing.cfg':"dotted",
 
     'sine.cfg_avg':"solid",
     'ctrnn.cfg_avg':"solid",
-    'decentr_ctrnn.cfg_avg':"solid",
+    'decentral_ctrnn.cfg_avg':"solid",
     'copy_ctrnn.cfg_avg':"solid",
 
     'sine_growing.cfg_avg':"dashdot",
     'ctrnn_growing.cfg_avg':"dashdot",
-    'decentr_ctrnn_growing.cfg_avg':"dashdot",
+    'decentral_ctrnn_growing.cfg_avg':"dashdot",
     'copy_ctrnn_growing.cfg_avg':"dashdot",
 }
 
@@ -170,8 +170,8 @@ def boxplot_of_last(dataname, stat="Means"):
     plt.savefig(f"{dataname}_{stat}_boxplot")
 
 def plot_mutation():
-    changes_cfgs = pd.DataFrame()
-    changes_sizes = pd.DataFrame()
+    changes_cfgs = []
+    changes_sizes = []
     labels = []
     for cfg in configs:
         labels.append(
@@ -201,8 +201,8 @@ def plot_mutation():
                 changes_list.append(changes / generations)
                 changes_sizes_list.append(avg_sizes)
 
-        changes_cfgs[cfg] = changes_list
-        changes_sizes[cfg] = changes_sizes_list
+        changes_cfgs.append(changes_list)
+        changes_sizes.append(changes_sizes_list)
 
     plt.figure()
     boxplot(
@@ -250,7 +250,7 @@ def boxplot(data, edge_color, fill_color, labels):
 
     return bp
 
-plot_runs("Fitness", stat="Means")
+plot_runs("Fitness", stat="Maxs")
 plot_runs("Nr Modules", stat="Means")
 plot_mutation()
 boxplot_of_last("Fitness", "Maxs")
