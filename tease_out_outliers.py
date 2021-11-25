@@ -54,7 +54,7 @@ def check_run(runNr: int, config_file: str):
         print(Fore.GREEN + "Fitness corresponds")
         print(Fore.GREEN + "Eval: " + str(eval_fitness))
         if eval_fitness > 16:
-            print(FORE.PURPLE + "Possible outlier")
+            print(Fore.PURPLE + "Possible outlier")
 
 if __name__ == "__main__":
     with open("experiments/valid_intervals", "r") as file:
