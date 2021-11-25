@@ -4,6 +4,7 @@ Build.app
 .pytest_cache
 __pycache__
 
+*.png
 *.cfg
 bestInd
 nohup.out
