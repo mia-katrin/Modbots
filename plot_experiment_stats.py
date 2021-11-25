@@ -89,18 +89,19 @@ def plot_runs(dataname, stat="Means"):
 
         average = []
         for runNr in experiment[cfg]:
-            path = f"experiments/run{runNr}"
-            with open(path+"/data", "rb") as file:
-                data = pickle.load(file)
+            if runNr not in experiment["Outliers"]:
+                path = f"experiments/run{runNr}"
+                with open(path+"/data", "rb") as file:
+                    data = pickle.load(file)
 
-            last_values[-1].append(data[dataname][stat][-1])
+                last_values[-1].append(data[dataname][stat][-1])
 
-            ax.plot(data[dataname][stat], c=colors[cfg], linestyle=linestyles[cfg], label=label)
+                ax.plot(data[dataname][stat], c=colors[cfg], linestyle=linestyles[cfg], label=label)
 
-            if len(average) == 0:
-                average = np.array(data[dataname][stat])
-            else:
-                average += np.array(data[dataname][stat])
+                if len(average) == 0:
+                    average = np.array(data[dataname][stat])
+                else:
+                    average += np.array(data[dataname][stat])
         averages.append(average / len(experiment[cfg]))
 
     for avg, label, cfg in zip(averages, labels, configs):
@@ -148,11 +149,12 @@ def boxplot_of_last(dataname, stat="Means"):
 
         average = []
         for runNr in experiment[cfg]:
-            path = f"experiments/run{runNr}"
-            with open(path+"/data", "rb") as file:
-                data = pickle.load(file)
+            if runNr not in experiment["Outliers"]:
+                path = f"experiments/run{runNr}"
+                with open(path+"/data", "rb") as file:
+                    data = pickle.load(file)
 
-            last_values[-1].append(data[dataname][stat][-1])
+                last_values[-1].append(data[dataname][stat][-1])
 
     plt.figure()
     boxplot(
@@ -180,23 +182,24 @@ def plot_mutation():
         changes_sizes_list = []
 
         for runNr in experiment[cfg]:
-            changes = 0
-            avg_sizes = 0
-            path = f"experiments/run{runNr}"
-            with open(path+"/data", "rb") as file:
-                data = pickle.load(file)
+            if runNr not in experiment["Outliers"]:
+                changes = 0
+                avg_sizes = 0
+                path = f"experiments/run{runNr}"
+                with open(path+"/data", "rb") as file:
+                    data = pickle.load(file)
 
-            max_fitnesses = data["Fitness"]["Maxs"]
-            generations = len(max_fitnesses)
-            for i in range(1, generations):
-                if max_fitnesses[i] != max_fitnesses[i-1]:
-                    changes += 1
-                    avg_sizes += (max_fitnesses[i] - max_fitnesses[i-1])
+                max_fitnesses = data["Fitness"]["Maxs"]
+                generations = len(max_fitnesses)
+                for i in range(1, generations):
+                    if max_fitnesses[i] != max_fitnesses[i-1]:
+                        changes += 1
+                        avg_sizes += (max_fitnesses[i] - max_fitnesses[i-1])
 
-            if changes != 0:
-                avg_sizes = avg_sizes / changes
-            changes_list.append(changes / generations)
-            changes_sizes_list.append(avg_sizes)
+                if changes != 0:
+                    avg_sizes = avg_sizes / changes
+                changes_list.append(changes / generations)
+                changes_sizes_list.append(avg_sizes)
 
         changes_cfgs[cfg] = changes_list
         changes_sizes[cfg] = changes_sizes_list
