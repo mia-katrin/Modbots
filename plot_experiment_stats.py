@@ -37,7 +37,7 @@ colors = {
     'copy_ctrnn.cfg':"palegreen",
     'copy_ctrnn.cfg_avg':"limegreen",
 
-    'sine_growing.cfg':"yellow",
+    'sine_growing.cfg':"gold",
     'sine_growing.cfg_avg':"goldenrod",
     'ctrnn_growing.cfg':"lightskyblue",
     'ctrnn_growing.cfg_avg':"blue",
@@ -45,6 +45,26 @@ colors = {
     'decentral_ctrnn_growing.cfg_avg':"deeppink",
     'copy_ctrnn_growing.cfg':"yellowgreen",
     'copy_ctrnn_growing.cfg_avg':"forestgreen",
+}
+
+colors = {
+    'sine.cfg':"gold",
+    'sine.cfg_avg':"orange",
+    'ctrnn.cfg':"lightskyblue",
+    'ctrnn.cfg_avg':"blue",
+    'decentral_ctrnn.cfg':(204/225, 121/225, 167/225),
+    'decentral_ctrnn.cfg_avg':(213/225, 94/225, 0),
+    'copy_ctrnn.cfg':"palegreen",
+    'copy_ctrnn.cfg_avg':(0,158/225, 115/225),
+
+    'sine_growing.cfg':"gold",
+    'sine_growing.cfg_avg':"orange",
+    'ctrnn_growing.cfg':"lightskyblue",
+    'ctrnn_growing.cfg_avg':"blue",
+    'decentral_ctrnn_growing.cfg':(204/225, 121/225, 167/225),
+    'decentral_ctrnn_growing.cfg_avg':(213/225, 94/225, 0),
+    'copy_ctrnn_growing.cfg':"palegreen",
+    'copy_ctrnn_growing.cfg_avg':(0,158/225, 115/225),
 }
 
 linestyles = {
