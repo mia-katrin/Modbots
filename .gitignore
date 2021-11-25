@@ -1,4 +1,5 @@
 experiments/
+experiments_mac/
 Build.app
 .DS_Store
 .pytest_cache
