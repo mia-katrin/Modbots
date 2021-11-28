@@ -35,7 +35,6 @@ public class Recorder : MonoBehaviour
 
     public void StartRecording(string filename)
     {
-        Debug.LogError("We got here!");
         doneEpisode = false;
         List<Texture2D> frames = new List<Texture2D>();
 
@@ -44,6 +43,7 @@ public class Recorder : MonoBehaviour
 
     private IEnumerator SaveFrames(List<Texture2D> frames, string filename)
     {
+        int j = 0;
         while (!doneEpisode)
         {
             // Method found at: https://docs.unity3d.com/ScriptReference/WaitForEndOfFrame.html
@@ -55,9 +55,8 @@ public class Recorder : MonoBehaviour
             Texture2D tex = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
             tex.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
             frames.Add(tex);
-            Debug.LogError("Getting images");
+            j++;
         }
-        Debug.LogError("Completed getting images");
 
         for (int i = 0; i < frames.Count; i++)
         {
@@ -68,8 +67,7 @@ public class Recorder : MonoBehaviour
 
             // Write to a file in a video folder
             // Path works on executable only
-            File.WriteAllBytes(Application.dataPath + $"{filename}/frame{i}.png", bytes);
-            Debug.LogError(Application.dataPath + $"{filename}/frame{i}.png");
+            File.WriteAllBytes($"{Application.dataPath}/../../video/frame{i}.png", bytes);
         }
         for (int i = 0; i < frames.Count; i++)
         {

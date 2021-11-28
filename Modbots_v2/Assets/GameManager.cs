@@ -125,6 +125,7 @@ public class GameManager : MonoBehaviour
     public bool robotElseModule = true;
     private void Update()
     {
+        Debug.Log(Application.persistentDataPath);
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (robotElseModule)

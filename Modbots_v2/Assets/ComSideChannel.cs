@@ -38,7 +38,7 @@ public class ComSideChannel : SideChannel
         }
         else if (receivedString == "Stop recording")
         {
-            //StopRecordingRequested.Invoke();
+            StopRecordingRequested.Invoke();
         }
         else
         {

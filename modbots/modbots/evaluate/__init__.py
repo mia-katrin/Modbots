@@ -50,7 +50,7 @@ def get_env():
     global env_pid
     if SEED == None:
         SEED = 42
-    #print("Using", SEED, HEADLESS, TIME_SCALE)
+    print("Using", SEED, HEADLESS, TIME_SCALE)
     #pid = multiprocessing.Process()._identity[0]
     pid = os.getpid() % 10000 # Steinar fix
     if env_pid == None:
@@ -81,7 +81,7 @@ def close_env():
     sc = None
 
 # Evaluate function uses variables of different env instances
-def evaluate(ind, force_evaluate=True):
+def evaluate(ind, force_evaluate=True, record=False):
     if not force_evaluate and not ind.needs_evaluation:
         return ind.fitness
 
@@ -91,6 +91,9 @@ def evaluate(ind, force_evaluate=True):
 
     side_channel.send_string(ind.body_to_str())
     env.reset()
+
+    if record:
+        side_channel.send_string("Record, /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/video")
 
     save_pos = [0,0,0]
     for i in range(N_STEPS):
@@ -112,6 +115,9 @@ def evaluate(ind, force_evaluate=True):
         # Send actions
         env.set_action_for_agent("ModularBehavior?team=0",0,ActionTuple(actions))
         env.step()  # Move the simulation forward
+
+    if record:
+        side_channel.send_string("Stop recording")
 
     # Get fitness
     index = list(obs.agent_id_to_index)

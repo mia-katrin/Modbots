@@ -109,7 +109,7 @@ def plot_runs(dataname, stat="Means"):
 
         average = []
         for runNr in experiment[cfg]:
-            if runNr not in experiment["Outliers"]:
+            if "Outliers" not in experiment or runNr not in experiment["Outliers"]:
                 path = f"experiments/run{runNr}"
                 with open(path+"/data", "rb") as file:
                     data = pickle.load(file)
@@ -169,7 +169,7 @@ def boxplot_of_last(dataname, stat="Means"):
 
         average = []
         for runNr in experiment[cfg]:
-            if runNr not in experiment["Outliers"]:
+            if "Outliers" not in experiment or runNr not in experiment["Outliers"]:
                 path = f"experiments/run{runNr}"
                 with open(path+"/data", "rb") as file:
                     data = pickle.load(file)
@@ -202,7 +202,7 @@ def plot_mutation():
         changes_sizes_list = []
 
         for runNr in experiment[cfg]:
-            if runNr not in experiment["Outliers"]:
+            if "Outliers" not in experiment or runNr not in experiment["Outliers"]:
                 changes = 0
                 avg_sizes = 0
                 path = f"experiments/run{runNr}"
