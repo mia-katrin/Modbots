@@ -13,8 +13,8 @@ config.experiment.headless = True
 
 # EA
 config.ea.mut_rate = 0.1
-config.ea.n_generations = 4
-config.ea.pop_size = 4
+config.ea.n_generations = 100
+config.ea.pop_size = 100
 config.ea.nr_parents = 0
 config.ea.tournsize = 2
 
@@ -26,7 +26,7 @@ config.individual.creation_std = 0.35
 # EVALUATION
 config.evaluation.n_steps = 500
 config.evaluation.n_start_eval = 100
-config.evaluation.time_scale = 10.0
+config.evaluation.time_scale = None
 
 # Files remains as default on computer
 
