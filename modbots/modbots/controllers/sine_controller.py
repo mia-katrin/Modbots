@@ -18,6 +18,13 @@ class SineController():
 		self.phase = np.random.uniform(-1,1)
 		self.offset = np.random.uniform(-1,1)
 
+	def __str__(self):
+		string = f"A:{round(self.amp,2)}".ljust(7, " ")
+		string += f" F:{round(self.freq,2)}".ljust(8, " ")
+		string += f" P:{round(self.phase,2)}".ljust(8, " ")
+		string += f" O:{round(self.offset,2)}".ljust(8, " ")
+		return string
+
 	def advance(self, observation, deltaTime):
 		self.state += deltaTime
 		return self.amp * math.sin(self.freq * self.state + self.phase) + self.offset

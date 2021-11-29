@@ -16,25 +16,35 @@ class Node:
             if rand_num < config.mutation.angle:
                 self.angle += -90 if np.random.rand() <= 0.5 else 90
                 self.angle = wrap_around(self.angle, [0, 270])
+                print("Angle")
                 return
             # Remove node
             elif rand_num < config.mutation.angle + config.mutation.remove_node:
                 if len(self.occupied_spots_list()) != 0:
                     self.children[np.random.choice(self.occupied_spots_list())] = None
+                    print("Remove")
                     return
             # Add node
             elif rand_num < config.mutation.angle + config.mutation.remove_node + config.mutation.add_node:
-                if len(self.open_spots_list()) != 0:
+                if self.scale < 1. and self.children[0] == None:
+                    new_node = Node(variable_scale=config.individual.variable_scale, growing=config.individual.growing)
+                    self.children[0] = new_node
+                    print("Add top")
+                    return
+                elif self.scale >= 1. and len(self.open_spots_list()) != 0:
                     new_node = Node(variable_scale=config.individual.variable_scale, growing=config.individual.growing)
                     self.children[np.random.choice(self.open_spots_list())] = new_node
+                    print("Add")
                     return
             # Scale
             elif rand_num < config.mutation.angle + config.mutation.remove_node + config.mutation.add_node + config.mutation.scale:
                 val = self.scale + (np.random.rand() - 0.5)
                 self.scale = bounce_back(val, (0.1, 3))
+                print("Scale")
                 return
             # Copy branch
             elif rand_num <= config.mutation.angle + config.mutation.remove_node + config.mutation.add_node + config.mutation.scale + config.mutation.copy_branch:
+                print("Copy")
                 pass
             else:
                 print("Oh no!")

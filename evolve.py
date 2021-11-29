@@ -148,30 +148,40 @@ def evolve(config, statement=None, show_figs=True):
     plotter.save_stats(population)
     plotter.print_stats()
 
+    bestInd = population[0]
+    for ind in population:
+        if ind.fitness > bestInd.fitness:
+            bestInd = ind
+
     try:
         for gen in tqdm(range(config.ea.n_generations)):
             print("Generation:",gen)
 
-            offspring = toolbox.select(population, config.ea.pop_size)
+            offspring = toolbox.select(population, config.ea.pop_size-1)
             offspring = list(map(toolbox.clone, offspring))
+            offspring.append(toolbox.clone(bestInd))
 
-            parents = np.random.choice(offspring, size=config.ea.nr_parents)
+            """parents = np.random.choice(offspring, size=config.ea.nr_parents)
             half = config.ea.nr_parents//2
             for ind1, ind2 in zip(parents[:half], parents[half:]):
                 child1, child2 = ind1.crossover(ind2)
                 offspring.append(child2)
-                offspring.append(child1)
+                offspring.append(child1)"""
 
             for o in offspring:
                 o.mutate(config)
 
+                if o.needs_evaluation:
+                    o.prepare_for_evaluation()
+
+            # Utilize multithreading as much as possible by forcing heavy jobs
+            # into separate chunks
             offspring = sort_to_chunks(offspring, nr_chunks=config.experiment.n_cores)
 
             fitnesses = toolbox.map(toolbox.evaluate, offspring)
             for ind, fit in zip(offspring, fitnesses):
                 ind.fitness = fit
 
-            bestInd = offspring[0]
             for ind in offspring:
                 if ind.fitness > bestInd.fitness:
                     bestInd = ind

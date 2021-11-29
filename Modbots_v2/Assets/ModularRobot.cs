@@ -320,22 +320,35 @@ public class ModularRobot : Agent
         // check for collision
         // Check for number of child bodies. I assume all children are colliders. None should collide when created.
 
-        List<Transform> colliderChildren = new List<Transform>
+        List<Transform> colliderChildren;
+        if (module.GetComponent<ModuleParameterized>().connectionSites.Count > 1)
         {
-            module.transform.GetChild(0).GetChild(3), // ConnectionSite
-            module.transform.GetChild(0).GetChild(4), // ConnectionSite (1)
-            module.transform.GetChild(0).GetChild(5), // ConnectionSite (2)
-            module.transform.GetChild(1).GetChild(0).GetChild(0)//, // Cube
-            //module.transform.GetChild(1).GetChild(1) // parent connection site
-            // parent site is not checked for because it overlaps with parent
-            // collider1 and cube no matter what, although I don't get why for the latter
-        };
+            colliderChildren = new List<Transform>
+            {
+                module.transform.GetChild(0).GetChild(3), // ConnectionSite
+                module.transform.GetChild(0).GetChild(4), // ConnectionSite (1)
+                module.transform.GetChild(0).GetChild(5), // ConnectionSite (2)
+                module.transform.GetChild(1).GetChild(0).GetChild(0)//, // Cube
+                //module.transform.GetChild(1).GetChild(1) // parent connection site
+                // parent site is not checked for because it overlaps with parent
+                // collider1 and cube no matter what, although I don't get why for the latter
+            };
+        }
+        else
+        {
+            colliderChildren = new List<Transform>
+            {
+                module.transform.GetChild(0).GetChild(3), // ConnectionSite
+                module.transform.GetChild(1).GetChild(0).GetChild(0)//, // Cube
+            };
+        }
 
         foreach (var child in colliderChildren)
         {
             var collider = child.GetComponent<BoxCollider>();
             if (collider)
             {
+                Debug.Log($"Checking {child}");
                 // The initial layer mask of a spawned module. Should be ignored first.
                 var layerMask = 1 << 8; //LayerMask.GetMask("PreExisting");
                 layerMask = ~layerMask;
@@ -353,7 +366,7 @@ public class ModularRobot : Agent
                     {
                         if (!colliderChildren.Contains(offenseCollider.gameObject.transform) && offenseCollider.gameObject.name != "ParentConnectionSite" && offenseCollider.gameObject.name != "Collider2")
                         {
-                            //Debug.Log($"{child} has collided with {offenseCollider.gameObject}");
+                            Debug.Log($"My {child} has collided with someone's {offenseCollider.gameObject}");
                             //GameManager.Instance.pythonCom.SendMessage($"{child} has collided with {offenseCollider.gameObject}");
                             didWeCollide = true;
                         }

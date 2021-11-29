@@ -86,11 +86,6 @@ Library: lib_burst_generated
 --compilation-defines=ENABLE_WEBSOCKET_HOST
 --compilation-defines=ENABLE_MONO
 --compilation-defines=NET_STANDARD_2_0
---compilation-defines=DEVELOPMENT_BUILD
---compilation-defines=ENABLE_PROFILER
---compilation-defines=DEBUG
---compilation-defines=TRACE
---compilation-defines=UNITY_ASSERTIONS
 --compilation-defines=ENABLE_CUSTOM_RENDER_TEXTURE
 --compilation-defines=ENABLE_DIRECTOR
 --compilation-defines=ENABLE_LOCALIZATION
@@ -105,7 +100,6 @@ Library: lib_burst_generated
 --compilation-defines=PACKAGE_PHYSICS2D
 --compilation-defines=PACKAGE_TILEMAP
 --compilation-defines=PACKAGE_ANIMATION
---debug=Full
 --output=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Plugins/lib_burst_generated
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ML-Agents.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.Barracuda.dll
@@ -252,11 +246,6 @@ Library: lib_burst_generated
 --compilation-defines=ENABLE_WEBSOCKET_HOST
 --compilation-defines=ENABLE_MONO
 --compilation-defines=NET_STANDARD_2_0
---compilation-defines=DEVELOPMENT_BUILD
---compilation-defines=ENABLE_PROFILER
---compilation-defines=DEBUG
---compilation-defines=TRACE
---compilation-defines=UNITY_ASSERTIONS
 --compilation-defines=ENABLE_CUSTOM_RENDER_TEXTURE
 --compilation-defines=ENABLE_DIRECTOR
 --compilation-defines=ENABLE_LOCALIZATION
@@ -271,7 +260,6 @@ Library: lib_burst_generated
 --compilation-defines=PACKAGE_PHYSICS2D
 --compilation-defines=PACKAGE_TILEMAP
 --compilation-defines=PACKAGE_ANIMATION
---debug=Full
 --output=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Plugins/lib_burst_generated
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ML-Agents.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.Barracuda.dll
