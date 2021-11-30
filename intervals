@@ -13,7 +13,16 @@ for interval in valid_intervals.keys():
     if "End runNr" in valid_intervals[interval].keys():
         print(valid_intervals[interval]["End runNr"])
     else:
-        print("Interrupted or ongoing")
+        rounds = -1
+        runs = 0
+        for key in valid_intervals[interval].keys():
+            if key != "Start runNr" and key != "End runNr":
+                if rounds == -1:
+                    rounds = len(valid_intervals[interval][key])
+                runs += len(valid_intervals[interval][key])
+
+        percent = runs / (8*rounds)
+        print(f"Interrupted or ongoing, {round(100*percent)} %")
 print()
 
 for interval in valid_intervals.keys():
