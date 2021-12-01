@@ -108,8 +108,10 @@ def plot_runs(dataname, stat="Means"):
         labels.append(label)
 
         average = []
+        nr_valid_runs = 0
         for runNr in experiment[cfg]:
             if "Outliers" not in experiment or runNr not in experiment["Outliers"]:
+                nr_valid_runs += 1
                 path = f"experiments/run{runNr}"
                 with open(path+"/data", "rb") as file:
                     data = pickle.load(file)
@@ -122,7 +124,7 @@ def plot_runs(dataname, stat="Means"):
                     average = np.array(data[dataname][stat])
                 else:
                     average += np.array(data[dataname][stat])
-        averages.append(average / len(experiment[cfg]))
+        averages.append(average / nr_valid_runs)
 
     for avg, label, cfg in zip(averages, labels, configs):
         ax.plot(avg, c=colors[cfg+"_avg"], label=label+" Average", linestyle=linestyles[cfg+"_avg"])
@@ -167,7 +169,6 @@ def boxplot_of_last(dataname, stat="Means"):
         label = cfg[:-4].replace("_", " ").title()
         labels.append(label)
 
-        average = []
         for runNr in experiment[cfg]:
             if "Outliers" not in experiment or runNr not in experiment["Outliers"]:
                 path = f"experiments/run{runNr}"
