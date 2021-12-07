@@ -9,7 +9,7 @@ with open("experiments/max_cores.txt") as file:
 config.experiment.seed = 1
 config.experiment.documentation = True
 config.experiment.n_cores = n_cores
-config.experiment.headless = True
+config.experiment.headless = False
 
 # EA
 config.ea.mut_rate = 0.1

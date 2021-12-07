@@ -51,7 +51,7 @@ class DecentralController:
 
         return actions
 
-    def mutate(self):
+    def mutate(self, config):
         self._check_lack_of_control()
 
         allNodes = []

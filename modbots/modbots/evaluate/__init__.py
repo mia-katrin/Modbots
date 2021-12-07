@@ -95,7 +95,10 @@ def evaluate(ind, force_evaluate=True, record=False):
     if record:
         side_channel.send_string("Record, /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/video")
 
+    #lines = [[] for _ in range(ind.get_nr_modules())]
+
     save_pos = [0,0,0]
+    last_100 = [0,0,0]
     for i in range(N_STEPS):
         # Get env observation space
         obs,other = env.get_steps(list(env._env_specs)[0])
@@ -105,6 +108,19 @@ def evaluate(ind, force_evaluate=True, record=False):
             index = list(obs.agent_id_to_index)
             save_pos = obs[index[0]][0][0][:3]
 
+            last_100 = obs[index[0]][0][0][:3]
+        elif i > N_START_EVAL+99 and i % 100 == 0:
+            index = list(obs.agent_id_to_index)
+
+            if np.allclose(obs[index[0]][0][0][:3], last_100, atol=0.1):
+                print(i)
+                print("Now pos", obs[index[0]][0][0][:3])
+                print("Last 100 pos", last_100)
+                print("Broke early")
+                break
+
+            last_100 = obs[index[0]][0][0][:3]
+
         # Make action array
         if (i >= 100):
             index = list(obs.agent_id_to_index)
@@ -112,12 +128,21 @@ def evaluate(ind, force_evaluate=True, record=False):
         else:
             actions = np.zeros(shape=(1,50),dtype=np.float32)
 
+        #for i, liste in enumerate(lines):
+        #    liste.append(actions[0,i])
+
         # Send actions
         env.set_action_for_agent("ModularBehavior?team=0",0,ActionTuple(actions))
         env.step()  # Move the simulation forward
 
     if record:
         side_channel.send_string("Stop recording")
+
+    #import matplotlib.pyplot as plt
+    #for line in lines:
+    #    plt.plot(line)
+
+    #plt.show()
 
     # Get fitness
     index = list(obs.agent_id_to_index)

@@ -5,13 +5,10 @@ import numpy as np
 class CTRNNInterface:
     static_genome_key = 1
 
-    def __init__(self, central=False, **kwargs):
+    def __init__(self, config="3to1", **kwargs):
         self.kwargs = kwargs
         local_dir = os.path.dirname(__file__)
-        if central:
-            config_path = os.path.join(local_dir, 'config-ctrnn')
-        else:
-            config_path = os.path.join(local_dir, 'config-ctrnn-3to1')
+        config_path = os.path.join(local_dir, f'configs/config-ctrnn-{config}')
         self.config = neat.Config(
             neat.DefaultGenome,
             neat.DefaultReproduction,
@@ -28,7 +25,7 @@ class CTRNNInterface:
         self.controller.reset()
 
     def get_actions(self, observation):
-        actions = self.advance(observation[:60], **self.kwargs)
+        actions = self.advance(observation[:len(self.controller.input_nodes)], **self.kwargs)
         to_ret = np.pad(
             np.array([actions]),
             ((0, 0), (0, 50 - len(actions))),
@@ -46,6 +43,6 @@ class CTRNNInterface:
     def reset(self):
         self.controller.reset()
 
-    def mutate(self):
+    def mutate(self, config):
         self.controllerGenome.mutate(self.config.genome_config)
         self.controller = neat.ctrnn.CTRNN.create(self.controllerGenome, self.config, 0.02)

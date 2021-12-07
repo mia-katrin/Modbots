@@ -22,22 +22,28 @@ public class ModuleParameterized : MonoBehaviour
     {
         index = i;
 
+        float max = 7;
+
         float r = 1.0f;
         float g;
         float b;
-        if (i <= 7)
+        if (i <= max)
         {
             g = 0f;
-            b = (7 - i) / 7f;
+            b = (max - i) / max;
         } else
         {
-            g = (i-7) / 7f; 
+            g = (i- max) / max; 
             b = 0f;
         }
-        
-        transform.GetChild(0).GetChild(3).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
-        transform.GetChild(0).GetChild(4).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
-        transform.GetChild(0).GetChild(5).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
+
+        for (int j = 0; j < transform.GetChild(0).childCount; j++)
+        {
+            if (transform.GetChild(0).GetChild(j).name.StartsWith("ConnectionSite"))
+            {
+                transform.GetChild(0).GetChild(j).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
+            }
+        }
         transform.GetChild(1).GetChild(1).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
     }
 
@@ -67,6 +73,22 @@ public class ModuleParameterized : MonoBehaviour
             // Leave connection site CS3 and ConnectionSite
             Destroy(collider1.transform.GetChild(4).gameObject); // ConnectionSite (1)
             Destroy(collider1.transform.GetChild(5).gameObject); // ConnectionSite (2)
+
+            // Save children
+            var childrenToKeep = new List<Transform>();
+            for (int i = 0; i < collider1.transform.childCount; i++)
+            {
+                if (i != 0 && i != 1 && i != 4 && i != 5)
+                    childrenToKeep.Add(collider1.transform.GetChild(i));
+            }
+
+            collider1.transform.DetachChildren();
+
+            // Reattach children
+            foreach (var child in childrenToKeep)
+            {
+                child.SetParent(collider1.transform);
+            }
         }
 
         // Save local positions
@@ -112,7 +134,7 @@ public class ModuleParameterized : MonoBehaviour
 
         Rigidbody rb2 = collider2.GetComponent<Rigidbody>();
         rb2.angularDrag = 0.05f;
-        rb2.mass = 10 * (0.5f + scale / (scale + 1)); // Non-linear scaling using sigmoid
+        rb2.mass = 25 * (0.1f + scale / (scale + 2)); // Non-linear scaling using sigmoid
 
         // Configure joint collider 1
         ConfigurableJoint cj = collider1.GetComponent<ConfigurableJoint>();
@@ -129,8 +151,8 @@ public class ModuleParameterized : MonoBehaviour
 
         // Angular x drive
         JointDrive angularXdrive = cj.angularXDrive;
-        angularXdrive.positionSpring = 1500;
-        angularXdrive.positionDamper = 10;
+        angularXdrive.positionSpring = 1000;
+        angularXdrive.positionDamper = 80;
         angularXdrive.maximumForce = 1000;
         cj.angularXDrive = angularXdrive;
 
@@ -210,7 +232,7 @@ public class ModuleParameterized : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(outwardsRay, out hit))
             {
-                Debug.Log($"Site {i} detects object {hit.distance} with collider {hit.collider}");
+                //Debug.Log($"Site {i} detects object {hit.distance} with collider {hit.collider}");
                 sensorMeasurements[i] = hit.distance;
             }
             Debug.DrawRay(origin, dir, colors[i], duration:0.5f, depthTest:true);

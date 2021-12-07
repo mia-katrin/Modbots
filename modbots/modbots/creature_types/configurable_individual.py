@@ -6,6 +6,7 @@ from modbots.controllers.decentral_controller import DecentralController
 from modbots.controllers.sine_controller import SineController
 from modbots.controllers.ctrnn_interface import CTRNNInterface
 from modbots.controllers.copy_decentral import CopyDecentralController
+from modbots.controllers.sensor_central import SensorCentral
 
 class Individual:
     def __init__(self, config = None):
@@ -28,7 +29,9 @@ class Individual:
         elif config.control.ctrnn and config.control.decentral:
             self.controller = DecentralController(CTRNNInterface, self.body, advance_time=0.02, time_step=0.02)
         elif config.control.ctrnn:
-            self.controller = CTRNNInterface(advance_time=0.02, central=True, time_step=0.02)
+            self.controller = CTRNNInterface(advance_time=0.02, config="45to15", time_step=0.02)
+        elif config.control.ctrnn and config.control.pre_processing:
+            self.controller = SensorCentral(self.body, advance_time=0.02, time_step=0.02)
         else:
             self.controller = None
             print("You have chosen no controller")
@@ -70,7 +73,7 @@ class Individual:
 
         rand_num = np.random.rand()
         if rand_num < config.ea.mut_rate*config.mutation.control and self.controller != None:
-            self.controller.mutate() # Force mut if central else very likely but not always
+            self.controller.mutate(config) # Force mut if central else very likely but not always
             print("Controller mutate")
             mutated = True
         elif rand_num < config.ea.mut_rate:

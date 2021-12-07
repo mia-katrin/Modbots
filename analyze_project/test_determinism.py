@@ -10,12 +10,12 @@ from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 
 from config_util import get_config
 
-NR_INDS = 1
-ROUNDS = 10
-NR_SEEDS = 1
+NR_INDS = 4
+ROUNDS = 4
+NR_SEEDS = 2
 
-N_CORES = 1 # It seems this determines a factor in population size
-HEADLESS = True
+N_CORES = 2 # It seems this determines a factor in population size
+HEADLESS = False
 TIME_SCALE = None
 
 def get_pop(nr_inds:int, config, duplicates:int = 1, at_least_modules:int = 1) -> list:

@@ -103,6 +103,8 @@ public class GameManager : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         if (currentGene.Length > 0) modularRobot.MakeRobot(currentGene);
+        yield return new WaitForFixedUpdate();
+        modularRobot.PruneCollisions();
         Physics.autoSimulation = true;
 
         string indexes = "Created modules: ";
@@ -122,17 +124,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int sequence = 0;
+
     public bool robotElseModule = true;
     private void Update()
     {
-        Debug.Log(Application.persistentDataPath);
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (robotElseModule)
             {
-                //NewEncodingGot("Random");
-                NewEncodingGot("2.2059753174358407|[|[|M0,90,0.4|]|M1,270,2.3238319278165367|[|[|M0,90,0.4|]|M1,0,1.9052311667896722|[|[|M0,270,1.4142948258945127|[|[|M0,0,1.015474977169059|M1,90,0.4|M0,0,0.4|M0,0,0.4|M0,0,0.4|]|M1,0,1.889147746366427|M0,0,0.4|M0,90,0.4|]|M2,0,1.1450144771781419|[|M1,180,0.4|]|M2,90,0.4|]|M1,0,0.4|]|M2,180,0.4|M0,90,0.4|]|M2,180,1.3559622227272705|M0,90,0.4|]|M2,90,0.4|");
-                //NewEncodingGot("2.2059753174358407|M2,90,0.4|");
+                NewEncodingGot("Random");
+
+                //NewEncodingGot("1.0|[|[|M0,0,1.0|M2,0,1.0|M2,0,1.0|]|M1,0,1.0|]|M2,0,1.0|");
+
+                //NewEncodingGot("1.0|[|[|M0,180,1.0|[|[|M0,0,1.0|]|M1,90,1.0|]|M2,180,1.0|]|M1,180,1.0|M2,180,1.0|M0,0,1.0|]|M2,0,1.0|[|M1,270,1.0|M1,90,1.0|M2,180,1.0|M2,180,1.0|M2,180,1.0|]|M2,180,1.0|M2,180,1.0|M2,180,1.0|M2,180,1.0|M2,180,1.0|");
+
+                //NewEncodingGot("1.0|[|[|M0,0,1.0|]|M1,90,1.0|]|M2,0,1.0|M2,0,1.0|M2,0,1.0|M2,0,1.0|");
+                //NewEncodingGot("1.0|[|[|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,90,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|");
                 ResetHappened();
             }
             else

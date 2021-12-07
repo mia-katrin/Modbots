@@ -18,14 +18,16 @@ public class ModularRobot : Agent
     private class Node
     {
         public Node[] children = new Node[3] { null, null, null };
-        public int angle = new int[4] { 0, 90, 180, 270 } [Random.Range(0, 3)];
-        public float scale = Random.Range(0.1f, 3);
+        public int angle = new int[4] { 0, 90, 180, 270 } [Random.Range(0, 4)];
+        public float scale = new float[2] { 1.0f, Random.Range(0.1f, 1.0f)} [Random.Range(0, 2)];
         public int index;
     }
 
     public GameObject modulePrefab;
     public GameObject rootGO;
     public List<GameObject> allModules;
+    public List<int> destroyedIndexes;
+    private Node geneRoot;
 
     public static int staticIndex = 0;
     public int myIndex = 0;
@@ -143,13 +145,17 @@ public class ModularRobot : Agent
         }
         allModules.Clear();
         Destroy(rootGO);
+
+        geneRoot = null;
+
+        destroyedIndexes.Clear();
     }
 
     public void MakeRobot(string gene)
     {
         //GameManager.Instance.pythonCom.SendMessage("Modular Robot about to make robot");
         //Debug.Log($"Gene got {gene}");
-        Node geneRoot = new Node();
+        geneRoot = new Node();
 
         if (gene == "Random")
         {
@@ -208,11 +214,11 @@ public class ModularRobot : Agent
                 //Debug.Log("ChildGO was null");
                 continue;
             }
-            if (HasCollided(toProcessGO))
-            {
-                Destroy(toProcessGO);
-                continue;
-            }
+            //if (HasCollided(toProcessGO))
+            //{
+            //    Destroy(toProcessGO);
+            //    continue;
+            //}
             toProcessGO.GetComponent<ModuleParameterized>().SetIndex(toProcess.index);
 
             for (int i = 0; i < toProcess.children.Length; i++)
@@ -227,6 +233,90 @@ public class ModularRobot : Agent
 
             allModules.Add(toProcessGO);
         }
+    }
+
+    public void PruneCollisions()
+    {
+        // allModules was constructed breadth first, meaning the last nodes are the bottom layer
+        if (allModules.Count == 0) return;
+        var module = allModules[allModules.Count - 1];
+        int i = allModules.Count - 1;
+        while (module != null)
+        {
+            if (HasCollided(module))
+            {
+                destroyedIndexes.Add(module.GetComponent<ModuleParameterized>().index);
+                allModules.Remove(module);
+                DestroyConnectedChildren(module);
+                Destroy(module);
+            }
+
+            i--;
+            if (i > 0)
+                module = allModules[i];
+            else
+                module = null;
+        }
+    }
+
+    private void DestroyConnectedChildren(GameObject module)
+    {
+        foreach (var child in FindMyChildren(module))
+        {
+            destroyedIndexes.Add(child.GetComponent<ModuleParameterized>().index);
+            DestroyConnectedChildren(child);
+            allModules.Remove(child);
+            Destroy(child);
+        }
+    }
+
+    private List<GameObject> FindMyChildren(GameObject module)
+    {
+        List<GameObject> children = new List<GameObject>();
+
+        // Get gene node to module
+        Node moduleNode = GetNode(module);
+
+        // Find node's gene children
+        foreach (Node node in moduleNode.children)
+        {
+            if (node != null)
+            {
+                foreach (var mod in allModules)
+                {
+                    if (mod.GetComponent<ModuleParameterized>().index == node.index)
+                    {
+                        children.Add(mod);
+                    }
+                }
+            }
+        }
+
+        return children;
+    }
+
+    private Node GetNode(GameObject module)
+    {
+        Queue<Node> queue = new Queue<Node>();
+        queue.Enqueue(geneRoot);
+
+        while (queue.Count > 0)
+        {
+            Node node = queue.Dequeue();
+
+            if (node.index == module.GetComponent<ModuleParameterized>().index)
+            {
+                return node;
+            }
+            foreach (var child in node.children)
+            {
+                if (child != null)
+                {
+                    queue.Enqueue(child);
+                }
+            }
+        }
+        return null;
     }
 
     private void IterativeConstruct(Node geneNode, GameObject parentGO)
@@ -314,9 +404,30 @@ public class ModularRobot : Agent
         }
     }
 
+    private GameObject GetModuleGameObject(Transform child)
+    {
+        ModuleParameterized moduleParameterized = child.GetComponent<ModuleParameterized>();
+        while (moduleParameterized == null)
+        {
+            child = child.parent;
+            moduleParameterized = child.GetComponent<ModuleParameterized>();
+        }
+        return moduleParameterized.gameObject;
+    }
+
+    private int GetIndex(Transform child)
+    {
+        ModuleParameterized moduleParameterized = child.GetComponent<ModuleParameterized>();
+        while (moduleParameterized == null)
+        {
+            child = child.parent;
+            moduleParameterized = child.GetComponent<ModuleParameterized>();
+        }
+        return moduleParameterized.index;
+    }
+
     private bool HasCollided(GameObject module)
     {
-
         // check for collision
         // Check for number of child bodies. I assume all children are colliders. None should collide when created.
 
@@ -328,18 +439,15 @@ public class ModularRobot : Agent
                 module.transform.GetChild(0).GetChild(3), // ConnectionSite
                 module.transform.GetChild(0).GetChild(4), // ConnectionSite (1)
                 module.transform.GetChild(0).GetChild(5), // ConnectionSite (2)
-                module.transform.GetChild(1).GetChild(0).GetChild(0)//, // Cube
-                //module.transform.GetChild(1).GetChild(1) // parent connection site
-                // parent site is not checked for because it overlaps with parent
-                // collider1 and cube no matter what, although I don't get why for the latter
+                module.transform.GetChild(1).GetChild(0).GetChild(0) // Cube
             };
         }
         else
         {
             colliderChildren = new List<Transform>
             {
-                module.transform.GetChild(0).GetChild(3), // ConnectionSite
-                module.transform.GetChild(1).GetChild(0).GetChild(0)//, // Cube
+                module.transform.GetChild(0).GetChild(1), // ConnectionSite
+                module.transform.GetChild(1).GetChild(0).GetChild(0) // Cube
             };
         }
 
@@ -348,7 +456,6 @@ public class ModularRobot : Agent
             var collider = child.GetComponent<BoxCollider>();
             if (collider)
             {
-                Debug.Log($"Checking {child}");
                 // The initial layer mask of a spawned module. Should be ignored first.
                 var layerMask = 1 << 8; //LayerMask.GetMask("PreExisting");
                 layerMask = ~layerMask;
@@ -358,15 +465,15 @@ public class ModularRobot : Agent
                 {
                     didWeCollide = true;
                 }
-                else if (Physics.CheckBox(collider.transform.position, collider.bounds.extents, collider.transform.rotation, layerMask))
+                else if (Physics.CheckBox(collider.transform.position, collider.bounds.extents))
                 {
-                    Collider[] collidingBoxes = Physics.OverlapBox(collider.transform.position, collider.bounds.extents, collider.transform.rotation, layerMask);
+                    Collider[] collidingBoxes = Physics.OverlapBox(collider.transform.position, collider.bounds.extents);
 
                     foreach (var offenseCollider in collidingBoxes)
                     {
-                        if (!colliderChildren.Contains(offenseCollider.gameObject.transform) && offenseCollider.gameObject.name != "ParentConnectionSite" && offenseCollider.gameObject.name != "Collider2")
+                        if (GetIndex(offenseCollider.transform) != GetIndex(child) && ! destroyedIndexes.Contains(GetIndex(offenseCollider.transform)))
                         {
-                            Debug.Log($"My {child} has collided with someone's {offenseCollider.gameObject}");
+                            Debug.Log($"My ({GetIndex(child)}) {child} has collided with someones's ({GetIndex(offenseCollider.transform)}) {offenseCollider.gameObject} {offenseCollider.bounds.size} {collider.bounds.size} {offenseCollider.transform.position} {child.transform.position}");
                             //GameManager.Instance.pythonCom.SendMessage($"{child} has collided with {offenseCollider.gameObject}");
                             didWeCollide = true;
                         }
@@ -382,6 +489,41 @@ public class ModularRobot : Agent
 
         return false;
     }
+    
+    /*private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        foreach (var module in allModules)
+        {
+            List<Transform> colliderChildren;
+            if (module.GetComponent<ModuleParameterized>().connectionSites.Count > 1)
+            {
+                colliderChildren = new List<Transform>
+                {
+                    module.transform.GetChild(0).GetChild(3), // ConnectionSite
+                    module.transform.GetChild(0).GetChild(4), // ConnectionSite (1)
+                    module.transform.GetChild(0).GetChild(5), // ConnectionSite (2)
+                    module.transform.GetChild(1).GetChild(0).GetChild(0) // Cube
+                };
+            }
+            else
+            {
+                colliderChildren = new List<Transform>
+                {
+                    module.transform.GetChild(0).GetChild(1), // ConnectionSite
+                    module.transform.GetChild(1).GetChild(0).GetChild(0) // Cube
+                };
+            }
+
+            foreach (var child in colliderChildren)
+            {
+                BoxCollider collider = child.GetComponent<BoxCollider>();
+
+                Gizmos.DrawWireCube(collider.transform.position, collider.bounds.size);
+                Debug.Log(collider.bounds.size);
+            }
+        }
+    }*/
 
     private GameObject ConnectModuleTo(GameObject parentGO, int site, int angle, float scale)
     {

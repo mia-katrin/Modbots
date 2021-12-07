@@ -8,7 +8,7 @@ from config_util import get_config
 
 config = get_config()
 
-N_INDS = 100
+N_INDS = 1000
 n = 10
 
 def mu_sigma(config):
@@ -32,8 +32,8 @@ def mu_sigma(config):
 
     return mean, std
 
-creation_mus = np.linspace(start=0.1, stop=1, num=n)
-creation_stds = np.linspace(start=0.6, stop=1, num=n)
+creation_mus = np.linspace(start=0.0, stop=1.7, num=n)
+creation_stds = np.linspace(start=0.0, stop=3, num=n)
 
 mus = []
 stds = []
@@ -57,10 +57,41 @@ for cmu in creation_mus:
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-fig = go.Figure(data=[go.Surface(
-    x=creation_mus,
-    y=creation_stds,
-    z=np.array(mus).reshape(n,n),
-    surfacecolor=np.array(stds).reshape(n,n))])
-fig.update_layout(title_text="Creation mu and std and how they correspond to nr modules")
+fig = make_subplots(
+    rows=1, cols=2,
+    specs=[[{'is_3d': True}, {'is_3d': True}]],
+    print_grid=False)
+
+fig.append_trace(
+    go.Surface(
+        x=creation_mus,
+        y=creation_stds,
+        z=np.array(mus).reshape(n,n),
+        surfacecolor=np.array(stds).reshape(n,n)),
+    row=1, col=1
+)
+
+fig.append_trace(
+    go.Surface(
+        x=creation_mus,
+        y=creation_stds,
+        z=np.array(stds).reshape(n,n),
+        surfacecolor=np.array(mus).reshape(n,n)),
+    row=1, col=2
+)
+
+fig.update_layout(
+    title="Plot Title",
+    scene = dict(
+        xaxis_title='Creation mu',
+        yaxis_title='Creation std',
+        zaxis_title='Nr modules',
+    ),
+    legend_title="Legend Title",
+    font=dict(
+        family="Courier New, monospace",
+        size=18,
+        color="RebeccaPurple"
+    )
+)
 fig.show()

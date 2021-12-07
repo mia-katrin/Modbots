@@ -50,7 +50,7 @@ namespace Unity.MLAgentsExamples
             Physics.defaultSolverIterations = solverIterations;
             Physics.defaultSolverVelocityIterations = solverVelocityIterations;
             Physics.reuseCollisionCallbacks = reuseCollisionCallbacks;
-            Debug.Log(Time.maximumDeltaTime);
+            //Debug.Log(Time.maximumDeltaTime);
             // Make sure the Academy singleton is initialized first, since it will create the SideChannels.
             Academy.Instance.EnvironmentParameters.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
         }

@@ -32,7 +32,7 @@ class SineController():
 	def reset(self):
 		self.state = 0
 
-	def mutate(self):
+	def mutate(self, config):
 		rand_choice = ["amp", "freq", "phase", "offset"][np.random.choice([0,1,2,3])]
 		to_mutate = "self."+rand_choice
 		exec(to_mutate + f"+= {np.random.uniform(-1,1)*0.5}")

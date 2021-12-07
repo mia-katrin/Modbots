@@ -14,12 +14,14 @@ class Body:
     @staticmethod
     def random(config):
         self = Body(config.individual.variable_scale)
+        self._recursive_construct(self.root, config, depth=config.individual.ind_depth-1)
 
-        while self.get_nr_modules() <= 2 or \
-            (self.root.scale < 1 and self.root.children[0] == None) or \
-            (self.root.scale < 1 and self.root.children[0].scale < 1):
-            self = Body(config.individual.variable_scale)
-            self._recursive_construct(self.root, config, depth=config.individual.ind_depth-1)
+        if config.individual.force_interesting:
+            while self.get_nr_modules() <= 2 or \
+                (self.root.scale < 1 and self.root.children[0] == None) or \
+                (self.root.scale < 1 and self.root.children[0].scale < 1):
+                self = Body(config.individual.variable_scale)
+                self._recursive_construct(self.root, config, depth=config.individual.ind_depth-1)
 
         return self
 
