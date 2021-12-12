@@ -109,7 +109,7 @@ def evaluate(ind, force_evaluate=True, record=False):
             save_pos = obs[index[0]][0][0][:3]
 
             last_100 = obs[index[0]][0][0][:3]
-        elif i > N_START_EVAL+99 and i % 100 == 0:
+        elif i > N_START_EVAL+9 and i % 10 == 0:
             index = list(obs.agent_id_to_index)
 
             if np.allclose(obs[index[0]][0][0][:3], last_100, atol=0.1):
@@ -119,7 +119,7 @@ def evaluate(ind, force_evaluate=True, record=False):
             last_100 = obs[index[0]][0][0][:3]
 
         # Make action array
-        if (i >= 100):
+        if (i >= 20):
             index = list(obs.agent_id_to_index)
             actions = ind.get_actions(obs[index[0]][0][0][3:])
         else:

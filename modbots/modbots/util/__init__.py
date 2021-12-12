@@ -8,7 +8,7 @@ def traverse_get_list(node, node_list_out):
             traverse_get_list(child, node_list_out)
 
 def calc_time_evolution(pop_size, n_cores, mut_rate, nr_parents, n_steps, n_gen, time_scale=None):
-    avg_one_ind_time = n_steps*0.02/(n_cores * (time_scale if time_scale != None else 1))
+    avg_one_ind_time = n_steps*0.1/(n_cores * (time_scale if time_scale != None else 1))
 
     round0 = pop_size*avg_one_ind_time
     inds_geni = (pop_size*mut_rate)+nr_parents

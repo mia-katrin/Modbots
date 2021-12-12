@@ -19,7 +19,7 @@ class CTRNNInterface:
         self.controllerGenome = neat.genome.DefaultGenome(CTRNNInterface.static_genome_key)
         CTRNNInterface.static_genome_key += 1
         self.controllerGenome.configure_new(self.config.genome_config)
-        self.controller = neat.ctrnn.CTRNN.create(self.controllerGenome, self.config, 0.02)
+        self.controller = neat.ctrnn.CTRNN.create(self.controllerGenome, self.config, 0.1)
 
     def prepare_for_evaluation(self):
         self.controller.reset()
@@ -34,7 +34,7 @@ class CTRNNInterface:
         )
         return to_ret
 
-    def advance(self, observation, advance_time=0.02, time_step=0.02):
+    def advance(self, observation, advance_time=0.1, time_step=0.1):
         a = self.controller.advance(observation, advance_time, time_step)
         if len(a) == 1:
             return a[0]
@@ -45,4 +45,4 @@ class CTRNNInterface:
 
     def mutate(self, config):
         self.controllerGenome.mutate(self.config.genome_config)
-        self.controller = neat.ctrnn.CTRNN.create(self.controllerGenome, self.config, 0.02)
+        self.controller = neat.ctrnn.CTRNN.create(self.controllerGenome, self.config, 0.1)

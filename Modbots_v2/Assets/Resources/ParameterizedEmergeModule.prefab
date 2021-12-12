@@ -977,6 +977,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Revolver
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0719f1d4ec0df4f5a8687cec556b799e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2260880548658568866, guid: 0719f1d4ec0df4f5a8687cec556b799e, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -1090,6 +1094,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: ad0c8a21b4e2c4a6f928cc96da1b4965, type: 3}
       propertyPath: m_Name
       value: Hat
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ad0c8a21b4e2c4a6f928cc96da1b4965, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5492026282337910451, guid: ad0c8a21b4e2c4a6f928cc96da1b4965, type: 3}
       propertyPath: m_Materials.Array.data[0]

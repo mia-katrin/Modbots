@@ -25,13 +25,13 @@ class Individual:
         elif config.control.oscillatory and config.control.copy_decentral:
             self.controller = CopyDecentralController(SineController, self.body, deltaTime=0.1)
         elif config.control.ctrnn and config.control.copy_decentral:
-            self.controller = CopyDecentralController(CTRNNInterface, self.body, advance_time=0.02, time_step=0.02)
+            self.controller = CopyDecentralController(CTRNNInterface, self.body, advance_time=0.1, time_step=0.1)
         elif config.control.ctrnn and config.control.decentral:
-            self.controller = DecentralController(CTRNNInterface, self.body, advance_time=0.02, time_step=0.02)
+            self.controller = DecentralController(CTRNNInterface, self.body, advance_time=0.1, time_step=0.1)
         elif config.control.ctrnn:
-            self.controller = CTRNNInterface(advance_time=0.02, config="45to15", time_step=0.02)
+            self.controller = CTRNNInterface(advance_time=0.1, config="45to15", time_step=0.1)
         elif config.control.ctrnn and config.control.pre_processing:
-            self.controller = SensorCentral(self.body, advance_time=0.02, time_step=0.02)
+            self.controller = SensorCentral(self.body, advance_time=0.1, time_step=0.1)
         else:
             self.controller = None
             print("You have chosen no controller")
