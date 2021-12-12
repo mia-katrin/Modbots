@@ -212,7 +212,8 @@ def evolve(config, statement=None, show_figs=True):
     if config.experiment.documentation:
         plotter.plot_stats(save_figs=True, show_figs=show_figs, folder=f"experiments/run{runNr}")
     else:
-        plotter.plot_stats()
+        if show_figs:
+            plotter.plot_stats()
 
 if __name__ == "__main__":
     # Add arguments

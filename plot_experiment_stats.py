@@ -20,6 +20,7 @@ configs = [
     'ctrnn.cfg',
     'decentral_ctrnn.cfg',
     'copy_ctrnn.cfg',
+    #'pre_ctrnn.cfg',
 
     'sine_growing.cfg',
     'ctrnn_growing.cfg',
@@ -56,6 +57,8 @@ colors = {
     'decentral_ctrnn.cfg_avg':(213/225, 94/225, 0),
     'copy_ctrnn.cfg':"palegreen",
     'copy_ctrnn.cfg_avg':(0,158/225, 115/225),
+    'pre_ctrnn.cfg':"green",
+    'pre_ctrnn.cfg_avg':"green",
 
     'sine_growing.cfg':"gold",
     'sine_growing.cfg_avg':"orange",
@@ -72,6 +75,7 @@ linestyles = {
     'ctrnn.cfg':"dashed",
     'decentral_ctrnn.cfg':"dashed",
     'copy_ctrnn.cfg':"dashed",
+    'pre_ctrnn.cfg':"dashed",
 
     'sine_growing.cfg':"dotted",
     'ctrnn_growing.cfg':"dotted",
@@ -82,6 +86,7 @@ linestyles = {
     'ctrnn.cfg_avg':"solid",
     'decentral_ctrnn.cfg_avg':"solid",
     'copy_ctrnn.cfg_avg':"solid",
+    'pre_ctrnn.cfg_avg':"solid",
 
     'sine_growing.cfg_avg':"dashdot",
     'ctrnn_growing.cfg_avg':"dashdot",

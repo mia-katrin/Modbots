@@ -7,14 +7,14 @@ with open("experiments/max_cores.txt") as file:
 
 # EXPERIMENT
 config.experiment.seed = 1
-config.experiment.documentation = True
+config.experiment.documentation = True # Must always be True
 config.experiment.n_cores = n_cores
-config.experiment.headless = False
+config.experiment.headless = True # Must always be True
 
 # EA
 config.ea.mut_rate = 0.1
-config.ea.n_generations = 100
-config.ea.pop_size = 100
+config.ea.n_generations = 20
+config.ea.pop_size = 20
 config.ea.nr_parents = 0
 config.ea.tournsize = 2
 
@@ -31,16 +31,17 @@ config.evaluation.time_scale = None
 # Files remains as default on computer
 
 # CONTROL + INDIVIDUAL
-for control in ["sine", "ctrnn", "decentral_ctrnn", "copy_ctrnn"]:
+for control in ["sine", "ctrnn", "decentral_ctrnn", "copy_ctrnn", "pre_ctrnn"]:
     config.control.oscillatory = True if control == "sine" else False
     config.control.ctrnn = True if not control == "sine" else False
-    config.control.decentral = True if not control == "ctrnn" else False
+    config.control.decentral = True if not control == "ctrnn" and not control == "pre_ctrnn" else False
     config.control.copy_decentral = True if control == "copy_ctrnn" else False
+    config.control.pre_processing = True if control == "pre_ctrnn" else False
 
     config.individual.torque = 1.0 if not control == "sine" else 0.0
 
     # MUTATION + INDIVIDUAL
-    for mode in ["", "_growing"]:
+    for mode in [""]: #, "_growing"]:
         if mode == "_growing":
             config.mutation.control = 0.4
             config.mutation.body = 0.6

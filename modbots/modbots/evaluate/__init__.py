@@ -50,12 +50,12 @@ def get_env():
     global env_pid
     if SEED == None:
         SEED = 42
-    print("Using", SEED, HEADLESS, TIME_SCALE)
+    #print("Using", SEED, HEADLESS, TIME_SCALE)
     #pid = multiprocessing.Process()._identity[0]
     pid = os.getpid() % 10000 # Steinar fix
     if env_pid == None:
         env_pid = pid
-    print("Env is fetched:", env_pid, pid)
+    #print("Env is fetched:", env_pid, pid)
     if (side_channel == None):
         side_channel = SideChannelPythonside()
     if (env == None):
@@ -113,10 +113,7 @@ def evaluate(ind, force_evaluate=True, record=False):
             index = list(obs.agent_id_to_index)
 
             if np.allclose(obs[index[0]][0][0][:3], last_100, atol=0.1):
-                print(i)
-                print("Now pos", obs[index[0]][0][0][:3])
-                print("Last 100 pos", last_100)
-                print("Broke early")
+                print(f"Broke early {i}")
                 break
 
             last_100 = obs[index[0]][0][0][:3]

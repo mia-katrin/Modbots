@@ -11,7 +11,7 @@ if args.label == None:
 else:
     run_label = args.label
 
-ROUNDS = 10
+ROUNDS = 3
 
 def delete_log_folder_content():
     os.system("rm log_folder/*")
@@ -22,6 +22,7 @@ def append_runNr(key):
         json.dump(valid_intervals, file)
 
 def run_on_config(conf_name):
+    print(conf_name)
     from localconfig import config
     config.read(conf_name)
     config.filename = conf_name
@@ -45,14 +46,15 @@ valid_intervals[run_label] = {
     "Start runNr": get_runNr(),
 }
 
-run_on_config("copy_ctrnn_growing.cfg")
-run_on_config("sine_growing.cfg")
-run_on_config("ctrnn_growing.cfg")
-run_on_config("decentral_ctrnn_growing.cfg")
-run_on_config("copy_ctrnn.cfg")
-run_on_config("sine.cfg")
-run_on_config("ctrnn.cfg")
-run_on_config("decentral_ctrnn.cfg")
+#run_on_config("copy_ctrnn_growing.cfg")
+#run_on_config("sine_growing.cfg")
+#run_on_config("ctrnn_growing.cfg")
+#run_on_config("decentral_ctrnn_growing.cfg")
+run_on_config("pre_ctrnn.cfg")
+#run_on_config("copy_ctrnn.cfg")
+#run_on_config("sine.cfg")
+#run_on_config("ctrnn.cfg")
+#run_on_config("decentral_ctrnn.cfg")
 
 valid_intervals[run_label]["End runNr"] = get_runNr()-1
 with open("experiments/valid_intervals", "w") as file:

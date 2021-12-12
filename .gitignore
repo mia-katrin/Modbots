@@ -1,5 +1,6 @@
 experiments/
 experiments_mac/
+experiments_rud/
 Build.app
 .DS_Store
 .pytest_cache

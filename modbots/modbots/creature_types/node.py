@@ -9,7 +9,7 @@ class Node:
         self.children = [None,None,None]
 
     def mutate(self, config):
-        for _ in range(1000):
+        for _ in range(100):
             rand_num = np.random.rand()
 
             # Angle

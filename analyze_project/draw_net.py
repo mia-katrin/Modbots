@@ -95,7 +95,7 @@ config = neat.Config(
     neat.DefaultReproduction,
     neat.DefaultSpeciesSet,
     neat.DefaultStagnation,
-    "../modbots/modbots/controllers/config-ctrnn-15to15"
+    "../Modbots/modbots/modbots/controllers/configs/config-ctrnn-3to1"
 )
 genome = neat.genome.DefaultGenome(0)
 genome.configure_new(config.genome_config)

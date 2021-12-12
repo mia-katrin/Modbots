@@ -114,6 +114,7 @@ class Body:
             if np.random.rand() <= node_chance:
                 mutated = True
                 node.mutate(config)
+                break
 
             for child in node.children:
                 if child != None:

@@ -62,8 +62,8 @@ class DecentralController:
         mutated = False
         for node in allNodes:
             if np.random.rand() < individual_likelihood:
-                node.controller.mutate()
+                node.controller.mutate(config)
                 mutated = True
 
         if not mutated:
-            self.mutate()
+            self.mutate(config)

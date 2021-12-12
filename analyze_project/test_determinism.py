@@ -4,14 +4,16 @@ import numpy as np
 import time
 import copy
 
+from IPython import embed
+
 from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
 from modbots.creature_types.configurable_individual import Individual
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 
 from config_util import get_config
 
-NR_INDS = 4
-ROUNDS = 4
+NR_INDS = 2
+ROUNDS = 2
 NR_SEEDS = 2
 
 N_CORES = 2 # It seems this determines a factor in population size
@@ -32,17 +34,18 @@ def test_determinism(fitness_map_function, config):
     inds = get_pop(NR_INDS, config, duplicates=ROUNDS, at_least_modules=4)
 
     all_fitnesses = {}
-    for i in range(NR_INDS):
+    for i in range(0, NR_INDS):
+        inds[i*ROUNDS].index = i
         all_fitnesses[str(i)] = []
 
     for s in [np.random.randint(100) for _ in range(NR_SEEDS)]:
         print(f"Seed: {s}")
 
+        np.random.shuffle(inds)
         fitnesses = fitness_map_function(inds, s, config)
 
-        for i in range(NR_INDS):
-            for j in range(ROUNDS):
-                all_fitnesses[str(i)].append(fitnesses[i*ROUNDS + j])
+        for fit, ind in zip(fitnesses, inds):
+            all_fitnesses[str(ind.index)].append(fit)
 
     for ind in all_fitnesses:
         print(all_fitnesses[ind])
@@ -77,15 +80,15 @@ def run_multithreaded(pop:list, seed:int, config) -> list:
 
     # register the map function in toolbox, toolbox.map can be used to evaluate a population of len(pop)
     toolbox.register("map", pool.map, chunksize=cs)
-    deepcopy_pop = copy.deepcopy(pop)
+    #deepcopy_pop = copy.deepcopy(pop)
     fitnesses1 = toolbox.map(toolbox.evaluate, pop)
     print(fitnesses1)
-    fitnesses2 = toolbox.map(toolbox.evaluate, deepcopy_pop)
+    #fitnesses2 = toolbox.map(toolbox.evaluate, deepcopy_pop)
 
     pool.close()
-    assert np.all(fitnesses1 == fitnesses2), f"Not all the same\n{fitnesses1}\n{fitnesses2}"
+    #assert np.all(fitnesses1 == fitnesses2), f"Not all the same\n{fitnesses1}\n{fitnesses2}"
 
-    return fitnesses2
+    return fitnesses1
 
 if __name__ == "__main__":
     config = get_config()

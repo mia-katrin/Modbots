@@ -1,6 +1,5 @@
 import os
 import re
-from localconfig import config
 import argparse
 
 def get_local_config():
@@ -25,6 +24,7 @@ def get_config():
 
     args = parser.parse_args()
 
+    from localconfig import config
     config.read(args.config_file)
 
     return config
