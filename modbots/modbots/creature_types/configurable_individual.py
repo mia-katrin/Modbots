@@ -15,6 +15,8 @@ class Individual:
         self.fitness = -1
         self.needs_evaluation = True
 
+        self.mutation_history = []
+
     @staticmethod
     def random(config):
         self = Individual(config) # This gives me an interesting body
@@ -74,11 +76,11 @@ class Individual:
         rand_num = np.random.rand()
         if rand_num < config.ea.mut_rate*config.mutation.control and self.controller != None:
             self.controller.mutate(config) # Force mut if central else very likely but not always
-            print("Controller mutate")
+            self.mutation_history.append("Control")
             mutated = True
         elif rand_num < config.ea.mut_rate:
             mutated = self.body.mutate(config)
-            print("Body mutate")
+            self.mutation_history.append("Body")
         else:
             mutated = False
 

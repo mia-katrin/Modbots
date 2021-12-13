@@ -13,8 +13,8 @@ class SineController():
 	def __init__(self, hash="Hei :)"):
 		self.nodeid = hash
 		self.state = 0.0
-		self.amp = np.random.uniform(0.0,1.0)
-		self.freq = np.random.uniform(-1,1)
+		self.amp = np.random.uniform(0.0,6.0)
+		self.freq = np.random.uniform(0.0,6.0)
 		self.phase = np.random.uniform(-1,1)
 		self.offset = np.random.uniform(-1,1)
 

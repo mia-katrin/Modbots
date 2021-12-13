@@ -50,3 +50,5 @@ fitness = evaluate(ind)
 print(f"We got fitness {fitness}")
 
 close_env()
+
+print(ind.mutation_history)
