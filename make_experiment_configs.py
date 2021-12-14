@@ -53,7 +53,7 @@ for control in ["sine", "ctrnn", "decentral_ctrnn", "copy_ctrnn", "pre_ctrnn"]:
         config.mutation.switch_copy_likelihood = 0.00
 
     # MUTATION + INDIVIDUAL
-    for mode in [""]: #, "_growing"]:
+    for mode in ["", "_growing"]:
         if mode == "_growing":
             config.mutation.control = 0.5
             config.mutation.body = 0.5
