@@ -158,8 +158,8 @@ def boxplot_of_last(dataname, stat="Means"):
     plt.figure()
     boxplot(
         last_values,
-        [pair[1] for pair in colors.items() if pair[0].endswith("_avg")],
-        [pair[1] for pair in colors.items() if not pair[0].endswith("_avg")],
+        [colors[cfg+"_avg"] for cfg in configs],
+        [colors[cfg] for cfg in configs],
         labels=labels
     )
     plt.xlabel("Controller")
@@ -206,8 +206,8 @@ def plot_mutation():
     plt.figure()
     boxplot(
         changes_cfgs,
-        [pair[1] for pair in colors.items() if pair[0].endswith("_avg")],
-        [pair[1] for pair in colors.items() if not pair[0].endswith("_avg")],
+        [colors[cfg+"_avg"] for cfg in configs],
+        [colors[cfg] for cfg in configs],
         labels=labels
     )
     plt.xlabel("Controller")
@@ -219,8 +219,8 @@ def plot_mutation():
     plt.figure()
     boxplot(
         changes_sizes,
-        [pair[1] for pair in colors.items() if pair[0].endswith("_avg")],
-        [pair[1] for pair in colors.items() if not pair[0].endswith("_avg")],
+        [colors[cfg+"_avg"] for cfg in configs],
+        [colors[cfg] for cfg in configs],
         labels=labels
     )
     plt.xlabel("Controller")
