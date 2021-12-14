@@ -119,7 +119,7 @@ def evaluate(ind, force_evaluate=True, record=False):
             last_100 = obs[index[0]][0][0][:3]
 
         # Make action array
-        if (i >= 20):
+        if (i >= 10):
             index = list(obs.agent_id_to_index)
             actions = ind.get_actions(obs[index[0]][0][0][3:])
         else:

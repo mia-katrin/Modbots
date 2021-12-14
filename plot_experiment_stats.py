@@ -15,38 +15,12 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-configs = [
-    'sine.cfg',
-    'ctrnn.cfg',
-    'decentral_ctrnn.cfg',
-    'copy_ctrnn.cfg',
-    #'pre_ctrnn.cfg',
+with open("experiments/valid_intervals", "r") as file:
+    valid_intervals = json.load(file)
 
-    'sine_growing.cfg',
-    'ctrnn_growing.cfg',
-    'decentral_ctrnn_growing.cfg',
-    'copy_ctrnn_growing.cfg',
-]
+experiment = valid_intervals[args.label]
 
-colors = {
-    'sine.cfg':"navajowhite",
-    'sine.cfg_avg':"orange",
-    'ctrnn.cfg':"paleturquoise",
-    'ctrnn.cfg_avg':"dodgerblue",
-    'decentral_ctrnn.cfg':"thistle",
-    'decentral_ctrnn.cfg_avg':"magenta",
-    'copy_ctrnn.cfg':"palegreen",
-    'copy_ctrnn.cfg_avg':"limegreen",
-
-    'sine_growing.cfg':"gold",
-    'sine_growing.cfg_avg':"goldenrod",
-    'ctrnn_growing.cfg':"lightskyblue",
-    'ctrnn_growing.cfg_avg':"blue",
-    'decentral_ctrnn_growing.cfg':"pink",
-    'decentral_ctrnn_growing.cfg_avg':"deeppink",
-    'copy_ctrnn_growing.cfg':"yellowgreen",
-    'copy_ctrnn_growing.cfg_avg':"forestgreen",
-}
+configs = [i for i in experiment.keys() if i != "End runNr" and i != "Start runNr"]
 
 colors = {
     'sine.cfg':"gold",
@@ -68,6 +42,8 @@ colors = {
     'decentral_ctrnn_growing.cfg_avg':(213/225, 94/225, 0),
     'copy_ctrnn_growing.cfg':"palegreen",
     'copy_ctrnn_growing.cfg_avg':(0,158/225, 115/225),
+    'pre_ctrnn_growing.cfg':"green",
+    'pre_ctrnn_growing.cfg_avg':"green",
 }
 
 linestyles = {
@@ -81,6 +57,7 @@ linestyles = {
     'ctrnn_growing.cfg':"dotted",
     'decentral_ctrnn_growing.cfg':"dotted",
     'copy_ctrnn_growing.cfg':"dotted",
+    'pre_ctrnn_growing.cfg':"dotted",
 
     'sine.cfg_avg':"solid",
     'ctrnn.cfg_avg':"solid",
@@ -92,12 +69,8 @@ linestyles = {
     'ctrnn_growing.cfg_avg':"dashdot",
     'decentral_ctrnn_growing.cfg_avg':"dashdot",
     'copy_ctrnn_growing.cfg_avg':"dashdot",
+    'pre_ctrnn_growing.cfg_avg':"dashdot",
 }
-
-with open("experiments/valid_intervals", "r") as file:
-    valid_intervals = json.load(file)
-
-experiment = valid_intervals[args.label]
 
 def plot_runs(dataname, stat="Means"):
     fig = plt.figure(figsize=(8,4.5))

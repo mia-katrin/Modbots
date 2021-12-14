@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set_theme()
+#sns.set_theme()
 
 from modbots.plotting import plot_voxels, plot_hist
 

@@ -33,7 +33,7 @@ public class ModuleParameterized : MonoBehaviour
             b = (max - i) / max;
         } else
         {
-            g = (i- max) / max; 
+            g = (i- max) / max;
             b = 0f;
         }
 
@@ -151,9 +151,9 @@ public class ModuleParameterized : MonoBehaviour
 
         // Angular x drive
         JointDrive angularXdrive = cj.angularXDrive;
-        angularXdrive.positionSpring = 1000;
-        angularXdrive.positionDamper = 80;
-        angularXdrive.maximumForce = 1000;
+        angularXdrive.positionSpring = 400;
+        angularXdrive.positionDamper = 4;
+        angularXdrive.maximumForce = 3.402823e+38f;
         cj.angularXDrive = angularXdrive;
 
         // Angular limits
@@ -176,8 +176,8 @@ public class ModuleParameterized : MonoBehaviour
 
         // Angular x drive collider 2
         JointDrive angularXdrive2 = cj2.angularXDrive;
-        angularXdrive2.positionSpring = 20;
-        angularXdrive2.positionDamper = 2;
+        angularXdrive2.positionSpring = 80;
+        angularXdrive2.positionDamper = 8;
         cj2.angularXDrive = angularXdrive2;
     }
 

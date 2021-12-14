@@ -11,7 +11,8 @@ if args.label == None:
 else:
     run_label = args.label
 
-ROUNDS = 3
+OUTER_ROUNDS = 10
+INTERNAL_ROUNDS = 1
 
 def delete_log_folder_content():
     os.system("rm log_folder/*")
@@ -27,12 +28,14 @@ def run_on_config(conf_name):
     config.read(conf_name)
     config.filename = conf_name
 
-    valid_intervals[run_label][conf_name] = []
-    for _ in range(ROUNDS):
+    if conf_name not in valid_intervals[run_label]:
+        valid_intervals[run_label][conf_name] = []
+
+    for _ in range(INTERNAL_ROUNDS):
         evolve(config, run_label, show_figs=False)
         append_runNr(conf_name)
 
-        # In order to not usee all our memory on rudolph,
+        # In order to not use all our memory on rudolph,
         # Delete log_folder content underway
         delete_log_folder_content()
 
@@ -46,15 +49,17 @@ valid_intervals[run_label] = {
     "Start runNr": get_runNr(),
 }
 
-#run_on_config("copy_ctrnn_growing.cfg")
-#run_on_config("sine_growing.cfg")
-#run_on_config("ctrnn_growing.cfg")
-#run_on_config("decentral_ctrnn_growing.cfg")
-run_on_config("pre_ctrnn.cfg")
-#run_on_config("copy_ctrnn.cfg")
-#run_on_config("sine.cfg")
-#run_on_config("ctrnn.cfg")
-#run_on_config("decentral_ctrnn.cfg")
+for _ in range(OUTER_ROUNDS):
+    run_on_config("copy_ctrnn_growing.cfg")
+    run_on_config("sine_growing.cfg")
+    run_on_config("ctrnn_growing.cfg")
+    #run_on_config("decentral_ctrnn_growing.cfg")
+    run_on_config("pre_ctrnn_growing.cfg")
+    run_on_config("copy_ctrnn.cfg")
+    run_on_config("sine.cfg")
+    run_on_config("ctrnn.cfg")
+    #run_on_config("decentral_ctrnn.cfg")
+    run_on_config("pre_ctrnn.cfg")
 
 valid_intervals[run_label]["End runNr"] = get_runNr()-1
 with open("experiments/valid_intervals", "w") as file:
