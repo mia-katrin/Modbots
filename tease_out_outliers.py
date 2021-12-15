@@ -55,7 +55,7 @@ def check_run(runNr: int, config_file: str):
         print(Fore.GREEN + "Eval: " + str(eval_fitness))
         if eval_fitness > 16:
             print(Fore.CYAN + "Possible outlier")
-        elif ind.get_nr_modules() <= 2:
+        if ind.get_nr_modules() <= 2:
             print(Fore.CYAN + f"Possible outlier, {ind.get_nr_modules()} module")
 
 if __name__ == "__main__":
