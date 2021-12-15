@@ -102,6 +102,7 @@ def plot_runs(dataname, stat="Means"):
                     average = np.array(data[dataname][stat])
                 else:
                     average += np.array(data[dataname][stat])
+        print("Valid runs:", nr_valid_runs, cfg)
         averages.append(average / nr_valid_runs)
 
     for avg, label, cfg in zip(averages, labels, configs):
