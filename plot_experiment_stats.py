@@ -20,7 +20,7 @@ with open("experiments/valid_intervals", "r") as file:
 
 experiment = valid_intervals[args.label]
 
-configs = [i for i in experiment.keys() if i != "End runNr" and i != "Start runNr"]
+configs = [i for i in experiment.keys() if i != "End runNr" and i != "Start runNr" and i != "Outliers"]
 
 colors = {
     'sine.cfg':"gold",
