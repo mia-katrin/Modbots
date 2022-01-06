@@ -3,12 +3,15 @@ import matplotlib.pyplot as plt
 import pickle
 from skimage.color import hsv2rgb
 import seaborn as sns
+from random import choice, random
 
 from modbots.plotting.diversity_measure import diversity
 
 class Plotter:
     def __init__(self):
         self.stats = {}
+
+        self.colordown = True
 
     def save_stats(self, population):
         nr_modules = []
@@ -20,22 +23,33 @@ class Plotter:
         self._save_min_max(fitnesses, "Fitness")
         self._save_stat(diversity(population), "Diversity")
 
-        if "color_id" in population[0].__dict__:
+        if hasattr(population[0], "color_id"):
             population = sorted(population, key=lambda x: x.color_id)
+
+        L = 1/len(population)
+        H = min(0.01, L)
+        def mutate_color(ind, i):
+            if hasattr(ind, "color"):
+                h, s, v = ind.color
+                h = (h + H) % 1.0
+                id = ind.color_id
+                ind.color_id = id - ((np.floor(id + 1) - id) / 2)
+            else:
+                h = i * L
+                v = 1.0
+                ind.color_id = i
+            s = random() * 0.5 + 0.5
+            ind.color = [h, s, v]
+
 
         colors = []
         for i, ind in enumerate(population):
-            if ind.needs_evaluation and "color" not in ind.__dict__:
-                hue = i/(len(population)) * 0.9 + 0.1
-                rgb = hsv2rgb([[[hue, 1.0, 1.0]]])[0][0]*255
-                ind.color = rgb.astype(int)
-                ind.color_id = i
-                colors.append(ind.color)
-            elif ind.needs_evaluation:
-                ind.color = (ind.color.astype(float) * 8 / 10).astype(int)
-                colors.append(ind.color)
-            else:
-                colors.append(ind.color)
+            if ind.needs_evaluation:
+                mutate_color(ind, i)
+
+            colors.append(
+                (hsv2rgb([[ind.color]])[0][0]*255).astype(int)
+            )
 
         self._save_image_column(colors, "Population Heritage")
 

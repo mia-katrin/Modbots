@@ -11,6 +11,8 @@ class Body:
         if gene != None:
             self._interpret_string_gene(gene)
 
+        self.mutation_history = []
+
     @staticmethod
     def random(config):
         self = Body(config.individual.variable_scale)
@@ -113,7 +115,8 @@ class Body:
 
             if np.random.rand() <= node_chance:
                 mutated = True
-                node.mutate(config)
+                mut_type = node.mutate(config)
+                self.mutation_history.append(mut_type)
                 break
 
             for child in node.children:

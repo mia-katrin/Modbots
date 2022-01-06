@@ -19,7 +19,7 @@ public class ModularRobot : Agent
     {
         public Node[] children = new Node[3] { null, null, null };
         public int angle = new int[4] { 0, 90, 180, 270 } [Random.Range(0, 4)];
-        public float scale = new float[2] { 1.0f, Random.Range(0.1f, 1.0f)} [Random.Range(0, 2)];
+        public float scale = new float[2] { 1.0f, Random.Range(0.1f, 1.0f)} [Random.Range(0, 1)]; // Should be 2
         public int index;
     }
 
@@ -31,6 +31,8 @@ public class ModularRobot : Agent
 
     public static int staticIndex = 0;
     public int myIndex = 0;
+
+    public float torque = 0.0f;
 
     private void Start()
     {
@@ -71,9 +73,10 @@ public class ModularRobot : Agent
         Vector3 pos = GetPosition();
         sensor.AddObservation(pos);
 
+        float[] sensorValues = Enumerable.Repeat(0.0f, 150).ToArray();
+
         if (allModules.Count > 0)
         {
-            float[] sensorValues = Enumerable.Repeat(0.0f, 150).ToArray();
             foreach (var moduleGO in allModules)
             {
                 ModuleParameterized m = moduleGO.GetComponent<ModuleParameterized>();
@@ -82,9 +85,9 @@ public class ModularRobot : Agent
                 sensorValues[m.index * 3 + 1] = data[1];
                 sensorValues[m.index * 3 + 2] = data[2];
             }
-            sensor.AddObservation(sensorValues);
         }
-        
+        sensor.AddObservation(sensorValues);
+
         RequestDecision();
     }
 
@@ -94,11 +97,9 @@ public class ModularRobot : Agent
 
         if (rootGO != null)
         {
-            var envParameters = Academy.Instance.EnvironmentParameters;
-            float torque = envParameters.GetWithDefault("torque", 0.0f);
-
             if (torque == 1.0f)
             {
+                Debug.LogError("Using velocity");
                 foreach (var module in allModules)
                 {
                     ConfigurableJoint joint = module.transform.GetChild(0).GetComponent<ConfigurableJoint>();
@@ -113,6 +114,7 @@ public class ModularRobot : Agent
             }
             else
             {
+                Debug.LogError("Using target rotation");
                 foreach (var module in allModules)
                 {
                     ConfigurableJoint joint = module.transform.GetChild(0).GetComponent<ConfigurableJoint>();
@@ -153,6 +155,8 @@ public class ModularRobot : Agent
 
     public void MakeRobot(string gene)
     {
+        var envParameters = Academy.Instance.EnvironmentParameters;
+        torque = envParameters.GetWithDefault("torque", 0.0f);
         //GameManager.Instance.pythonCom.SendMessage("Modular Robot about to make robot");
         //Debug.Log($"Gene got {gene}");
         geneRoot = new Node();
@@ -238,6 +242,11 @@ public class ModularRobot : Agent
     public void PruneCollisions()
     {
         // allModules was constructed breadth first, meaning the last nodes are the bottom layer
+        // indexes are like this:
+        //     0
+        //    /|\
+        //   1 2 3
+
         if (allModules.Count == 0) return;
         var module = allModules[allModules.Count - 1];
         int i = allModules.Count - 1;
@@ -420,7 +429,9 @@ public class ModularRobot : Agent
         ModuleParameterized moduleParameterized = child.GetComponent<ModuleParameterized>();
         while (moduleParameterized == null)
         {
+            Transform saved = child;
             child = child.parent;
+            if (child == null) Debug.LogError(saved);
             moduleParameterized = child.GetComponent<ModuleParameterized>();
         }
         return moduleParameterized.index;
@@ -461,7 +472,7 @@ public class ModularRobot : Agent
                 layerMask = ~layerMask;
 
                 bool didWeCollide = false;
-                if (collider.transform.position.y < -3.0f)
+                if (EnvironmentBuilder.Instance.CollisionCheck(collider))
                 {
                     didWeCollide = true;
                 }
@@ -471,6 +482,9 @@ public class ModularRobot : Agent
 
                     foreach (var offenseCollider in collidingBoxes)
                     {
+                        Debug.Log($"Collider {offenseCollider} is up for review against {child}. " +
+                            $"Offense: {offenseCollider.transform.position} {offenseCollider.bounds.extents}, " +
+                            $"Child: {collider.transform.position} {collider.bounds.extents}");
                         if (GetIndex(offenseCollider.transform) != GetIndex(child) && ! destroyedIndexes.Contains(GetIndex(offenseCollider.transform)))
                         {
                             Debug.Log($"My ({GetIndex(child)}) {child} has collided with someones's ({GetIndex(offenseCollider.transform)}) {offenseCollider.gameObject} {offenseCollider.bounds.size} {collider.bounds.size} {offenseCollider.transform.position} {child.transform.position}");

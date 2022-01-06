@@ -20,15 +20,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 def get_fitness(config, ind):
-    set_env_variables(
-        config.files.build_path,
-        config.files.log_folder,
-        seed=config.experiment.seed,
-        headless=config.experiment.headless,
-        n_steps=config.evaluation.n_steps,
-        n_start_eval=config.evaluation.n_start_eval,
-        time_scale=config.evaluation.time_scale
-    )
+    set_env_variables(config=config)
 
     fitness = evaluate(ind)
 

@@ -150,10 +150,15 @@ public class ModuleParameterized : MonoBehaviour
         cj.angularZMotion = ConfigurableJointMotion.Locked;
 
         // Angular x drive
-        JointDrive angularXdrive = cj.angularXDrive;
-        angularXdrive.positionSpring = 400;
-        angularXdrive.positionDamper = 4;
-        angularXdrive.maximumForce = 3.402823e+38f;
+        JointDrive angularXdrive = new JointDrive
+        {
+            maximumForce = 10,
+            positionSpring = 0,
+            positionDamper = 1e10f,
+        };
+        angularXdrive.positionSpring = 0;
+        angularXdrive.positionDamper = 400;
+        angularXdrive.maximumForce = 400;
         cj.angularXDrive = angularXdrive;
 
         // Angular limits
@@ -176,8 +181,9 @@ public class ModuleParameterized : MonoBehaviour
 
         // Angular x drive collider 2
         JointDrive angularXdrive2 = cj2.angularXDrive;
-        angularXdrive2.positionSpring = 80;
-        angularXdrive2.positionDamper = 8;
+        angularXdrive2.positionSpring = 20;
+        angularXdrive2.positionDamper = 2;
+        angularXdrive2.maximumForce = 3.402823e+38f;
         cj2.angularXDrive = angularXdrive2;
     }
 

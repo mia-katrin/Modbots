@@ -1,3 +1,7 @@
+"""
+A file for exploring individuals, specifying configs, ind files, or random inds.
+"""
+
 import time
 
 from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
@@ -10,21 +14,18 @@ import re
 from config_util import get_local_config
 from localconfig import config
 
-import numpy as np
-np.random.seed(42)
-
 # Add arguments
 parser = argparse.ArgumentParser(description='Explore some boys')
 parser.add_argument(
     '--config_file',
     type = str,
-    help='The config file that was used with thiss individual',
+    help='The config file that was used with this individual',
     default=get_local_config()
 )
 parser.add_argument(
     '--gene',
     type = str,
-    help='The gene file',
+    help='The gene file. Write "random" to get a random ind using the config',
     default="bestInd/ind"
 )
 
@@ -32,23 +33,20 @@ args = parser.parse_args()
 
 config.read(args.config_file)
 
-print("We start")
-ind = Individual.unpack_ind(args.gene, config)
-print("Stored fitness:", ind.fitness)
+if args.gene == "random":
+    ind = Individual.random(config)
+    print("Starting random ind")
+else:
+    ind = Individual.unpack_ind(args.gene, config)
+    print("Stored fitness:", ind.fitness)
 
-set_env_variables(
-    config.files.build_path,
-    config.files.log_folder,
-    seed=config.experiment.seed,
-    headless=config.experiment.headless,
-    n_steps=config.evaluation.n_steps,
-    n_start_eval=config.evaluation.n_start_eval,
-    time_scale=config.evaluation.time_scale
-)
+set_env_variables(config=config)
 
 fitness = evaluate(ind)
 print(f"We got fitness {fitness}")
 
 close_env()
 
-print(ind.mutation_history)
+if args.gene != "random":
+    print("\nMutation history:")
+    print(ind.mutation_history)

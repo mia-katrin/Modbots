@@ -16,37 +16,47 @@ class Node:
             if rand_num < config.mutation.angle:
                 self.angle += -90 if np.random.rand() <= 0.5 else 90
                 self.angle = wrap_around(self.angle, [0, 270])
-                return
+                return "Angle"
             # Remove node
             elif rand_num < config.mutation.angle + config.mutation.remove_node:
                 if len(self.occupied_spots_list()) != 0:
                     self.children[np.random.choice(self.occupied_spots_list())] = None
-                    return
+                    return "Remove"
             # Add node
             elif rand_num < config.mutation.angle + config.mutation.remove_node + config.mutation.add_node:
                 if self.scale < 1. and self.children[0] == None:
                     new_node = Node(variable_scale=config.individual.variable_scale, growing=config.individual.growing)
                     self.children[0] = new_node
-                    return
+                    return "Add on dwarf"
                 elif self.scale >= 1. and len(self.open_spots_list()) != 0:
                     new_node = Node(variable_scale=config.individual.variable_scale, growing=config.individual.growing)
                     self.children[np.random.choice(self.open_spots_list())] = new_node
-                    return
+                    return "Add on normal"
             # Scale
-            elif rand_num < config.mutation.angle + config.mutation.remove_node + config.mutation.add_node + config.mutation.scale:
-                val = self.scale + (np.random.rand() - 0.5)
-                self.scale = bounce_back(val, (0.1, 3))
+            # elif ((growing and short) or variable) and rand_num
+            elif ((config.individual.growing and self.scale < 1) or config.individual.variable_scale) and rand_num < config.mutation.angle + config.mutation.remove_node + config.mutation.add_node + config.mutation.scale:
+                # growing and not variable
+                if config.individual.growing and not config.individual.variable_scale:
+                    # Add a random small num
+                    val = self.scale + (np.random.rand() * 0.5)
+                    # Scale is that or 1, the smallest option
+                    self.scale = min(val, 1)
+                else:
+                    # When growing and variable, or simply variable
+                    val = self.scale + (np.random.rand() - 0.5)
+                    self.scale = bounce_back(val, (0.1, 3))
 
                 if self.scale < 1.0:
                     self.children[1] = None
                     self.children[2] = None
-                return
+                return "Scale"
             # Copy branch
             elif rand_num <= config.mutation.angle + config.mutation.remove_node + config.mutation.add_node + config.mutation.scale + config.mutation.copy_branch:
                 print("Copy")
                 pass
 
         print("Could not mutate!") # Should never really happen
+        return "None"
 
     def open_spots_list(self):
         return self.get_indexes_of(lambda x: x is None)

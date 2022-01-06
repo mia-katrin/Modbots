@@ -3,6 +3,7 @@ import copy
 
 from modbots.util import traverse_get_list
 from modbots.controllers.ctrnn_interface import CTRNNInterface
+from modbots.controllers.copy_decentral import CopyDecentralController
 
 class SensorCentral:
     def __init__(self, body, **kwargs):
@@ -25,7 +26,10 @@ class SensorCentral:
         sensor_processing = self.sensor_control.get_actions(observation)
 
         # Feed to central_control
-        actions = self.central_control.get_actions(sensor_processing)
+        actions = self.central_control.get_actions(sensor_processing[0][:15])
+
+        #actions = np.clip(actions, a_min=-2, a_max=2)
+        #print(actions)
 
         return actions
 

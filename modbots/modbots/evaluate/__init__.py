@@ -16,7 +16,7 @@ HEADLESS = False
 TIME_SCALE = None
 
 # Method to set static variables
-def set_env_variables(path, log_folder, seed=42, headless=False, time_scale=None, n_steps=1000, n_start_eval=250, torque=0.0):
+def set_env_variables(config=None, path=None, log_folder=None, seed=None, headless=None, time_scale=None, n_steps=None, n_start_eval=None, torque=None, env_enum=None):
     global SEED
     global HEADLESS
     global TIME_SCALE
@@ -25,23 +25,28 @@ def set_env_variables(path, log_folder, seed=42, headless=False, time_scale=None
     global N_START_EVAL
     global LOG_FOLDER
     global TORQUE
-    PATH = path
-    SEED = seed
-    HEADLESS = headless
-    TIME_SCALE = time_scale
-    N_STEPS = n_steps
-    N_START_EVAL = n_start_eval
-    LOG_FOLDER = log_folder
-    TORQUE = torque
+    global ENV_ENUM
+
+    PATH       = path         if path != None           else config.files.build_path
+    LOG_FOLDER = log_folder   if log_folder != None     else config.files.log_folder
+    SEED       = seed         if seed != None           else config.experiment.seed
+    HEADLESS   = headless     if headless != None       else config.experiment.headless
+    N_STEPS    = n_steps      if n_steps != None        else config.evaluation.n_steps
+    N_START_EVAL = n_start_eval if n_start_eval != None else config.evaluation.n_start_eval
+    TIME_SCALE = time_scale   if time_scale != None     else config.evaluation.time_scale
+    ENV_ENUM   = env_enum     if env_enum != None       else config.evaluation.env_enum
+    TORQUE     = torque       if torque != None         else config.individual.torque
 
 # singleton equivalent (unsure if this is true, pool map will spawn several envs
 # on different adresses with different variables)
 env_pid = None
 env = None
 side_channel = None
+param_channel = None
 def get_env():
     global env
     global side_channel
+    global param_channel
     global SEED
     global HEADLESS
     global TIME_SCALE
@@ -69,7 +74,8 @@ def get_env():
             env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, param_channel],no_graphics = HEADLESS, worker_id=pid, log_folder=LOG_FOLDER)
             env.reset()
         param_channel.set_float_parameter("torque", TORQUE)
-    return env, side_channel
+        param_channel.set_float_parameter("envEnum", ENV_ENUM)
+    return env, side_channel, param_channel
 
 # Likely won't be able to run this because pool keeps its own copies of envs
 def close_env():
@@ -87,7 +93,7 @@ def evaluate(ind, force_evaluate=True, record=False):
 
     ind.prepare_for_evaluation()
 
-    env, side_channel = get_env()
+    env, side_channel, param_channel = get_env()
 
     side_channel.send_string(ind.body_to_str())
     env.reset()
@@ -95,6 +101,7 @@ def evaluate(ind, force_evaluate=True, record=False):
     if record:
         side_channel.send_string("Record, /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/video")
 
+    # Action plotting
     #lines = [[] for _ in range(ind.get_nr_modules())]
 
     save_pos = [0,0,0]
@@ -125,6 +132,7 @@ def evaluate(ind, force_evaluate=True, record=False):
         else:
             actions = np.zeros(shape=(1,50),dtype=np.float32)
 
+        # Action plotting
         #for i, liste in enumerate(lines):
         #    liste.append(actions[0,i])
 
@@ -135,10 +143,10 @@ def evaluate(ind, force_evaluate=True, record=False):
     if record:
         side_channel.send_string("Stop recording")
 
+    # Action plotting
     #import matplotlib.pyplot as plt
     #for line in lines:
     #    plt.plot(line)
-
     #plt.show()
 
     # Get fitness

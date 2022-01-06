@@ -5,6 +5,7 @@ import multiprocessing
 import time
 from shutil import copyfile
 import pickle
+from operator import attrgetter
 
 from IPython import embed
 
@@ -51,7 +52,7 @@ def continue_experiment(run_nr):
     cont = True
     while cont:
         try:
-            file = open(f"experiments/run{run_nr}/bestInd{last_gen+1}.txt")
+            file = open(f"experiments/run{run_nr}/bestInd{last_gen+1}")
             file.close()
             last_gen += 1
         except FileNotFoundError:
@@ -61,7 +62,7 @@ def continue_experiment(run_nr):
 
     start_gen = last_gen + 1
 
-def init_pop(toolbox, config):
+def init_pop(toolbox, config) -> list:
     population = toolbox.population(n=config.ea.pop_size)
 
     fitnesses = toolbox.map(toolbox.evaluate, population) # Lazy execution
@@ -71,7 +72,7 @@ def init_pop(toolbox, config):
         print(f"Fitness: {fit}, Modules: {ind.get_nr_modules()}")
     return population
 
-def init_toolbox(config):
+def init_toolbox(config) -> tuple:
     toolbox = base.Toolbox()
     toolbox.register("individual", individual_class.random, config=config)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
@@ -87,10 +88,8 @@ def init_toolbox(config):
         toolbox.register("map", pool.map, chunksize=cs)
     return toolbox, pool
 
-def evolve(config, statement=None, show_figs=True):
-    assert config.ea.pop_size%config.experiment.n_cores == 0, "Cannot run this POP_SIZE because it will cause non-deterministic evaluations"
-
-    calc_time = calc_time_evolution(config.ea.pop_size, config.experiment.n_cores, config.ea.mut_rate, config.ea.nr_parents, config.evaluation.n_steps, config.ea.n_generations, config.evaluation.time_scale)
+def print_time(config):
+    calc_time = calc_time_evolution(config)
     minutes = calc_time / 60
     hours = minutes / 60
     print(
@@ -101,39 +100,36 @@ def evolve(config, statement=None, show_figs=True):
         "\n               ", hours, "hours",
     )
 
+def init_documentation(runNr, statement):
+    with open("experiments/runNr.txt", "w") as file:
+        file.write(f"{runNr + 1}")
+        file.close()
+
+    os.makedirs(f"experiments/run{runNr}/")
+
+    # Save statement
+    if statement == None:
+        print("What has changed in this run?\n> ", end="")
+        statement = input()
+
+    with open(f"experiments/run{runNr}/statement.txt", "w") as file:
+        file.write(statement)
+    with open(f"experiments/all_statements.txt", "a") as file:
+        file.write(f"\nRun {runNr}: {change}")
+
+    # Save config
+    config.save(f"experiments/run{runNr}/{config.filename}")
+
+def evolve(config, statement=None, show_figs=True):
+    assert config.ea.pop_size%config.experiment.n_cores == 0, "Cannot run this POP_SIZE because it will cause non-deterministic evaluations"
+
+    print_time(config)
+
     if config.experiment.documentation:
         runNr = get_runNr()
-        with open("experiments/runNr.txt", "w") as file:
-            file.write(f"{runNr + 1}")
-            file.close()
+        init_documentation(runNr, statement)
 
-        os.makedirs(f"experiments/run{runNr}/")
-
-        # Save statement
-        if statement != None:
-            change = statement
-        elif args.statement != None:
-            change = args.statement
-        else:
-            print("What has changed in this run?\n> ", end="")
-            change = input()
-        with open(f"experiments/run{runNr}/statement.txt", "w") as file:
-            file.write(change)
-        with open(f"experiments/all_statements.txt", "a") as file:
-            file.write(f"\nRun {runNr}: {change}")
-
-        # Save config
-        config.save(f"experiments/run{runNr}/{config.filename}")
-
-    set_env_variables(
-        config.files.build_path,
-        config.files.log_folder,
-        seed=config.experiment.seed,
-        headless=config.experiment.headless,
-        n_steps=config.evaluation.n_steps,
-        n_start_eval=config.evaluation.n_start_eval,
-        time_scale=config.evaluation.time_scale
-    )
+    set_env_variables(config=config)
 
     # init toolbox
     toolbox, pool = init_toolbox(config)
@@ -148,50 +144,36 @@ def evolve(config, statement=None, show_figs=True):
     plotter.save_stats(population)
     plotter.print_stats()
 
-    bestInd = population[0]
-    for ind in population:
-        if ind.fitness > bestInd.fitness:
-            bestInd = ind
-
     try:
         for gen in tqdm(range(config.ea.n_generations)):
             print("Generation:",gen)
 
-            offspring = toolbox.select(population, config.ea.pop_size-1)
+            offspring = toolbox.select(population, config.ea.pop_size)
             offspring = list(map(toolbox.clone, offspring))
-            offspring.append(toolbox.clone(bestInd))
 
-            """parents = np.random.choice(offspring, size=config.ea.nr_parents)
-            half = config.ea.nr_parents//2
-            for ind1, ind2 in zip(parents[:half], parents[half:]):
-                child1, child2 = ind1.crossover(ind2)
-                offspring.append(child2)
-                offspring.append(child1)"""
+            # Code graveyard label: Crossover code
 
             for o in offspring:
                 o.mutate(config)
 
+                # Sometimes this method is used for updating things after mutation
                 if o.needs_evaluation:
                     o.prepare_for_evaluation()
 
-            # Utilize multithreading as much as possible by forcing heavy jobs
-            # into separate chunks
+            # Utilize multithreading as much as possible by forcing heavy jobs into separate chunks
             offspring = sort_to_chunks(offspring, nr_chunks=config.experiment.n_cores)
 
             fitnesses = toolbox.map(toolbox.evaluate, offspring)
             for ind, fit in zip(offspring, fitnesses):
                 ind.fitness = fit
 
-            for ind in offspring:
-                if ind.fitness > bestInd.fitness:
-                    bestInd = ind
-
             population = offspring
 
+            bestInd = max(population, key=attrgetter('fitness'))
             print(f"Best has {bestInd.get_nr_modules()} modules")
 
             if config.experiment.documentation:
-                bestInd.save_individual(f"experiments/run{runNr}/bestInd{gen}.txt")
+                bestInd.save_individual(f"experiments/run{runNr}/bestInd{gen}")
                 save_population(population, filename=f"experiments/run{runNr}/population")
 
             plotter.save_stats(population)
@@ -200,8 +182,7 @@ def evolve(config, statement=None, show_figs=True):
         close_env()
         pool.close()
 
-        inp = input("Do you want to generate plots?")
-        if inp != "y":
+        if input("Do you want to generate plots?") != "y":
             raise KeyboardInterrupt("You chose to simply exit")
     close_env()
     pool.close()
@@ -232,7 +213,8 @@ if __name__ == "__main__":
     parser.add_argument(
         '-s', '--statement',
         type=str,
-        help="The statement to log."
+        help="The statement to log.",
+        default=None
     )
 
     args = parser.parse_args()
@@ -240,4 +222,4 @@ if __name__ == "__main__":
     config.read(args.config_file)
     config.filename = args.config_file
 
-    evolve(config)
+    evolve(config, statement=args.statement)

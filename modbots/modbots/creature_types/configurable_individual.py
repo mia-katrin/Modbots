@@ -17,23 +17,32 @@ class Individual:
 
         self.mutation_history = []
 
+    indNr = 0
     @staticmethod
     def random(config):
+        print(f"Creating ind nr {Individual.indNr}")
+        Individual.indNr += 1
         self = Individual(config) # This gives me an interesting body
 
         # Select controller from config
         if config.control.oscillatory and not config.control.copy_decentral:
-            self.controller = DecentralController(SineController, self.body, deltaTime=0.2)
+            print("Oscillatory decentral control chosen")
+            self.controller = DecentralController(SineController, self.body, deltaTime=config.control.request_period)
         elif config.control.oscillatory and config.control.copy_decentral:
-            self.controller = CopyDecentralController(SineController, self.body, deltaTime=0.2)
+            print("Oscillatory decentral copy control chosen")
+            self.controller = CopyDecentralController(SineController, self.body, deltaTime=config.control.request_period)
         elif config.control.ctrnn and config.control.copy_decentral:
-            self.controller = CopyDecentralController(CTRNNInterface, self.body, advance_time=0.2, time_step=0.2)
+            print("Ctrnn decentral copy control chosen")
+            self.controller = CopyDecentralController(CTRNNInterface, self.body, advance_time=config.control.request_period, time_step=config.control.request_period)
         elif config.control.ctrnn and config.control.decentral:
-            self.controller = DecentralController(CTRNNInterface, self.body, advance_time=0.2, time_step=0.2)
-        elif config.control.ctrnn:
-            self.controller = CTRNNInterface(advance_time=0.2, config="45to15", time_step=0.2)
+            print("Ctrnn decentral control chosen")
+            self.controller = DecentralController(CTRNNInterface, self.body, advance_time=config.control.request_period, time_step=config.control.request_period)
         elif config.control.ctrnn and config.control.pre_processing:
-            self.controller = SensorCentral(self.body, advance_time=0.2, time_step=0.2)
+            print("Ctrnn preprocess central control chosen")
+            self.controller = SensorCentral(self.body, advance_time=config.control.request_period, time_step=config.control.request_period)
+        elif config.control.ctrnn:
+            print("Ctrnn central control chosen")
+            self.controller = CTRNNInterface(advance_time=config.control.request_period, config="45to15", time_step=config.control.request_period)
         else:
             self.controller = None
             print("You have chosen no controller")
@@ -80,7 +89,7 @@ class Individual:
             mutated = True
         elif rand_num < config.ea.mut_rate:
             mutated = self.body.mutate(config)
-            self.mutation_history.append("Body")
+            self.mutation_history.append(f"Body:{self.body.mutation_history[-1]}")
         else:
             mutated = False
 

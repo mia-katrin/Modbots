@@ -7,7 +7,15 @@ def traverse_get_list(node, node_list_out):
         if child is not None:
             traverse_get_list(child, node_list_out)
 
-def calc_time_evolution(pop_size, n_cores, mut_rate, nr_parents, n_steps, n_gen, time_scale=None):
+def calc_time_evolution(config):
+    pop_size = config.ea.pop_size
+    n_cores = config.experiment.n_cores 
+    mut_rate = config.ea.mut_rate
+    nr_parents = config.ea.nr_parents
+    n_steps = config.evaluation.n_steps
+    n_gen = config.ea.n_generations
+    time_scale = config.evaluation.time_scale
+
     avg_one_ind_time = n_steps*0.2/(n_cores * (time_scale if time_scale != None else 1))
 
     round0 = pop_size*avg_one_ind_time

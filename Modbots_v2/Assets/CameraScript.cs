@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.MLAgents;
 
 public class CameraScript : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class CameraScript : MonoBehaviour
     public static CameraScript Instance { get { return instance; } }
 
     public ModularRobot target;
-    public Vector3 relativeCamPos = new Vector4(3f, 3f, 3f);
+    public Vector3 relativeCamPos = new Vector3(3f, 3f, 3f);
     private float angle = 0;
     private float distance;
 
@@ -27,6 +28,31 @@ public class CameraScript : MonoBehaviour
             instance = this;
         }
         DontDestroyOnLoad(gameObject);
+
+        var envParameters = Academy.Instance.EnvironmentParameters;
+        float envEnum = envParameters.GetWithDefault("envEnum", 0.0f);
+
+        switch (envEnum)
+        {
+            case 0.0f:
+                Debug.LogError("Floor cam");
+                relativeCamPos = new Vector3(0f, 0.01f, -8f);
+                break;
+            case 3f:
+                Debug.LogError("Corridor cam");
+                relativeCamPos = new Vector3(0f, 0.01f, -8f);
+                break;
+            case 1f:
+                Debug.LogError("Maze cam");
+                relativeCamPos = new Vector3(0f, 7f, -5f);
+                break;
+            case 2f:
+                Debug.LogError("Stair cam");
+                relativeCamPos = new Vector3(0f, 7f, -5f);
+                break;
+            default:
+                break;
+        }
 
         distance = relativeCamPos.magnitude;
     }
@@ -60,7 +86,7 @@ public class CameraScript : MonoBehaviour
             transform.position = new Vector3(modPos.x + relativeCamPos.x, relativeCamPos.y, modPos.z + relativeCamPos.z);
 
             // Look at
-            transform.LookAt(new Vector3(modPos.x, relativeCamPos.y, modPos.z));
+            transform.LookAt(new Vector3(modPos.x, 0f, modPos.z));
 
             transform.RotateAround(modPos, Vector3.up, angle);
         }

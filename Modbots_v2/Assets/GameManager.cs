@@ -13,11 +13,12 @@ public class GameManager : MonoBehaviour
 
     public ComSideChannel pythonCom;
 
-    public static int warmupFixedUpdates = 10;
+    public static int warmupFixedUpdates = 5;
 
     public ModularRobot modularRobot;
     public string currentGene = "";
     public bool resetting = false;
+    public bool firstReset = true;
 
     public static int staticIndex = 0;
     public int myIndex = 0;
@@ -76,8 +77,10 @@ public class GameManager : MonoBehaviour
     private void ResetHappened()
     {
         //pythonCom.SendMessage("GameManager resetting");
-        if (resetting)
+        Debug.Log("Resetting");
+        if (resetting || firstReset)
         {
+            firstReset = false;
             return;
         }
         resetting = true;
@@ -102,7 +105,13 @@ public class GameManager : MonoBehaviour
         {
             yield return new WaitForFixedUpdate();
         }
+
         if (currentGene.Length > 0) modularRobot.MakeRobot(currentGene);
+        EnvironmentBuilder.Instance.BuildEnvironment();
+
+        // By default, newly spawned objects are not synced with the physics world before the next pyhsics frame
+        // Calling this forces that
+        Physics.SyncTransforms();
         yield return new WaitForFixedUpdate();
         modularRobot.PruneCollisions();
         Physics.autoSimulation = true;
@@ -141,7 +150,9 @@ public class GameManager : MonoBehaviour
 
                 //NewEncodingGot("1.0|[|[|M0,0,1.0|]|M1,90,1.0|]|M2,0,1.0|M2,0,1.0|M2,0,1.0|M2,0,1.0|");
                 //NewEncodingGot("1.0|[|[|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,90,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|");
+                Debug.Log("About to manually do a reset");
                 ResetHappened();
+                    
             }
             else
             {
