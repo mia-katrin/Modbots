@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 using Unity.MLAgents;
-using Unity.MLAgents.SideChannels;
-using UnityEngine.SceneManagement;
-using System.Collections;
 using System;
 using System.Collections.Generic;
 
@@ -39,6 +36,7 @@ public class EnvironmentBuilder : MonoBehaviour
 
         var envParameters = Academy.Instance.EnvironmentParameters;
         float envEnum = envParameters.GetWithDefault("envEnum", 0.0f);
+        int seed = (int)envParameters.GetWithDefault("seed", 42.0f);
 
         // The environment is always gone at the start, so instantiate and
         // activate what needs to be there
@@ -46,24 +44,20 @@ public class EnvironmentBuilder : MonoBehaviour
         switch (envEnum)
         {
             case (0.0f):
-                Debug.LogError("Making floor");
                 Instantiate(floor);
                 break;
             case (1.0f):
-                Debug.LogError("Making corridor");
                 Instantiate(floor);
-                corridor = new Maze(5, 5, corridor:true);
+                corridor = new Maze(5, 5, corridor: true, seed: seed);
                 corridor.Draw();
                 break;
             case (2.0f):
-                Debug.LogError("Making maze");
                 Instantiate(floor);
-                maze = new Maze(5, 5);
+                maze = new Maze(5, 5, seed: seed);
                 maze.Draw();
                 testColliders = maze.wallColliders;
                 break;
             case (3.0f):
-                Debug.LogError("Making stairs");
                 Instantiate(floor);
                 Instantiate(stairs);
                 break;
@@ -91,6 +85,19 @@ public class EnvironmentBuilder : MonoBehaviour
                 break;
         }
         return false;
+    }
+
+    internal float GetMazeFitness(Vector3 pos)
+    {
+        throw new NotImplementedException();
+    }
+
+    public float GetCorridorFitness(Vector3 pos)
+    {
+        if (corridor == null) return 0.0f;
+        float fitness = corridor.GetFitness(pos);
+        Debug.Log($"Fitness {fitness}");
+        return fitness;
     }
 
     private void Start()

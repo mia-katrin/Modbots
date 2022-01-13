@@ -3,7 +3,6 @@ using Unity.MLAgents;
 using Unity.MLAgents.SideChannels;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,19 +19,11 @@ public class GameManager : MonoBehaviour
     public bool resetting = false;
     public bool firstReset = true;
 
-    public static int staticIndex = 0;
-    public int myIndex = 0;
-
     public void Awake()
     {
-        myIndex = staticIndex;
-        //Debug.Log($"I'm GM {myIndex}");
-        staticIndex += 1;
         // Make sure there is only one instance of the game manager
         if (instance != null && instance != this)
         {
-            //Debug.Log($"GM {myIndex} destroyed");
-            //instance.pythonCom.SendMessage($"I am GM {myIndex}, being destroyed");
             this.gameObject.SetActive(false);
             Destroy(this.gameObject);
             return;
@@ -43,7 +34,6 @@ public class GameManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
         
-
         // We create the Side Channel
         if (pythonCom == null)
         {
@@ -52,32 +42,15 @@ public class GameManager : MonoBehaviour
         }
         Academy.Instance.OnEnvironmentReset += ResetHappened;
         ComSideChannel.OnReceivedEncoding += NewEncodingGot;
-        SceneManager.sceneLoaded += SceneManagerSaysLoaded;
-
-        //Debug.LogError("Done with GM AWake");
-    }
-
-    private void Start()
-    {
-        
-    }
-
-    private void SceneManagerSaysLoaded(Scene scene, LoadSceneMode LoadSceneMode)
-    {
-        //Debug.LogError($"Loaded scene {scene.name}");
-        //pythonCom.SendMessage($"Loaded scene {scene.name}");
     }
 
     private void NewEncodingGot(string gene)
     {
         currentGene = gene;
-        //pythonCom.SendMessage("GameManager got encoding");
     }
 
     private void ResetHappened()
     {
-        //pythonCom.SendMessage("GameManager resetting");
-        Debug.Log("Resetting");
         if (resetting || firstReset)
         {
             firstReset = false;
@@ -86,7 +59,6 @@ public class GameManager : MonoBehaviour
         resetting = true;
         if (SceneManager.GetActiveScene().isLoaded)
         {
-            //pythonCom.SendMessage("Loading scene");
             SceneManager.LoadScene(0);
         }
 
@@ -133,8 +105,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int sequence = 0;
-
     public bool robotElseModule = true;
     private void Update()
     {
@@ -143,14 +113,6 @@ public class GameManager : MonoBehaviour
             if (robotElseModule)
             {
                 NewEncodingGot("Random");
-
-                //NewEncodingGot("1.0|[|[|M0,0,1.0|M2,0,1.0|M2,0,1.0|]|M1,0,1.0|]|M2,0,1.0|");
-
-                //NewEncodingGot("1.0|[|[|M0,180,1.0|[|[|M0,0,1.0|]|M1,90,1.0|]|M2,180,1.0|]|M1,180,1.0|M2,180,1.0|M0,0,1.0|]|M2,0,1.0|[|M1,270,1.0|M1,90,1.0|M2,180,1.0|M2,180,1.0|M2,180,1.0|]|M2,180,1.0|M2,180,1.0|M2,180,1.0|M2,180,1.0|M2,180,1.0|");
-
-                //NewEncodingGot("1.0|[|[|M0,0,1.0|]|M1,90,1.0|]|M2,0,1.0|M2,0,1.0|M2,0,1.0|M2,0,1.0|");
-                //NewEncodingGot("1.0|[|[|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,90,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|M0,0,0.1|");
-                Debug.Log("About to manually do a reset");
                 ResetHappened();
                     
             }

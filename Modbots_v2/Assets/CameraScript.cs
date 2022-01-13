@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
+using System;
 
 public class CameraScript : MonoBehaviour
 {
@@ -29,25 +30,26 @@ public class CameraScript : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
 
+        Academy.Instance.OnEnvironmentReset += ResetPosition;
+    }
+
+    private void ResetPosition()
+    {
         var envParameters = Academy.Instance.EnvironmentParameters;
         float envEnum = envParameters.GetWithDefault("envEnum", 0.0f);
 
         switch (envEnum)
         {
             case 0.0f:
-                Debug.LogError("Floor cam");
                 relativeCamPos = new Vector3(0f, 0.01f, -8f);
                 break;
             case 3f:
-                Debug.LogError("Corridor cam");
                 relativeCamPos = new Vector3(0f, 0.01f, -8f);
                 break;
             case 1f:
-                Debug.LogError("Maze cam");
                 relativeCamPos = new Vector3(0f, 7f, -5f);
                 break;
             case 2f:
-                Debug.LogError("Stair cam");
                 relativeCamPos = new Vector3(0f, 7f, -5f);
                 break;
             default:

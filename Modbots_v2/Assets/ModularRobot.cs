@@ -1,11 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using System.Linq;
 
 public class ModularRobot : Agent
@@ -29,22 +25,12 @@ public class ModularRobot : Agent
     public List<int> destroyedIndexes;
     private Node geneRoot;
 
-    public static int staticIndex = 0;
-    public int myIndex = 0;
-
     public float torque = 0.0f;
 
     private void Start()
     {
-        myIndex = staticIndex;
-        //Debug.Log($"I'm MR {myIndex}");
-        staticIndex += 1;
         if (instance != null && instance != this)
         {
-            if (GameManager.Instance != null)
-            {
-                //GameManager.Instance.pythonCom.SendMessage($"I am MR {myIndex}, being destroyed");
-            }
             this.gameObject.SetActive(false);
             Destroy(this.gameObject);
             return;
@@ -70,8 +56,28 @@ public class ModularRobot : Agent
     // mlagents functions
     public override void CollectObservations(VectorSensor sensor)
     {
+        var envParameters = Academy.Instance.EnvironmentParameters;
+        float envEnum = envParameters.GetWithDefault("envEnum", 0.0f);
+
         Vector3 pos = GetPosition();
-        sensor.AddObservation(pos);
+
+        if (envEnum == 0.0 || envEnum == 3.0)
+        {
+            sensor.AddObservation(pos);
+        }
+        else
+        {
+            float fitness = 0.0f;
+            if (envEnum == 1.0)
+            {
+                fitness = EnvironmentBuilder.Instance.GetCorridorFitness(pos);
+            }
+            else if (envEnum == 2.0)
+            {
+                fitness = EnvironmentBuilder.Instance.GetMazeFitness(pos);
+            }
+            sensor.AddObservation(new Vector3(fitness, 0f, 0f));
+        }
 
         float[] sensorValues = Enumerable.Repeat(0.0f, 150).ToArray();
 
@@ -93,13 +99,10 @@ public class ModularRobot : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        //weirdSine += 0.01f;
-
         if (rootGO != null)
         {
             if (torque == 1.0f)
             {
-                Debug.LogError("Using velocity");
                 foreach (var module in allModules)
                 {
                     ConfigurableJoint joint = module.transform.GetChild(0).GetComponent<ConfigurableJoint>();
@@ -108,13 +111,13 @@ public class ModularRobot : Agent
                     tr.x = vectorAction[
                         module.GetComponent<ModuleParameterized>().index
                     ];
-                    //tr.x = Mathf.Sin(weirdSine);
                     joint.targetAngularVelocity = tr;
+
+                    module.GetComponent<ModuleParameterized>().SetColor(true, tr.x);
                 }
             }
             else
             {
-                Debug.LogError("Using target rotation");
                 foreach (var module in allModules)
                 {
                     ConfigurableJoint joint = module.transform.GetChild(0).GetComponent<ConfigurableJoint>();
@@ -122,8 +125,9 @@ public class ModularRobot : Agent
                     tr.x = vectorAction[
                         module.GetComponent<ModuleParameterized>().index
                     ];
-                    //tr.x = Mathf.Sin(weirdSine);
                     joint.targetRotation = tr;
+
+                    module.GetComponent<ModuleParameterized>().SetColor(false, tr.x);
                 }
             }
         }
@@ -156,9 +160,8 @@ public class ModularRobot : Agent
     public void MakeRobot(string gene)
     {
         var envParameters = Academy.Instance.EnvironmentParameters;
-        torque = envParameters.GetWithDefault("torque", 0.0f);
-        //GameManager.Instance.pythonCom.SendMessage("Modular Robot about to make robot");
-        //Debug.Log($"Gene got {gene}");
+        torque = envParameters.GetWithDefault("torque", 1.0f);
+        
         geneRoot = new Node();
 
         if (gene == "Random")
@@ -170,14 +173,13 @@ public class ModularRobot : Agent
             string[] rootInfo = gene.Substring(0, gene.IndexOf('|')).Split(',');
             geneRoot.scale = float.Parse(rootInfo[0]);
             InterpretStringGene(gene, new Stack<Node>(), geneRoot);
-            //GameManager.Instance.pythonCom.SendMessage("Modular Robot string interpreted");
         }
 
         SetIndex(geneRoot, 0);
 
         // Done reading the info given, now we must create the corresponding GameObject
 
-        rootGO = Instantiate(modulePrefab);
+        rootGO = Instantiate(modulePrefab,Vector3.zero, Quaternion.Euler(90, 0, 0));
         ModuleParameterized rootModule = rootGO.GetComponent<ModuleParameterized>();
         rootModule.SetIndex(geneRoot.index);
         DontDestroyOnLoad(rootGO);
@@ -186,7 +188,6 @@ public class ModularRobot : Agent
         rootModule.RemoveFixedJoint();
 
         BreadthFirstConstruct(geneRoot, rootGO);
-        //GameManager.Instance.pythonCom.SendMessage("Modular robot made");
     }
 
     private void BreadthFirstConstruct(Node rootNode, GameObject rootGO)
@@ -218,11 +219,6 @@ public class ModularRobot : Agent
                 //Debug.Log("ChildGO was null");
                 continue;
             }
-            //if (HasCollided(toProcessGO))
-            //{
-            //    Destroy(toProcessGO);
-            //    continue;
-            //}
             toProcessGO.GetComponent<ModuleParameterized>().SetIndex(toProcess.index);
 
             for (int i = 0; i < toProcess.children.Length; i++)
@@ -328,33 +324,6 @@ public class ModularRobot : Agent
         return null;
     }
 
-    private void IterativeConstruct(Node geneNode, GameObject parentGO)
-    {
-        if (HasCollided(parentGO))
-        {
-            Destroy(parentGO);
-            return;
-        }
-
-        allModules.Add(parentGO);
-
-        for (int i = 0; i < geneNode.children.Length; i++)
-        {
-            if (geneNode.children[i] != null)
-            {
-                GameObject childGO = ConnectModuleTo(parentGO, site: i, geneNode.children[i].angle, geneNode.children[i].scale);
-                if (childGO == null)
-                {
-                    //Debug.Log("ChildGO was null");
-                    return;
-                }
-                childGO.GetComponent<ModuleParameterized>().SetIndex(geneNode.children[i].index);
-
-                IterativeConstruct(geneNode.children[i], childGO);
-            }
-        }
-    }
-
     private int SetIndex(Node node, int index)
     {
         node.index = index;
@@ -411,17 +380,6 @@ public class ModularRobot : Agent
         {
             InterpretStringGene(gene.Substring(dividerPos + 1, gene.Length - (dividerPos + 1)), stack, child);
         }
-    }
-
-    private GameObject GetModuleGameObject(Transform child)
-    {
-        ModuleParameterized moduleParameterized = child.GetComponent<ModuleParameterized>();
-        while (moduleParameterized == null)
-        {
-            child = child.parent;
-            moduleParameterized = child.GetComponent<ModuleParameterized>();
-        }
-        return moduleParameterized.gameObject;
     }
 
     private int GetIndex(Transform child)
@@ -503,41 +461,6 @@ public class ModularRobot : Agent
 
         return false;
     }
-    
-    /*private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        foreach (var module in allModules)
-        {
-            List<Transform> colliderChildren;
-            if (module.GetComponent<ModuleParameterized>().connectionSites.Count > 1)
-            {
-                colliderChildren = new List<Transform>
-                {
-                    module.transform.GetChild(0).GetChild(3), // ConnectionSite
-                    module.transform.GetChild(0).GetChild(4), // ConnectionSite (1)
-                    module.transform.GetChild(0).GetChild(5), // ConnectionSite (2)
-                    module.transform.GetChild(1).GetChild(0).GetChild(0) // Cube
-                };
-            }
-            else
-            {
-                colliderChildren = new List<Transform>
-                {
-                    module.transform.GetChild(0).GetChild(1), // ConnectionSite
-                    module.transform.GetChild(1).GetChild(0).GetChild(0) // Cube
-                };
-            }
-
-            foreach (var child in colliderChildren)
-            {
-                BoxCollider collider = child.GetComponent<BoxCollider>();
-
-                Gizmos.DrawWireCube(collider.transform.position, collider.bounds.size);
-                Debug.Log(collider.bounds.size);
-            }
-        }
-    }*/
 
     private GameObject ConnectModuleTo(GameObject parentGO, int site, int angle, float scale)
     {

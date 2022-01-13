@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class Maze
@@ -7,6 +8,7 @@ public class Maze
     {
         public int[] coor;
         public List<Tile> children;
+        public Tile parent;
 
         public Tile(int[] c)
         {
@@ -35,7 +37,7 @@ public class Maze
     {
         // Take seed
         if (seed != -1)
-            Random.seed = seed;
+            Random.InitState(seed);
 
         N = height;
         M = width;
@@ -51,11 +53,68 @@ public class Maze
         }
 
         root = setOfTiles[M / 2];
+        root.parent = null;
         end = setOfTiles[(N - 1) * M + M / 2];
 
         ConnectRecursive(root, setOfTiles);
 
         if (corridor) ShaveSolution(root);
+
+        //MakeImg();
+    }
+
+    private void MakeImg()
+    {
+        Debug.Log("Beginning to make img");
+        int res = 20;
+        Texture2D texture = new Texture2D(N*res, M*res);
+
+        for (int i = 0; i < N*res; i++)
+        {
+            for (int j = 0; j < M*res; j++)
+            {
+                texture.SetPixel(i, j, Color.black);
+            }
+        }
+        Debug.Log("Colored black");
+
+        Queue<Tile> queue = new Queue<Tile>();
+        queue.Enqueue(root);
+
+        while (queue.Count > 0)
+        {
+            Tile tile = queue.Dequeue();
+            Vector3 pos = GetMidPos(tile);
+
+            for (int i = 0; i < res; i++)
+            {
+                for (int j = 0; j < res; j++)
+                {
+                    float x = pos.x + (i - res/2f) / res * tileSize[0];
+                    float z = pos.z + (j - res / 2f) / res * tileSize[2];
+
+                    float fitness = GetFitness(new Vector3(x,0,z));
+
+                    if (fitness == -1) Debug.LogError("Fitness fault");
+                    while (fitness > 6) fitness -= 6;
+                    texture.SetPixel(
+                        tile.coor[0] * res + i,
+                        tile.coor[1] * res + j,
+                        Color.HSVToRGB(fitness / 6, 1f, 1f)
+                    );
+                }
+            }
+
+            foreach (var child in tile.children)
+            {
+                queue.Enqueue(child);
+            }
+        }
+
+        // Save picture
+        texture.Apply();
+        byte[] bytes = texture.EncodeToPNG();
+        File.WriteAllBytes($"/Users/mia-katrinkvalsund/Desktop/picture.png", bytes);
     }
 
     private bool ShaveSolution(Tile tile)
@@ -88,6 +147,7 @@ public class Maze
 
             Tile child = neighbors[Random.Range(0, neighbors.Count)];
             tile.children.Add(child);
+            child.parent = tile;
             ConnectRecursive(child, setOfTiles);
         }
     }
@@ -166,8 +226,9 @@ public class Maze
         wallNr++;
 
         // Store the colliders next to the spawn point
-        // x | r | x
-        // x | x | x
+        // | x | x | r | x | x | 
+        // | x | x | x | x | x | 
+        // | x | x | x | x | x | 
         if (Mathf.Abs(tile.coor[0] - root.coor[0]) <= 2 && Mathf.Abs(tile.coor[1] - root.coor[1]) <= 2)
         {
             wallColliders.Add(cube);
@@ -188,5 +249,116 @@ public class Maze
             }
         }
         return false;
+    }
+
+    private Vector3 GetMidPos(Tile tile)
+    {
+        // Tile coordinate scaled by tilesize
+        float xPos = tile.coor[0] * tileSize[0];
+
+        // Important to note that this will hover above ground
+        float yPos = floorPos + tileSize[1] / 2;
+
+        // Tile coordinate scaled by tilesize
+        float zPos = tile.coor[1] * tileSize[2];
+        // Z position is offset in order to start in the middle of the row
+        zPos = zPos + beginOffset * M * tileSize[2] + tileSize[2] / 2;
+
+        return new Vector3(xPos, yPos, zPos);
+    }
+
+    private int GetCountOf(Tile tile)
+    {
+        int count = 1;
+        while (tile.parent != null)
+        {
+            count++;
+            tile = tile.parent;
+        }
+
+        return count;
+    }
+
+    public float GetFitness(Vector3 pos)
+    {
+        Tile tile = GetTile(pos);
+        // Out of bounds
+        if (tile == null) return -1;
+
+        int tileNr = GetCountOf(tile);
+
+        // Fitness is AT LEAST tileNr-1
+        // Now to figure out how much more (float yknow)
+
+        // find parent and child pos to interpolate between
+        Vector3 childPos;
+        Vector3 parPos;
+        // At root we have no parent
+        if (tile.parent == null)
+        {
+            parPos = GetMidPos(tile) - new Vector3(tileSize[0] / 2, 0, 0);
+        }
+        else
+        {
+            parPos = GetMidPos(tile.parent);
+        }
+        // At end we have no child
+        if (tile.children.Count == 0)
+        {
+            childPos = GetMidPos(tile) + new Vector3(tileSize[0] / 2, 0, 0);
+        }
+        else
+        {
+            childPos = GetMidPos(tile.children[0]);
+        }
+
+        // Make sure we only interpolate in the xz plane
+        parPos.y = 0;
+        childPos.y = 0;
+        pos.y = 0;
+
+        // Find distances to interpolation points
+        float distPar = (parPos - pos).magnitude;
+        float distChi = (childPos - pos).magnitude;
+
+        return tileNr-1 + 2*(distPar / (distPar + distChi));
+
+        // Normalize against path end
+    }
+
+    private Tile GetTile(Vector3 pos)
+    {
+        Queue<Tile> queue = new Queue<Tile>();
+        queue.Enqueue(root);
+
+        Vector3 tileSizeVec3 = new Vector3(tileSize[0], tileSize[1], tileSize[2]);
+
+        while (queue.Count > 0)
+        {
+            Tile tile = queue.Dequeue();
+            Vector3 midPos = GetMidPos(tile);
+
+            if (PosInCube(pos, midPos, tileSizeVec3/2f))
+            {
+                return tile;
+            }
+            else
+            {
+                foreach (var child in tile.children)
+                {
+                    queue.Enqueue(child);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private bool PosInCube(Vector3 pos, Vector3 midPos, Vector3 halfScale)
+    {
+        bool inX = pos.x >= midPos.x - halfScale.x && pos.x <= midPos.x + halfScale.x;
+        bool inZ = pos.z >= midPos.z - halfScale.z && pos.z <= midPos.z + halfScale.z;
+
+        return inX && inZ;
     }
 }

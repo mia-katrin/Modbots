@@ -21,7 +21,7 @@ from deap import base,tools,algorithms
 from modbots.plotting.plotter import Plotter
 from modbots.creature_types.configurable_individual import Individual
 individual_class = Individual
-from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
+from modbots.evaluate import get_env, evaluate, close_env, set_env_variables, set_env_seeds
 from modbots.util import sort_to_chunks, calc_time_evolution
 
 def get_runNr():
@@ -115,7 +115,7 @@ def init_documentation(runNr, statement):
     with open(f"experiments/run{runNr}/statement.txt", "w") as file:
         file.write(statement)
     with open(f"experiments/all_statements.txt", "a") as file:
-        file.write(f"\nRun {runNr}: {change}")
+        file.write(f"\nRun {runNr}: {statement}")
 
     # Save config
     config.save(f"experiments/run{runNr}/{config.filename}")
@@ -130,6 +130,8 @@ def evolve(config, statement=None, show_figs=True):
         init_documentation(runNr, statement)
 
     set_env_variables(config=config)
+    if 1.0 <= config.evaluation.env_enum <= 2.0:
+        set_env_seeds(np.round(np.random.rand(3)*1000))
 
     # init toolbox
     toolbox, pool = init_toolbox(config)

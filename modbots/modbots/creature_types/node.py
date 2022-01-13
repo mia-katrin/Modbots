@@ -1,10 +1,12 @@
 import numpy as np
+import copy
 
 from modbots.util import bounce_back, wrap_around
 
+
 class Node:
     def __init__(self, variable_scale=False, growing=False):
-        self.scale = .16 if growing else 1. if not variable_scale else np.random.rand() * 2. + 1.
+        self.scale = .16 if growing else 1. if not variable_scale else np.random.rand() * 2. + .16
         self.angle = np.random.choice([0,90,180,270]).item() # to int
         self.children = [None,None,None]
 
@@ -14,13 +16,15 @@ class Node:
 
             # Angle
             if rand_num < config.mutation.angle:
-                self.angle += -90 if np.random.rand() <= 0.5 else 90
+                change = -90 if np.random.rand() <= 0.5 else 90
+                self.angle += change
                 self.angle = wrap_around(self.angle, [0, 270])
-                return "Angle"
+                return f"Angle {change}"
             # Remove node
             elif rand_num < config.mutation.angle + config.mutation.remove_node:
-                if len(self.occupied_spots_list()) != 0:
-                    self.children[np.random.choice(self.occupied_spots_list())] = None
+                leaves = self.get_indexes_of(lambda x: x is not None and x.isleaf())
+                if len(leaves) != 0:
+                    self.children[np.random.choice(leaves)] = None
                     return "Remove"
             # Add node
             elif rand_num < config.mutation.angle + config.mutation.remove_node + config.mutation.add_node:
@@ -38,24 +42,27 @@ class Node:
                 # growing and not variable
                 if config.individual.growing and not config.individual.variable_scale:
                     # Add a random small num
-                    val = self.scale + (np.random.rand() * 0.5)
+                    val = self.scale + (np.random.rand() * 0.1)
                     # Scale is that or 1, the smallest option
                     self.scale = min(val, 1)
                 else:
                     # When growing and variable, or simply variable
-                    val = self.scale + (np.random.rand() - 0.5)
+                    val = self.scale + (np.random.rand()*0.2 - 0.1)
                     self.scale = bounce_back(val, (0.1, 3))
 
                 if self.scale < 1.0:
                     self.children[1] = None
                     self.children[2] = None
-                return "Scale"
+                return f"Scale {val}"
             # Copy branch
             elif rand_num <= config.mutation.angle + config.mutation.remove_node + config.mutation.add_node + config.mutation.scale + config.mutation.copy_branch:
-                print("Copy")
-                pass
+                if 1 <= len(self.occupied_spots_list()) <= 2:
+                    child = self.children[np.random.choice(self.occupied_spots_list())]
+                    child = copy.deepcopy(child)
+                    self.children[np.random.choice(self.open_spots_list())] = child
+                    return "Copy"
 
-        print("Could not mutate!") # Should never really happen
+        print("Could not mutate!")
         return "None"
 
     def open_spots_list(self):
@@ -71,3 +78,6 @@ class Node:
             if expression(self.children[i]):
                 indexes.append(i)
         return indexes
+
+    def isleaf(self):
+        return len(self.occupied_spots_list()) == 0

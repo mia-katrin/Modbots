@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Unity.MLAgents;
 using UnityEngine;
 
 public class ModuleParameterized : MonoBehaviour
@@ -13,15 +13,17 @@ public class ModuleParameterized : MonoBehaviour
     [Tooltip("This is the joint that should be connected to the parent object")]
     [SerializeField] public ConfigurableJoint attachmentJoint;
 
-    public bool collisionEntered = false;
     private float originalFemaleDisplacement;
-
     public int index = -1;
 
     public void SetIndex(int i)
     {
         index = i;
+        ColorBasedOnIndex(i);
+    }
 
+    public void ColorBasedOnIndex(int i)
+    {
         float max = 7;
 
         float r = 1.0f;
@@ -31,9 +33,10 @@ public class ModuleParameterized : MonoBehaviour
         {
             g = 0f;
             b = (max - i) / max;
-        } else
+        }
+        else
         {
-            g = (i- max) / max;
+            g = (i - max) / max;
             b = 0f;
         }
 
@@ -45,6 +48,33 @@ public class ModuleParameterized : MonoBehaviour
             }
         }
         transform.GetChild(1).GetChild(1).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
+    }
+
+    public void SetColor(bool torque, float controlValue)
+    {
+        float r;
+        float g;
+        float b;
+        if (torque == true)
+        {
+            r = (3f + controlValue) / 6f;
+            g = 0f;
+            b = 1f - (3f + controlValue) / 6f;
+        }
+        else
+        {
+            r = (1f + controlValue) / 2f;
+            g = 0.5f;
+            b = 0.5f;
+        }
+
+        for (int j = 0; j < transform.GetChild(0).childCount; j++)
+        {
+            if (transform.GetChild(0).GetChild(j).name.StartsWith("ConnectionSite"))
+            {
+                transform.GetChild(0).GetChild(j).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
+            }
+        }
     }
 
     private void Awake()
@@ -156,9 +186,22 @@ public class ModuleParameterized : MonoBehaviour
             positionSpring = 0,
             positionDamper = 1e10f,
         };
-        angularXdrive.positionSpring = 0;
-        angularXdrive.positionDamper = 400;
-        angularXdrive.maximumForce = 400;
+
+        var envParameters = Academy.Instance.EnvironmentParameters;
+        float torque = envParameters.GetWithDefault("torque", 1.0f);
+
+        if (torque == 1.0)
+        {
+            angularXdrive.positionSpring = 0;
+            angularXdrive.positionDamper = 500;
+        }
+        else
+        {
+            angularXdrive.positionSpring = 500;
+            angularXdrive.positionDamper = 5;
+        }
+
+        angularXdrive.maximumForce = 500;
         cj.angularXDrive = angularXdrive;
 
         // Angular limits
