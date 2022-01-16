@@ -62,7 +62,10 @@ class Individual:
 
     def get_actions(self, observation):
         if self.controller != None:
-            return self.controller.get_actions(observation)
+            actions = self.controller.get_actions(observation)
+            # Dead root
+            actions[0][0] = 0.0
+            return actions
         return np.zeros((1,50), dtype=float)
 
     def save_individual(self, filename):
@@ -87,7 +90,7 @@ class Individual:
             self.controller.mutate(config) # Force mut if central else very likely but not always
             self.mutation_history.append("Control")
             mutated = True
-        elif rand_num < config.ea.mut_rate:
+        elif rand_num <= config.ea.mut_rate:
             mutated = self.body.mutate(config)
             self.mutation_history.append(f"Body:{self.body.mutation_history[-1]}")
         else:

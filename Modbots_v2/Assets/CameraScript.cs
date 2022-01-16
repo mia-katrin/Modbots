@@ -36,7 +36,7 @@ public class CameraScript : MonoBehaviour
     private void ResetPosition()
     {
         var envParameters = Academy.Instance.EnvironmentParameters;
-        float envEnum = envParameters.GetWithDefault("envEnum", 0.0f);
+        float envEnum = envParameters.GetWithDefault("envEnum", 3.0f);
 
         switch (envEnum)
         {

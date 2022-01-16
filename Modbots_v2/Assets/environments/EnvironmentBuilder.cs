@@ -35,7 +35,7 @@ public class EnvironmentBuilder : MonoBehaviour
     {
 
         var envParameters = Academy.Instance.EnvironmentParameters;
-        float envEnum = envParameters.GetWithDefault("envEnum", 0.0f);
+        float envEnum = envParameters.GetWithDefault("envEnum", 3.0f);
         int seed = (int)envParameters.GetWithDefault("seed", 42.0f);
 
         // The environment is always gone at the start, so instantiate and
@@ -69,7 +69,7 @@ public class EnvironmentBuilder : MonoBehaviour
     public bool CollisionCheck(BoxCollider boxCollider)
     {
         var envParameters = Academy.Instance.EnvironmentParameters;
-        float envEnum = envParameters.GetWithDefault("envEnum", 0.0f);
+        float envEnum = envParameters.GetWithDefault("envEnum", 3.0f);
 
         switch (envEnum)
         {

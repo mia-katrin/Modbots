@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 0.29
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.046902817, g: 0.25723717, b: 0.5849056, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 4067de1a02072244798361060c5e7325, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 71f14a2d79f732f4d9893ef1b911f4ff, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -781,7 +781,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.8490566, g: 0.71769315, b: 0.35644355, a: 1}
+  m_Color: {r: 1, g: 0.97072476, b: 0.8915094, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -1161,7 +1161,6 @@ MonoBehaviour:
   rootGO: {fileID: 0}
   allModules: []
   destroyedIndexes: 
-  myIndex: 0
   torque: 0
 --- !u!114 &1116932021
 MonoBehaviour:
@@ -1175,7 +1174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 5
+  DecisionPeriod: 10
   TakeActionsBetweenDecisions: 0
 --- !u!114 &1116932022
 MonoBehaviour:
@@ -2850,8 +2849,6 @@ MonoBehaviour:
   currentGene: 
   resetting: 0
   firstReset: 1
-  myIndex: 0
-  sequence: 0
   robotElseModule: 1
 --- !u!114 &1890165990
 MonoBehaviour:

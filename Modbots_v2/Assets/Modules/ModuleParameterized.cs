@@ -24,55 +24,36 @@ public class ModuleParameterized : MonoBehaviour
 
     public void ColorBasedOnIndex(int i)
     {
-        float max = 7;
-
-        float r = 1.0f;
-        float g;
-        float b;
-        if (i <= max)
-        {
-            g = 0f;
-            b = (max - i) / max;
-        }
-        else
-        {
-            g = (i - max) / max;
-            b = 0f;
-        }
+        float max = 14;
+        Color color = Color.Lerp(Color.magenta, Color.yellow, i / max);
 
         for (int j = 0; j < transform.GetChild(0).childCount; j++)
         {
             if (transform.GetChild(0).GetChild(j).name.StartsWith("ConnectionSite"))
             {
-                transform.GetChild(0).GetChild(j).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
+                transform.GetChild(0).GetChild(j).gameObject.GetComponent<Renderer>().material.color = color;
             }
         }
-        transform.GetChild(1).GetChild(1).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
+        transform.GetChild(1).GetChild(1).gameObject.GetComponent<Renderer>().material.color = color;
     }
 
     public void SetColor(bool torque, float controlValue)
     {
-        float r;
-        float g;
-        float b;
+        Color color;
         if (torque == true)
         {
-            r = (3f + controlValue) / 6f;
-            g = 0f;
-            b = 1f - (3f + controlValue) / 6f;
+            color = Color.Lerp(Color.blue, Color.red, (3f + controlValue) / 6f);
         }
         else
         {
-            r = (1f + controlValue) / 2f;
-            g = 0.5f;
-            b = 0.5f;
+            color = Color.Lerp(Color.green, Color.magenta, (1f + controlValue) / 2f);
         }
 
         for (int j = 0; j < transform.GetChild(0).childCount; j++)
         {
             if (transform.GetChild(0).GetChild(j).name.StartsWith("ConnectionSite"))
             {
-                transform.GetChild(0).GetChild(j).gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
+                transform.GetChild(0).GetChild(j).gameObject.GetComponent<Renderer>().material.color = color;
             }
         }
     }
@@ -198,7 +179,7 @@ public class ModuleParameterized : MonoBehaviour
         else
         {
             angularXdrive.positionSpring = 500;
-            angularXdrive.positionDamper = 5;
+            angularXdrive.positionDamper = 0;
         }
 
         angularXdrive.maximumForce = 500;

@@ -6,7 +6,7 @@ from modbots.creature_types.node import Node
 
 class Body:
     def __init__(self, variable_scale=False, gene=None):
-        self.root = Node(variable_scale=variable_scale)
+        self.root = Node()
         self._nr_expressed_modules = -1
         if gene != None:
             self._interpret_string_gene(gene)
@@ -19,9 +19,7 @@ class Body:
         self._recursive_construct(self.root, config, depth=config.individual.ind_depth-1)
 
         if config.individual.force_interesting:
-            while self.get_nr_modules() <= 2 or \
-                (self.root.scale < 1 and self.root.children[0] == None) or \
-                (self.root.scale < 1 and self.root.children[0].scale < 1):
+            while self.get_nr_modules() < 3:
                 self = Body(config.individual.variable_scale)
                 self._recursive_construct(self.root, config, depth=config.individual.ind_depth-1)
 
@@ -33,7 +31,7 @@ class Body:
 
         for i in range(len(node.children)):
             if bool_from_distribution("gaussian", c_mu=config.individual.creation_mu, c_std=config.individual.creation_std, depth=depth, o_depth=config.individual.ind_depth):
-                node.children[i] = Node(variable_scale=config.individual.variable_scale) #0F 1R 2L
+                node.children[i] = Node() #0F 1R 2L
                 self._recursive_construct(node.children[i], config, depth-1)
 
     def _recursive_counting(self, node) -> int:

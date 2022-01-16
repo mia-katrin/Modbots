@@ -13,7 +13,7 @@ class SineController():
 	def __init__(self, hash="Hei :)"):
 		self.nodeid = hash
 		self.state = 0.0
-		self.amp = np.random.uniform(0.0,6.0)
+		self.amp = np.random.uniform(0.0,1.0)
 		self.freq = np.random.uniform(0.0,6.0)
 		self.phase = np.random.uniform(-1,1)
 		self.offset = np.random.uniform(-1,1)
@@ -35,42 +35,17 @@ class SineController():
 	def mutate(self, config):
 		rand_choice = ["amp", "freq", "phase", "offset"][np.random.choice([0,1,2,3])]
 		to_mutate = "self."+rand_choice
-		exec(to_mutate + f"+= {np.random.uniform(-1,1)*0.5}")
+		exec(to_mutate + f"+= {np.random.uniform(-1,1)*0.2}")
 		exec(f"{to_mutate} = bounce_back({to_mutate}, SineController.allowable_{rand_choice})")
 
 if __name__ == "__main__":
 	d = []
-	controller = Controller("hei")
-	for i in range(1000):
-		d.append(controller.update(.02))
+	controller = SineController("hei")
+	for i in range(100):
+		d.append(controller.advance(None, .2))
 	plt.plot(d)
-
-	plt.figure()
-	d = []
-	controller.reset()
-	controller.mutate()
-	for i in range(300):
-		d.append(controller.update(.02))
-	controller.mutate()
-	for i in range(300):
-		d.append(controller.update(.02))
-	controller.mutate()
-	for i in range(300):
-		d.append(controller.update(.02))
-	controller.mutate()
-	for i in range(300):
-		d.append(controller.update(.02))
-	plt.plot(d)
-
-	plt.figure()
-	d = [[],[],[],[]]
-	for _ in range(100):
-		controller.mutate()
-		d[0].append(controller.amp)
-		d[1].append(controller.freq)
-		d[2].append(controller.phase)
-		d[3].append(controller.offset)
-
-	for p in d:
-		plt.plot(p)
 	plt.show()
+
+	print(controller)
+	controller.mutate(None)
+	print(controller)
