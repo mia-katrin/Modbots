@@ -7,9 +7,10 @@ from modbots.creature_types.configurable_individual import Individual
 from config_util import get_config
 
 config = get_config()
+config.individual.force_interesting = False
 
-N_INDS = 1000
-n = 10
+N_INDS = 200
+n = 20
 
 def mu_sigma(config):
     # Make histogram of robot number of modules
@@ -32,8 +33,8 @@ def mu_sigma(config):
 
     return mean, std
 
-creation_mus = np.linspace(start=0.0, stop=1.7, num=n)
-creation_stds = np.linspace(start=0.0, stop=3, num=n)
+creation_mus = np.linspace(start=0, stop=1, num=n)
+creation_stds = np.linspace(start=0, stop=1, num=n)
 
 mus = []
 stds = []

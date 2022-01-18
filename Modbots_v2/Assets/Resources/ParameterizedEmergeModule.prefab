@@ -762,7 +762,6 @@ MonoBehaviour:
   parentConnectionSite: {fileID: 5531964572376966866}
   joints: []
   attachmentJoint: {fileID: 0}
-  collisionEntered: 0
   index: -1
   sensorValues: []
 --- !u!1 &7789632487809820083

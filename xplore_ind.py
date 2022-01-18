@@ -28,6 +28,12 @@ parser.add_argument(
     help='The gene file. Write "random" to get a random ind using the config',
     default="bestInd/ind"
 )
+parser.add_argument(
+    '--record',
+    action="store_true",
+    help='To record or not',
+    default=False
+)
 
 args = parser.parse_args()
 
@@ -42,7 +48,7 @@ else:
 
 set_env_variables(config=config)
 
-fitness = evaluate(ind)
+fitness = evaluate(ind, force_evaluate=True, record=args.record)
 print(f"We got fitness {fitness}")
 
 close_env()

@@ -182,12 +182,14 @@ def evolve(config, statement=None, show_figs=True):
             plotter.print_stats()
     except KeyboardInterrupt:
         close_env()
-        pool.close()
+        if config.experiment.n_cores > 1:
+            pool.close()
 
         if input("Do you want to generate plots?") != "y":
             raise KeyboardInterrupt("You chose to simply exit")
     close_env()
-    pool.close()
+    if config.experiment.n_cores > 1:
+        pool.close()
 
     bestInd.save_individual("bestInd/ind")
     print("Recorded:",bestInd.fitness)

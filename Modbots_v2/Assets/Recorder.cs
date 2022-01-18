@@ -49,13 +49,22 @@ public class Recorder : MonoBehaviour
             if (ModularRobot.Instance.rootGO != null)
             {
                 Vector3 pos = ModularRobot.Instance.rootGO.transform.GetChild(0).transform.position;
+                Quaternion rot = ModularRobot.Instance.rootGO.transform.GetChild(0).transform.rotation;
                 foreach (var module in ModularRobot.Instance.allModules)
                 {
                     pos = module.transform.GetChild(0).transform.position;
-                    text.Add($"{pos.x},{pos.y},{pos.z}|");
+                    rot = module.transform.GetChild(0).transform.rotation;
+                    // 0,0,0v0,0,0,0/
+                    text.Add($"{pos.x},{pos.y},{pos.z}v{rot.x},{rot.y},{rot.z},{rot.w}/");
+                    pos = module.transform.GetChild(1).transform.position;
+                    rot = module.transform.GetChild(1).transform.rotation;
+                    float scale = module.GetComponent<ModuleParameterized>().scale;
+                    // 1.0v0,0,0v0,0,0,0|
+                    text.Add($"{scale}v{pos.x},{pos.y},{pos.z}v{rot.x},{rot.y},{rot.z},{rot.w}|");
                 }
+                // 0,0,0v0,0,0,0/1.0v0,0,0v0,0,0,0|...|\n
                 text.Add($"\n");
-                GameManager.Instance.pythonCom.SendMessage("Hello written");
+                GameManager.Instance.pythonCom.SendMessage("State written");
             }
         }
         GameManager.Instance.pythonCom.SendMessage("Done, about to save frames");

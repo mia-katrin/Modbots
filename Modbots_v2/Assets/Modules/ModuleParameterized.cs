@@ -15,6 +15,7 @@ public class ModuleParameterized : MonoBehaviour
 
     private float originalFemaleDisplacement;
     public int index = -1;
+    public float scale = 1f;
 
     public void SetIndex(int i)
     {
@@ -67,6 +68,7 @@ public class ModuleParameterized : MonoBehaviour
     // MUST BE CALLED!
     public void SetSize(float xSize)
     {
+        scale = xSize;
         // Get both colliders
         GameObject collider1 = transform.GetChild(0).gameObject;
         GameObject collider2 = transform.GetChild(1).gameObject;
