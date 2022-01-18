@@ -109,9 +109,9 @@ Library: lib_burst_generated
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.TextMeshPro.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.Burst.dll
---root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Assembly-CSharp.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.Poly2Tri.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ML-Agents.CommunicatorObjects.dll
+--root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Assembly-CSharp.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.Csg.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.KdTree.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.Stl.dll
@@ -274,9 +274,9 @@ Library: lib_burst_generated
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.TextMeshPro.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.Burst.dll
---root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Assembly-CSharp.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.Poly2Tri.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ML-Agents.CommunicatorObjects.dll
+--root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Assembly-CSharp.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.Csg.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.KdTree.dll
 --root-assembly=/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots_v2/Temp/StagingArea/Data/Managed/Unity.ProBuilder.Stl.dll
