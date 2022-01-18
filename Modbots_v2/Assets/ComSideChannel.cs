@@ -16,6 +16,7 @@ public class ComSideChannel : SideChannel
     public static event Action<string> OnReceivedEncoding;
     public static event Action<string> RecordingRequested;
     public static event Action StopRecordingRequested;
+    public static event Action<string> PlayRecording;
 
     public ComSideChannel()
     {
@@ -39,6 +40,11 @@ public class ComSideChannel : SideChannel
         else if (receivedString == "Stop recording")
         {
             StopRecordingRequested.Invoke();
+        }
+        else if (receivedString.StartsWith("Play"))
+        {
+            string filename = receivedString.Split(',')[1].Trim('_');
+            PlayRecording(filename);
         }
         else
         {

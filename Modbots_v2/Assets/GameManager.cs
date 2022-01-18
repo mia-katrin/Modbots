@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
         // Calling this forces that
         Physics.SyncTransforms();
         yield return new WaitForFixedUpdate();
-        modularRobot.PruneCollisions();
+        if (currentGene.Length > 0) modularRobot.PruneCollisions();
         Physics.autoSimulation = true;
 
         string indexes = "Created modules: ";

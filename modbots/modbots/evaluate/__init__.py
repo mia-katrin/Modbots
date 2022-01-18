@@ -105,10 +105,10 @@ def evaluate(ind, force_evaluate=True, record=False):
 
         side_channel.send_string(ind.body_to_str())
         param_channel.set_float_parameter("seed", env_seed)
-        env.reset()
-
         if record:
-            side_channel.send_string("Record, /Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/video")
+            side_channel.send_string("Record, hello.txt")
+
+        env.reset()
 
         # Action plotting
         #lines = [[] for _ in range(ind.get_nr_modules())]
@@ -151,7 +151,10 @@ def evaluate(ind, force_evaluate=True, record=False):
 
         if record:
             side_channel.send_string("Stop recording")
-
+            import time
+            env.step()
+            time.sleep(1)
+        
         # Action plotting
         #import matplotlib.pyplot as plt
         #for line in lines:

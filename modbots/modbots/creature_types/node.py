@@ -7,7 +7,7 @@ class Node:
     allowable_length = (0.1, 3)
 
     def __init__(self, variable_scale=False, growing=False):
-        self.scale = .16 if growing else 1. if not variable_scale else np.random.rand() * 2. + .16
+        self.scale = .05 if growing else 1. if not variable_scale else np.random.rand() * 2. + .05
         self.angle = np.random.choice([0,90,180,270]).item() # to int
         self.children = [None,None,None]
 
@@ -56,7 +56,7 @@ class Node:
             # growing and not variable
             if config.individual.growing and not config.individual.variable_scale:
                 # Add a random small num
-                val = self.scale + (np.random.rand() * 0.1)
+                val = self.scale + (np.random.rand() * 0.2)
                 # Scale is that or 1, the smallest option
                 self.scale = min(val, 1.0)
             else:

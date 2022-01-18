@@ -734,7 +734,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 696133017}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -3.999, z: 0}
+  m_LocalPosition: {x: 0, y: -4.01, z: 0}
   m_LocalScale: {x: 4, y: 1, z: 4}
   m_Children: []
   m_Father: {fileID: 0}
@@ -747,7 +747,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 696133017}
-  m_Material: {fileID: 13400000, guid: eb64eabde2b31421fa0de82997a5b72a, type: 2}
+  m_Material: {fileID: 13400000, guid: 9f9ab388208bc45a19e945db8d0a60e5, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -2878,7 +2878,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1931940935}
   - component: {fileID: 1931940936}
-  - component: {fileID: 1931940937}
   m_Layer: 0
   m_Name: EnvironmentBuilder
   m_TagString: Untagged
@@ -2916,19 +2915,6 @@ MonoBehaviour:
   bumpyGround: {fileID: 0}
   stairs: {fileID: 6171412863756027167, guid: e886ccd3f4e8244438d64d6047ee7df9, type: 3}
   testColliders: []
---- !u!114 &1931940937
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1931940934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a35b623274dbd4ea98dc796d89b8dddc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  envEnum: 0
 --- !u!1001 &1147269942912125664
 PrefabInstance:
   m_ObjectHideFlags: 0

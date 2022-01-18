@@ -36,11 +36,11 @@ class TestNode(unittest.TestCase):
 
         # Growing should init as a small module
         node = Node(variable_scale=False, growing=True)
-        assert node.scale == 0.16
+        assert node.scale == 0.05
 
         # Growing takes presedence to variable scale
         node = Node(variable_scale=True, growing=True)
-        assert node.scale == 0.16
+        assert node.scale == 0.05
 
     def test_spots_list(self):
         """ Node has three functions to test children spots for factors, such as
@@ -147,7 +147,7 @@ class TestNode(unittest.TestCase):
 
         config.individual.growing = True
         node = Node()
-        node.scale = 0.1
+        node.scale = 0.05
 
         while node.scale < 1.0:
             assert node.mutate_add_node(config) == "Add on grow"
@@ -164,7 +164,7 @@ class TestNode(unittest.TestCase):
         config.individual.growing = True
         assert node.mutate_scale(config) == None
 
-        node.scale = 0.1
+        node.scale = 0.05
         while node.scale < 1.0:
             old_val = node.scale
             node.mutate_scale(config)

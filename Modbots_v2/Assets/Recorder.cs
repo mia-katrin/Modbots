@@ -36,42 +36,48 @@ public class Recorder : MonoBehaviour
     public void StartRecording(string filename)
     {
         doneEpisode = false;
-        List<Texture2D> frames = new List<Texture2D>();
 
-        StartCoroutine(SaveFrames(frames, filename));
+        StartCoroutine(RecordFrames(filename));
     }
 
-    private IEnumerator SaveFrames(List<Texture2D> frames, string filename)
+    private IEnumerator RecordFrames(string filename)
     {
-        int j = 0;
+        List<string> text = new List<string>();
         while (!doneEpisode)
         {
-            // Method found at: https://docs.unity3d.com/ScriptReference/WaitForEndOfFrame.html
-
-            // We should only read the screen buffer after rendering is complete
-            yield return new WaitForEndOfFrame();
-
-            // Read screen contents into the texture
-            Texture2D tex = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-            tex.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-            frames.Add(tex);
-            j++;
+            yield return new WaitForFixedUpdate();
+            if (ModularRobot.Instance.rootGO != null)
+            {
+                Vector3 pos = ModularRobot.Instance.rootGO.transform.GetChild(0).transform.position;
+                foreach (var module in ModularRobot.Instance.allModules)
+                {
+                    pos = module.transform.GetChild(0).transform.position;
+                    text.Add($"{pos.x},{pos.y},{pos.z}|");
+                }
+                text.Add($"\n");
+                GameManager.Instance.pythonCom.SendMessage("Hello written");
+            }
         }
+        GameManager.Instance.pythonCom.SendMessage("Done, about to save frames");
+        SaveFrames(text.ToArray(), filename);
+    }
 
-        for (int i = 0; i < frames.Count; i++)
+    private void SaveFrames(string[] lines, string filename)
+    {
+        GameManager.Instance.pythonCom.SendMessage($"Using file {filename}");
+        using FileStream fs = new FileStream(filename
+                                     , FileMode.OpenOrCreate
+                                     , FileAccess.ReadWrite);
+        GameManager.Instance.pythonCom.SendMessage("New streamwriter");
+        StreamWriter tw = new StreamWriter(fs);
+        GameManager.Instance.pythonCom.SendMessage("About to write");
+        foreach (var line in lines)
         {
-            frames[i].Apply();
-
-            // Encode texture into PNG
-            byte[] bytes = frames[i].EncodeToPNG();
-
-            // Write to a file in a video folder
-            // Path works on executable only
-            File.WriteAllBytes($"{Application.dataPath}/../../video/frame{i}.png", bytes);
+            tw.Write(line);
         }
-        for (int i = 0; i < frames.Count; i++)
-        {
-            Destroy(frames[i]);
-        }
+        GameManager.Instance.pythonCom.SendMessage("File written");
+        GameManager.Instance.pythonCom.SendMessage("About to close file");
+        tw.Flush();
+        GameManager.Instance.pythonCom.SendMessage("File is closed");
     }
 }

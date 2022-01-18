@@ -15,7 +15,7 @@ public class ModularRobot : Agent
     {
         public Node[] children = new Node[3] { null, null, null };
         public int angle = new int[4] { 0, 90, 180, 270 } [Random.Range(0, 4)];
-        public float scale = new float[2] { 1.0f, Random.Range(0.1f, 1.0f)} [Random.Range(0, 1)]; // Should be 2
+        public float scale = new float[2] { 1.0f, Random.Range(0.05f, 1.0f)} [Random.Range(0, 2)]; // Should be 2
         public int index;
     }
 
