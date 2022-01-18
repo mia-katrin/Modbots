@@ -27,7 +27,7 @@ env.reset()
 param_channel.set_float_parameter("torque", config.individual.torque)
 param_channel.set_float_parameter("envEnum", config.evaluation.env_enum)
 
-side_channel.send_string("Play, recorded_ind.txt")
+side_channel.send_string("Play,recorded_ind.txt")
 
 env.reset()
 

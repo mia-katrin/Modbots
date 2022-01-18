@@ -14,65 +14,72 @@ config.experiment.headless = True # Must always be True
 # EA
 config.ea.mut_rate = 0.1
 config.ea.n_generations = 100
-config.ea.pop_size = 100
+pop_size = 100
+config.ea.pop_size = n_cores*(pop_size//n_cores + (1 if pop_size%n_cores!=0 else 0))
 config.ea.nr_parents = 0
-config.ea.tournsize = 2
+config.ea.tournsize = 4
 
 # INDIVIDUAL
+config.individual.torque = 0.0
 config.individual.ind_depth = 5
-config.individual.creation_mu = 0.75
-config.individual.creation_std = 0.35
+config.individual.force_interesting = True
+config.individual.creation_mu = 0.632
+config.individual.creation_std = 0.157
 
 # EVALUATION
 config.evaluation.n_steps = 100
 config.evaluation.n_start_eval = 10
 config.evaluation.time_scale = None
+config.evaluation.env_enum = 0.0
+
+# CONTROL
+config.control.oscillatory = True
+config.control.ctrnn = False
+config.control.decentral = True
+config.control.copy_decentral = False
+config.control.pre_processing = False
+
+config.control.request_period = 0.2
+
+# MUTATION
+config.mutation.control = 0.5
+config.mutation.body = 0.5
 
 # Files remains as default on computer
 
-# CONTROL + INDIVIDUAL
-config.individual.torque = 1.0
+# MUTATION + INDIVIDUAL
+# Case 1
+config.individual.variable_scale = False
+config.individual.growing = False
 
-for control in ["sine", "ctrnn", "decentral_ctrnn", "copy_ctrnn", "pre_ctrnn"]:
-    config.control.oscillatory = True if control == "sine" else False
-    config.control.ctrnn = True if not control == "sine" else False
-    config.control.decentral = True if not control == "ctrnn" and not control == "pre_ctrnn" else False
-    config.control.copy_decentral = True if control == "copy_ctrnn" else False
-    config.control.pre_processing = True if control == "pre_ctrnn" else False
+config.mutation.angle = 0.15
+config.mutation.remove_node = 0.25
+config.mutation.add_node = 0.35
+config.mutation.scale = 0.0
+config.mutation.copy_branch = 0.25
 
-    if control == "copy_ctrnn":
-        # Copy brain mutation
-        config.mutation.copy_number = 2
-        config.mutation.copy_likelihood = 0.5
-        config.mutation.switch_copy_likelihood = 0.05
+config.save("baseline.cfg")
 
-    if control == "pre_ctrnn":
-        # Copy brain mutation
-        config.mutation.copy_number = 1
-        config.mutation.copy_likelihood = 0.0
-        config.mutation.switch_copy_likelihood = 0.00
+# Case 2
+config.individual.variable_scale = True
+config.individual.growing = False
 
-    # MUTATION + INDIVIDUAL
-    for mode in ["", "_growing"]:
-        if mode == "_growing":
-            config.mutation.control = 0.5
-            config.mutation.body = 0.5
-            config.mutation.angle = 0.1
-            config.mutation.remove_node = 0.3
-            config.mutation.add_node = 0.4
-            config.mutation.scale = 0.2
+config.mutation.angle = 0.1
+config.mutation.remove_node = 0.2
+config.mutation.add_node = 0.3
+config.mutation.scale = 0.2
+config.mutation.copy_branch = 0.2
 
-            config.individual.variable_scale = True
-            config.individual.growing = True
-        else:
-            config.mutation.control = 0.5
-            config.mutation.body = 0.5
-            config.mutation.angle = 0.2
-            config.mutation.remove_node = 0.3
-            config.mutation.add_node = 0.5
-            config.mutation.scale = 0.0
+config.save("variable_scale.cfg")
 
-            config.individual.variable_scale = False
-            config.individual.growing = False
+# Case 3
+config.individual.variable_scale = True
+config.individual.growing = True
 
-        config.save(control + mode + ".cfg")
+config.mutation.angle = 0.1
+config.mutation.remove_node = 0.2
+config.mutation.add_node = 0.3
+config.mutation.scale = 0.2
+config.mutation.copy_branch = 0.2
+
+config.save("gradual.cfg")
