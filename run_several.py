@@ -51,8 +51,8 @@ valid_intervals[run_label] = {
 
 for _ in range(OUTER_ROUNDS):
     #run_on_config("baseline.cfg")
-    run_on_config("variable_scale.cfg")
-    #run_on_config("gradual.cfg")
+    #run_on_config("variable_scale.cfg")
+    run_on_config("gradual.cfg")
 
 valid_intervals[run_label]["End runNr"] = get_runNr()-1
 with open("experiments/valid_intervals", "w") as file:
