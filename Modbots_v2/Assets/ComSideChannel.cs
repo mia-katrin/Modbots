@@ -34,7 +34,7 @@ public class ComSideChannel : SideChannel
         }
         else if (receivedString.StartsWith("Record"))
         {
-            string filename = receivedString.Split(',')[1].Trim('_');
+            string filename = receivedString.Split(',')[1].Trim(' ');
             RecordingRequested.Invoke(filename);
         }
         else if (receivedString == "Stop recording")
@@ -43,7 +43,7 @@ public class ComSideChannel : SideChannel
         }
         else if (receivedString.StartsWith("Play"))
         {
-            string filename = receivedString.Split(',')[1].Trim('_');
+            string filename = receivedString.Split(',')[1].Trim(' ');
             PlayRecording(filename);
         }
         else

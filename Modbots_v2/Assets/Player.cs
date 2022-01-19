@@ -10,15 +10,17 @@ public class Player : MonoBehaviour
     private static Player instance;
     public static Player Instance { get { return instance; } }
 
+    // Prefabs of parts that need animating
+    // Should not have any physics components
+    // Maybe having a collider is fine, but no rigidbodies
     public GameObject collider1Prefab;
     public GameObject collider2Prefab;
 
-    List<GameObject> spheres;
+    List<GameObject> animatedObjects;
 
-    // Use this for initialization
     void Awake()
     {
-        // Singleton enforce
+        // Singleton enforce pattern begin
         if (instance != null && instance != this)
         {
             this.gameObject.SetActive(false);
@@ -30,45 +32,45 @@ public class Player : MonoBehaviour
             instance = this;
         }
         DontDestroyOnLoad(gameObject);
+        // Singleton enforce pattern end
 
+        // Listen to events issued by the Unity-side side schannel
         ComSideChannel.PlayRecording += PlayRecording;
-        ComSideChannel.Instance.SendMessage("Subscribed");
     }
 
     private void PlayRecording(string filename)
     {
-        ComSideChannel.Instance.SendMessage("Start playing");
-        spheres = new List<GameObject>();
+        animatedObjects = new List<GameObject>();
         StartCoroutine(ReadFile(filename));
-        ComSideChannel.Instance.SendMessage("Coroutine started");
     }
 
-    // Update is called once per frame
     private IEnumerator ReadFile(string filename)
     {
-        ComSideChannel.Instance.SendMessage("About to make input stream");
         StreamReader inputStream = new StreamReader(filename);
 
-        ComSideChannel.Instance.SendMessage("About to read from file");
         while (!inputStream.EndOfStream)
         {
             yield return new WaitForFixedUpdate();
 
+            // Reading one line per fixed update
             string line = inputStream.ReadLine();
             TreatLine(line);
         }
 
         inputStream.Close();
-        ComSideChannel.Instance.SendMessage("Closed stream");
     }
 
     private void TreatLine(string line)
     {
-        foreach (var sphere in spheres)
+        // Likely a better solution to just move the objects instead of spawning
+        // them and deleting them
+        // But here I delete them all
+        // Performance bad, slow? Fix this :)
+        foreach (var obj in animatedObjects)
         {
-            Destroy(sphere);
+            Destroy(obj);
         }
-        spheres.Clear();
+        animatedObjects.Clear();
 
         // 1,1,1v2,2,2,2/0.1v3,3,3v4,4,4,4|...|\n => "1,1,1v2,2,2,2/0.1v3,3,3v4,4,4,4" , "..."
         string[] lineSplit = line.Split('|');
@@ -81,25 +83,11 @@ public class Player : MonoBehaviour
                 // 1,1,1v2,2,2,2/0.1v3,3,3v4,4,4,4 => "1,1,1v2,2,2,2" , "0.1v3,3,3v4,4,4,4"
                 string[] part1and2 = item.Split('/');
 
-                // 1,1,1v2,2,2,2 => "1,1,1" , "2,2,2,2"
-                string[] part1 = part1and2[0].Split('v');
-                GameObject collider1 = Instantiate(collider1Prefab);
-                collider1.transform.SetPositionAndRotation(
-                        SplitTransformVec3(part1[0]),
-                        SplitTransformQuat(part1[1]));
-                spheres.Add(collider1);
+                // Make the different parts
+                GameObject collider1 = MakeCol1(part1and2[0]);
+                float scale = MakeCol2(part1and2[1]);
 
-                // 0.1v3,3,3v4,4,4,4 => "0.1" , "3,3,3" , "4,4,4,4"
-                string[] part2 = part1and2[1].Split('v');
-
-                GameObject collider2 = Instantiate(collider2Prefab);
-                collider2.transform.SetPositionAndRotation(
-                        SplitTransformVec3(part2[1]),
-                        SplitTransformQuat(part2[2]));
-                float scale = float.Parse(part2[0]);
-                collider2.transform.GetChild(0).transform.GetChild(0).localScale += Vector3.up * (scale - 1);
-                spheres.Add(collider2);
-
+                // Adjust the model after the info
                 if (scale < 1f)
                 {
                     Destroy(collider1.transform.GetChild(0).GetChild(0).GetChild(0).gameObject);
@@ -107,6 +95,36 @@ public class Player : MonoBehaviour
                 }
             }
         }
+    }
+
+    private GameObject MakeCol1(string info)
+    {
+        // 1,1,1v2,2,2,2 => "1,1,1" , "2,2,2,2"
+        string[] part1 = info.Split('v');
+
+        GameObject collider1 = Instantiate(collider1Prefab);
+        collider1.transform.SetPositionAndRotation(
+                SplitTransformVec3(part1[0]),
+                SplitTransformQuat(part1[1]));
+        animatedObjects.Add(collider1);
+
+        return collider1;
+    }
+
+    private float MakeCol2(string info)
+    {
+        // 0.1v3,3,3v4,4,4,4 => "0.1" , "3,3,3" , "4,4,4,4"
+        string[] part2 = info.Split('v');
+
+        GameObject collider2 = Instantiate(collider2Prefab);
+        collider2.transform.SetPositionAndRotation(
+                SplitTransformVec3(part2[1]),
+                SplitTransformQuat(part2[2]));
+        float scale = float.Parse(part2[0]);
+        collider2.transform.GetChild(0).transform.GetChild(0).localScale += Vector3.up * (scale - 1);
+        animatedObjects.Add(collider2);
+
+        return scale;
     }
 
     private Vector3 SplitTransformVec3(string stringRepresentation)

@@ -44,6 +44,11 @@ public class ModularRobot : Agent
         base.MaxStep = 10000;
     }
 
+    public bool RobotExists()
+    {
+        return rootGO != null;
+    }
+
     public Vector3 GetPosition()
     {
         if (rootGO != null)
