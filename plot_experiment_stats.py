@@ -46,6 +46,15 @@ colors = {
     'pre_ctrnn_growing.cfg_avg':"green",
 }
 
+colors = {
+    'baseline.cfg':"gold",
+    'baseline.cfg_avg':"orange",
+    'variable_scale.cfg':"lightskyblue",
+    'variable_scale.cfg_avg':"blue",
+    'gradual.cfg':(204/225, 121/225, 167/225),
+    'gradual.cfg_avg':(213/225, 94/225, 0)
+}
+
 linestyles = {
     'sine.cfg':"dashed",
     'ctrnn.cfg':"dashed",
@@ -70,6 +79,15 @@ linestyles = {
     'decentral_ctrnn_growing.cfg_avg':"dashdot",
     'copy_ctrnn_growing.cfg_avg':"dashdot",
     'pre_ctrnn_growing.cfg_avg':"dashdot",
+}
+linestyles = {
+    'baseline.cfg':"dashed",
+    'variable_scale.cfg':"dashed",
+    'gradual.cfg':"dashed",
+
+    'baseline.cfg_avg':"solid",
+    'variable_scale.cfg_avg':"solid",
+    'gradual.cfg_avg':"solid"
 }
 
 def plot_runs(dataname, stat="Means"):
