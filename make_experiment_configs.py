@@ -12,9 +12,9 @@ config.experiment.n_cores = n_cores
 config.experiment.headless = True # Must always be True
 
 # EA
-config.ea.mut_rate = 0.1
-config.ea.n_generations = 100
-pop_size = 100
+config.ea.mut_rate = 0.5
+config.ea.n_generations = 40
+pop_size = 40
 config.ea.pop_size = n_cores*(pop_size//n_cores + (1 if pop_size%n_cores!=0 else 0))
 config.ea.nr_parents = 0
 config.ea.tournsize = 4
@@ -52,11 +52,11 @@ config.mutation.body = 0.5
 config.individual.variable_scale = False
 config.individual.growing = False
 
-config.mutation.angle = 0.15
-config.mutation.remove_node = 0.25
-config.mutation.add_node = 0.35
+config.mutation.angle = 0.2
+config.mutation.remove_node = 0.3
+config.mutation.add_node = 0.3
 config.mutation.scale = 0.0
-config.mutation.copy_branch = 0.25
+config.mutation.copy_branch = 0.2
 
 config.save("baseline.cfg")
 
@@ -76,10 +76,10 @@ config.save("variable_scale.cfg")
 config.individual.variable_scale = True
 config.individual.growing = True
 
-config.mutation.angle = 0.1
-config.mutation.remove_node = 0.2
-config.mutation.add_node = 0.3
-config.mutation.scale = 0.2
-config.mutation.copy_branch = 0.2
+config.mutation.angle = 0.2
+config.mutation.remove_node = 0.1
+config.mutation.add_node = 0.1
+config.mutation.scale = 0.5
+config.mutation.copy_branch = 0.1
 
 config.save("gradual.cfg")
