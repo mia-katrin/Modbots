@@ -43,7 +43,7 @@ def write_to_valid_intervals(run_label, key, value, liste=True):
         valid_intervals[run_label] = {}
 
     if liste:
-        if key is in valid_intervals[run_label].keys():
+        if key in valid_intervals[run_label].keys():
             valid_intervals[run_label][key].append(value)
         else:
             valid_intervals[run_label][key] = [value]
