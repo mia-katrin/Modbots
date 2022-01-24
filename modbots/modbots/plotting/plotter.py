@@ -13,6 +13,13 @@ class Plotter:
 
         self.colordown = True
 
+    def nr_mutated(self, population):
+        nr_mutated = 0
+        for ind in population:
+            if ind.needs_evaluation:
+                nr_mutated += 1
+        return nr_mutated
+
     def save_stats(self, population):
         nr_modules = []
         fitnesses = []
@@ -22,6 +29,7 @@ class Plotter:
         self._save_min_max(nr_modules, "Nr Modules")
         self._save_min_max(fitnesses, "Fitness")
         self._save_stat(diversity(population), "Diversity")
+        self._save_stat(self.nr_mutated(population), "Nr Mutated")
 
         if hasattr(population[0], "color_id"):
             population = sorted(population, key=lambda x: x.color_id)
