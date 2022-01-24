@@ -33,7 +33,7 @@ class Node:
                     self.children[index] = None
                     return f"Remove {scale}"
                 else:
-                    val = self.children[index].scale - (np.random.rand()*0.1)
+                    val = self.children[index].scale - (np.random.rand()*0.5)
                     self.children[index].scale = max(val, self.allowable_length[0])
                     return "Remove shrink"
         else:
@@ -45,7 +45,7 @@ class Node:
 
     def mutate_add_node(self, config) -> str:
         if config.individual.gradual and self.scale < 1.0:
-            val = self.scale + (np.random.rand()*0.1)
+            val = self.scale + (np.random.rand()*0.5)
             self.scale = min(val, self.allowable_length[1])
             return "Add on grow"
         else:
@@ -61,12 +61,12 @@ class Node:
             # growing and not variable
             if config.individual.growing and not config.individual.variable_scale:
                 # Add a random small num
-                val = self.scale + (np.random.rand() * 0.1)
+                val = self.scale + (np.random.rand() * 0.5)
                 # Scale is that or 1, the smallest option
                 self.scale = min(val, 1.0)
             else:
                 # When growing and variable, or simply variable
-                val = self.scale + random.gauss(0,1.0)
+                val = self.scale + random.gauss(0,0.5)
                 self.scale = bounce_back(val, self.allowable_length)
 
             if self.scale < 1.0:

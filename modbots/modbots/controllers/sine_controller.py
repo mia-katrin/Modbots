@@ -36,7 +36,7 @@ class SineController():
 	def mutate(self, config):
 		rand_choice = ["amp", "freq", "phase", "offset"][np.random.choice([0,1,2,3])]
 		to_mutate = "self."+rand_choice
-		exec(to_mutate + f"+= {random.gauss(0,1)}")
+		exec(to_mutate + f"+= {random.gauss(0,0.5)}")
 		exec(f"{to_mutate} = bounce_back({to_mutate}, SineController.allowable_{rand_choice})")
 
 if __name__ == "__main__":
