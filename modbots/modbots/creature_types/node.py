@@ -12,9 +12,11 @@ class Node:
         self.children = [None,None,None]
 
     def mutate_angle(self, config) -> str:
-        possibilities = [wrap_around(self.angle-90, [0, 270]), wrap_around(self.angle+90, [0, 270])]
-        if not config.individual.growing:
-            possibilities.append(self.angle+180 if self.angle < 180 else self.angle-180)
+        possibilities = [
+            wrap_around(self.angle-90, [0, 270]),
+            wrap_around(self.angle+90, [0, 270]),
+            self.angle+180 if self.angle < 180 else self.angle-180
+        ]
 
         old_angle = self.angle
         self.angle = np.random.choice(possibilities).item() # to int
@@ -25,11 +27,12 @@ class Node:
             leaves = self.get_indexes_of(lambda x: x is not None and x.is_leaf())
             if len(leaves) != 0:
                 index = np.random.choice(leaves)
-                if self.children[index].scale < 0.25:
+                if not config.individual.gradual or self.children[index].scale < 0.25:
+                    scale = self.children[index].scale
                     self.children[index] = None
-                    return "Remove dwarf"
+                    return f"Remove {scale}"
                 else:
-                    val = self.children[index].scale - (np.random.rand()*0.2)
+                    val = self.children[index].scale - (np.random.rand()*0.1)
                     self.children[index].scale = max(val, self.allowable_length[0])
                     return "Remove shrink"
         else:
@@ -40,15 +43,16 @@ class Node:
         return None
 
     def mutate_add_node(self, config) -> str:
-        if config.individual.growing and self.scale < 1.0:
-            val = self.scale + (np.random.rand()*0.2)
+        if config.individual.gradual and self.scale < 1.0:
+            val = self.scale + (np.random.rand()*0.1)
             self.scale = min(val, self.allowable_length[1])
             return "Add on grow"
         else:
             if len(self.open_spots_list()) > 0:
                 new_node = Node(variable_scale=config.individual.variable_scale, growing=config.individual.growing)
                 self.children[np.random.choice(self.open_spots_list())] = new_node
-                return "Add on normal"
+                addition = "dwarf" if (config.individual.growing or config.individual.gradual) else "normal"
+                return f"Add on {addition}"
         return None
 
     def mutate_scale(self, config) -> str:
@@ -56,12 +60,12 @@ class Node:
             # growing and not variable
             if config.individual.growing and not config.individual.variable_scale:
                 # Add a random small num
-                val = self.scale + (np.random.rand() * 0.2)
+                val = self.scale + (np.random.rand() * 0.1)
                 # Scale is that or 1, the smallest option
                 self.scale = min(val, 1.0)
             else:
                 # When growing and variable, or simply variable
-                val = self.scale + (np.random.rand()*0.4 - 0.2)
+                val = self.scale + (np.random.rand()*0.2 - 0.1)
                 self.scale = bounce_back(val, self.allowable_length)
 
             if self.scale < 1.0:
@@ -83,6 +87,29 @@ class Node:
     def _interval_func(self, so_far, mut_perc):
         func = lambda num: so_far <= num < so_far + mut_perc
         return func, so_far+mut_perc
+
+    def mutate_maybe(self, config):
+        so_far = 0
+        within_angle,       so_far = self._interval_func(so_far, config.mutation.angle)
+        within_remove,      so_far = self._interval_func(so_far, config.mutation.remove_node)
+        within_add_node,    so_far = self._interval_func(so_far, config.mutation.add_node)
+        within_scale,       so_far = self._interval_func(so_far, config.mutation.scale)
+        within_copy_branch, so_far = self._interval_func(so_far, config.mutation.copy_branch)
+
+        rand_num = np.random.rand()
+
+        result = None
+        for mut_type in ["angle", "remove", "add_node", "scale", "copy_branch"]:
+            within_func = eval(f"within_{mut_type}")
+            mutate_func = eval(f"self.mutate_{mut_type}")
+
+            if within_func(rand_num):
+                result = mutate_func(config)
+
+            if result != None:
+                return result
+
+        return result
 
     def mutate(self, config):
         so_far = 0

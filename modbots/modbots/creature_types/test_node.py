@@ -9,6 +9,7 @@ class TestNode(unittest.TestCase):
             def __init__(self):
                 self.growing = True
                 self.variable_scale = False
+                self.gradual = False
         class MutationConf:
             def __init__(self):
                 self.angle = 0.1
@@ -77,67 +78,114 @@ class TestNode(unittest.TestCase):
         """
         config = self.get_config()
 
-        # Growing only chooses adjacent angles
-        config.individual.growing = True
         node = Node()
-        for _ in range(10):
-            old_angle = node.angle
-            node.mutate_angle(config)
 
-            assert old_angle != node.angle
-            assert abs(old_angle - node.angle) == 90 or abs(old_angle - node.angle) == 270
+        times = {"0":0, "90":0, "180":0, "270":0}
 
-        # Non-growing simply chooses whichever. This likely matters because of
-        # the control
         config.individual.growing = False
-        for _ in range(10):
+        for _ in range(10000):
             old_angle = node.angle
             node.mutate_angle(config)
             assert old_angle != node.angle
+            times[str(node.angle)] += 1
+
+        config.individual.growing = True
+        for _ in range(10000):
+            old_angle = node.angle
+            node.mutate_angle(config)
+            assert old_angle != node.angle
+            times[str(node.angle)] += 1
+
+        print(times)
+        for key in times:
+            assert times[key] > 10000/4
 
     def test_mutate_remove_leaf(self):
+        # Removing from a leaf node always yields None
         config = self.get_config()
         node = Node()
 
-        config.individual.growing = True
-        assert node.mutate_remove(config) == None
-
-        config.individual.growing = False
-        assert node.mutate_remove(config) == None
+        for grad_bool in [True, False]:
+            for grow_bool in [True, False]:
+                for vars_bool in [True, False]:
+                    config.individual.gradual = grad_bool
+                    config.individual.growing = grow_bool
+                    config.individual.variable_scale = vars_bool
+                    assert node.mutate_remove(config) == None
 
     def test_mutate_remove_normal(self):
         config = self.get_config()
         config.individual.growing = False
-        node = Node()
-        node.children[0] = Node()
+        config.individual.gradual = False
 
-        assert node.mutate_remove(config) == "Remove full"
-        assert node.mutate_remove(config) == None
+        for vars_bool in [True, False]:
+            config.individual.variable_scale = vars_bool
+            node = Node()
+            node.children[0] = Node()
+
+            assert node.mutate_remove(config) == "Remove full"
+            assert node.mutate_remove(config) == None
 
     def test_mutate_remove_dwarf(self):
         config = self.get_config()
         config.individual.growing = True
+        config.individual.gradual = False
+        node = Node()
+        node.children[0] = Node()
+        node.children[0].scale = 1
+
+        result = node.mutate_remove(config)
+        assert result.startswith("Remove")
+        try:
+            float(result.split(" ")[1])
+        except:
+            assert False, "Last part is not float"
+        assert node.mutate_remove(config) == None
+
+        config.individual.growing = True
+        config.individual.gradual = True
         node = Node()
         node.children[0] = Node()
         node.children[0].scale = 0.2
 
-        assert node.mutate_remove(config) == "Remove dwarf"
+        result = node.mutate_remove(config)
+        assert result.startswith("Remove")
+        try:
+            float(result.split(" ")[1])
+        except:
+            assert False, "Last part is not float"
         assert node.mutate_remove(config) == None
+
+        config.individual.growing = True
+        config.individual.gradual = True
+        node = Node()
+        node.children[0] = Node()
+        node.children[0].scale = 1
+
+        assert node.mutate_remove(config) == "Remove shrink"
+        assert node.mutate_remove(config) != None
 
     def test_mutate_remove_shrink(self):
         config = self.get_config()
         config.individual.growing = True
+        config.individual.gradual = True
         node = Node()
         node.children[0] = Node()
 
         while node.children[0].scale > 0.25:
             assert node.mutate_remove(config) == "Remove shrink"
-        assert node.mutate_remove(config) == "Remove dwarf"
+        result = node.mutate_remove(config)
+        assert result.startswith("Remove")
+        try:
+            float(result.split(" ")[1])
+        except:
+            assert False, "Last part is not float"
         assert node.mutate_remove(config) == None
 
     def test_mutate_add_node(self):
         config = self.get_config()
         config.individual.growing = False
+        config.individual.gradual = False
         node = Node()
 
         assert node.mutate_add_node(config) == "Add on normal"
@@ -146,12 +194,21 @@ class TestNode(unittest.TestCase):
         assert node.mutate_add_node(config) == None
 
         config.individual.growing = True
+        config.individual.gradual = True
         node = Node()
         node.scale = 0.05
 
         while node.scale < 1.0:
             assert node.mutate_add_node(config) == "Add on grow"
-        assert node.mutate_add_node(config) == "Add on normal"
+        result = node.mutate_add_node(config)
+        assert result.startswith("Add on") and result != "Add on grow"
+
+        config.individual.growing = True
+        config.individual.gradual = False
+        node = Node()
+        node.scale = 0.05
+        result = node.mutate_add_node(config)
+        assert result.startswith("Add on") and result != "Add on grow"
 
     def test_mutate_scale(self):
         config = self.get_config()
@@ -267,6 +324,39 @@ class TestNode(unittest.TestCase):
                 times["Copy"] += 1
 
         print(times)
+        for key in times:
+            assert times[key] > 100
+
+    def test_mutate_maybe(self):
+        config = self.get_config()
+        config.mutation.angle = 0.02
+        config.mutation.remove_node = 0.02
+        config.mutation.add_node = 0.02
+        config.mutation.scale = 0.02
+        config.mutation.copy_branch = 0.02
+
+        config.individual.variable_scale = True
+        config.individual.growing = False
+
+        times = {"Angle":0, "Remove":0, "Add":0, "Scale":0, "Copy":0, "None":0}
+        for _ in range(10000):
+            node = Node()
+            node.children[0] = Node()
+            mutation = node.mutate_maybe(config)
+
+            if mutation == None:
+                times["None"] += 1
+            elif mutation.startswith("Angle"):
+                times["Angle"] += 1
+            elif mutation.startswith("Remove"):
+                times["Remove"] += 1
+            elif mutation.startswith("Add"):
+                times["Add"] += 1
+            elif mutation.startswith("Scale"):
+                times["Scale"] += 1
+            elif mutation.startswith("Copy"):
+                times["Copy"] += 1
+
         for key in times:
             assert times[key] > 100
 

@@ -14,7 +14,7 @@ class SineController():
 		self.nodeid = hash
 		self.state = 0.0
 		self.amp = np.random.uniform(0.0,1.0)
-		self.freq = np.random.uniform(0.0,6.0)
+		self.freq = 3.0
 		self.phase = np.random.uniform(-1,1)
 		self.offset = np.random.uniform(-1,1)
 
@@ -35,7 +35,7 @@ class SineController():
 	def mutate(self, config):
 		rand_choice = ["amp", "freq", "phase", "offset"][np.random.choice([0,1,2,3])]
 		to_mutate = "self."+rand_choice
-		exec(to_mutate + f"+= {np.random.uniform(-1,1)*0.2}")
+		exec(to_mutate + f"+= {np.random.uniform(-1,1)*0.1}")
 		exec(f"{to_mutate} = bounce_back({to_mutate}, SineController.allowable_{rand_choice})")
 
 if __name__ == "__main__":

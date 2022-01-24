@@ -86,6 +86,21 @@ class Individual:
             self.needs_evaluation = False
 
         rand_num = np.random.rand()
+        if rand_num < config.mutation.control and self.controller != None:
+            self.controller.mutate(config) # Force mut if central else very likely but not always
+            self.mutation_history.append("Control")
+            self.needs_evaluation = True
+
+        result = self.body.mutate_maybe(config)
+        if result != None:
+            self.mutation_history.append(f"Body:{result}")
+            self.needs_evaluation = True
+
+    def mutate2(self, config):
+        if self.fitness >= 0:
+            self.needs_evaluation = False
+
+        rand_num = np.random.rand()
         if rand_num < config.ea.mut_rate*config.mutation.control and self.controller != None:
             self.controller.mutate(config) # Force mut if central else very likely but not always
             self.mutation_history.append("Control")

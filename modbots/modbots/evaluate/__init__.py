@@ -128,7 +128,7 @@ def evaluate(ind, force_evaluate=True, record=False):
             elif i > N_START_EVAL+19 and i % 10 == 0:
                 index = list(obs.agent_id_to_index)
 
-                if np.allclose(obs[index[0]][0][0][:3], last_100, atol=0.01):
+                if np.allclose(obs[index[0]][0][0][:3], last_100, atol=0.1):
                     print(f"Broke early {i}")
                     break
 

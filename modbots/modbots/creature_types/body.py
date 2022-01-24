@@ -101,6 +101,44 @@ class Body:
         child_strings = child_strings[:-2]
         return res + child_strings
 
+    def mutate_maybe(self, config):
+        angle_store = config.mutation.angle
+        add_node_store = config.mutation.add_node
+        remove_node_store = config.mutation.remove_node
+        scale_store = config.mutation.scale
+        copy_branch_store = config.mutation.copy_branch
+        config.mutation.angle /= self.get_nr_modules()
+        config.mutation.add_node /= self.get_nr_modules()
+        config.mutation.remove_node /= self.get_nr_modules()
+        config.mutation.copy_branch /= self.get_nr_modules()
+        config.mutation.scale /= self.get_nr_modules()
+
+        current_nodes = [self.root]
+
+        mutations = ""
+        while len(current_nodes) > 0:
+            node = current_nodes.pop(0)
+
+            result = node.mutate_maybe(config)
+            if result != None:
+                mutations += (", " if len(mutations) > 0 else "") + result
+
+            for child in node.children:
+                if child != None:
+                    current_nodes.append(child)
+
+        config.mutation.angle = angle_store
+        config.mutation.add_node = add_node_store
+        config.mutation.remove_node = remove_node_store
+        config.mutation.scale = scale_store
+        config.mutation.copy_branch = copy_branch_store
+
+        if len(mutations) > 0:
+            self._nr_expressed_modules = -1
+            return mutations
+
+        return None
+
     def mutate(self, config):
         mutated = False
 
