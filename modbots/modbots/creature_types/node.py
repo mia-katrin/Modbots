@@ -66,7 +66,7 @@ class Node:
                 self.scale = min(val, 1.0)
             else:
                 # When growing and variable, or simply variable
-                val = self.scale + random.gauss(0,0.1)
+                val = self.scale + random.gauss(0,1.0)
                 self.scale = bounce_back(val, self.allowable_length)
 
             if self.scale < 1.0:

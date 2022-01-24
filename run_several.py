@@ -18,18 +18,13 @@ def delete_log_folder_content():
     os.system("rm log_folder/*")
 
 def append_runNr(key):
-    valid_intervals[run_label][key].append(get_runNr()-1)
-    with open("experiments/valid_intervals", "w") as file:
-        json.dump(valid_intervals, file)
+	write_to_valid_intervals(run_label, key, get_runNr()-1, liste=True)
 
 def run_on_config(conf_name):
     print(conf_name)
     from localconfig import config
     config.read(conf_name)
     config.filename = conf_name
-
-    if conf_name not in valid_intervals[run_label]:
-        valid_intervals[run_label][conf_name] = []
 
     for _ in range(INTERNAL_ROUNDS):
         evolve(config, run_label, show_figs=False)
@@ -58,15 +53,11 @@ def write_to_valid_intervals(run_label, key, value, liste=True):
     with open("experiments/valid_intervals", "w") as file:
         json.dump(valid_intervals, file)
 
-valid_intervals[run_label] = {
-    "Start runNr": get_runNr(),
-}
+write_to_valid_intervals(run_label, "Start runNr", get_runNr(), liste=False)
 
 for _ in range(OUTER_ROUNDS):
     run_on_config("baseline.cfg")
     run_on_config("variable_scale.cfg")
     run_on_config("gradual.cfg")
-
-valid_intervals[run_label]["End runNr"] = get_runNr()-1
-with open("experiments/valid_intervals", "w") as file:
-    json.dump(valid_intervals, file)
+	
+write_to_valid_intervals(run_label, "End runNr", get_runNr()-1, liste=False)
