@@ -1,4 +1,5 @@
 import numpy as np
+import random
 import copy
 
 from modbots.util import bounce_back, wrap_around
@@ -65,7 +66,7 @@ class Node:
                 self.scale = min(val, 1.0)
             else:
                 # When growing and variable, or simply variable
-                val = self.scale + (np.random.rand()*0.2 - 0.1)
+                val = self.scale + random.gauss(0,0.1)
                 self.scale = bounce_back(val, self.allowable_length)
 
             if self.scale < 1.0:
