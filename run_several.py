@@ -58,6 +58,7 @@ write_to_valid_intervals(run_label, "Start runNr", get_runNr(), liste=False)
 for _ in range(OUTER_ROUNDS):
     run_on_config("baseline.cfg")
     run_on_config("variable_scale.cfg")
+    run_on_config("growing.cfg")
     run_on_config("gradual.cfg")
-	
+
 write_to_valid_intervals(run_label, "End runNr", get_runNr()-1, liste=False)
