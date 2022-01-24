@@ -39,11 +39,24 @@ def run_on_config(conf_name):
         # Delete log_folder content underway
         delete_log_folder_content()
 
-with open("experiments/valid_intervals", "r") as file:
-    valid_intervals = json.load(file)
+def write_to_valid_intervals(run_label, key, value, liste=True):
+    valid_intervals = None
+    with open("experiments/valid_intervals", "r") as file:
+        valid_intervals = json.load(file)
 
-if run_label in valid_intervals:
-    raise ValueError("You've named the experiment as something that is already named in valid_intervals. Please choose a different name.")
+    if run_label not in valid_intervals.keys():
+        valid_intervals[run_label] = {}
+
+    if liste:
+        if key is in valid_intervals[run_label].keys():
+            valid_intervals[run_label][key].append(value)
+        else:
+            valid_intervals[run_label][key] = [value]
+    else:
+        valid_intervals[run_label][key] = value
+
+    with open("experiments/valid_intervals", "w") as file:
+        json.dump(valid_intervals, file)
 
 valid_intervals[run_label] = {
     "Start runNr": get_runNr(),
