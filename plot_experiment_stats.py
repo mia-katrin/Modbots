@@ -52,7 +52,9 @@ colors = {
     'variable_scale.cfg':"lightskyblue",
     'variable_scale.cfg_avg':"blue",
     'gradual.cfg':(204/225, 121/225, 167/225),
-    'gradual.cfg_avg':(213/225, 94/225, 0)
+    'gradual.cfg_avg':(213/225, 94/225, 0),
+    'growing.cfg':"palegreen",
+    'growing.cfg_avg':(0,158/225, 115/225),
 }
 
 linestyles = {
@@ -84,10 +86,12 @@ linestyles = {
     'baseline.cfg':"dashed",
     'variable_scale.cfg':"dashed",
     'gradual.cfg':"dashed",
+    'growing.cfg':"dashed",
 
     'baseline.cfg_avg':"solid",
     'variable_scale.cfg_avg':"solid",
-    'gradual.cfg_avg':"solid"
+    'gradual.cfg_avg':"solid",
+    'growing.cfg_avg':"solid"
 }
 
 def plot_runs(dataname, stat="Means"):
