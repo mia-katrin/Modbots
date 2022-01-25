@@ -81,7 +81,7 @@ class Individual:
     def crossover(self, other) -> tuple:
         pass
 
-    def mutate(self, config):
+    def mutate2(self, config):
         if self.fitness >= 0:
             self.needs_evaluation = False
 
@@ -96,7 +96,7 @@ class Individual:
             self.mutation_history.append(f"Body:{result}")
             self.needs_evaluation = True
 
-    def mutate2(self, config):
+    def mutate(self, config):
         if self.fitness >= 0:
             self.needs_evaluation = False
 

@@ -17,7 +17,7 @@ config.ea.n_generations = 100
 pop_size = 90
 config.ea.pop_size = n_cores*(pop_size//n_cores + (1 if pop_size%n_cores!=0 else 0))
 config.ea.nr_parents = 0
-config.ea.tournsize = 4
+config.ea.tournsize = 2
 
 # INDIVIDUAL
 config.individual.torque = 0.0
@@ -27,7 +27,7 @@ config.individual.creation_mu = 0.75
 config.individual.creation_std = 0.35
 
 # EVALUATION
-config.evaluation.n_steps = 80
+config.evaluation.n_steps = 100
 config.evaluation.n_start_eval = 10
 config.evaluation.time_scale = None
 config.evaluation.env_enum = 0.0
@@ -42,7 +42,7 @@ config.control.pre_processing = False
 config.control.request_period = 0.2
 
 # MUTATION
-config.mutation.control = 0.07
+config.mutation.control = 0.5
 config.mutation.body = 0.5
 
 # Files remains as default on computer
@@ -53,11 +53,11 @@ config.individual.variable_scale = False
 config.individual.growing = False
 config.individual.gradual = False
 
-config.mutation.angle = 0.015
-config.mutation.remove_node = 0.02
-config.mutation.add_node = 0.025
+config.mutation.angle = 0.15
+config.mutation.remove_node = 0.25
+config.mutation.add_node = 0.3
 config.mutation.scale = 0.0
-config.mutation.copy_branch = 0.03
+config.mutation.copy_branch = 0.3
 
 config.save("baseline.cfg")
 
@@ -66,11 +66,11 @@ config.individual.variable_scale = True
 config.individual.growing = False
 config.individual.gradual = False
 
-config.mutation.angle = 0.01
-config.mutation.remove_node = 0.015
-config.mutation.add_node = 0.02
-config.mutation.scale = 0.025
-config.mutation.copy_branch = 0.025
+config.mutation.angle = 0.15
+config.mutation.remove_node = 0.2
+config.mutation.add_node = 0.2
+config.mutation.scale = 0.25
+config.mutation.copy_branch = 0.2
 
 config.save("variable_scale.cfg")
 
@@ -79,11 +79,11 @@ config.individual.variable_scale = True
 config.individual.growing = True
 config.individual.gradual = False
 
-config.mutation.angle = 0.01
-config.mutation.remove_node = 0.015
-config.mutation.add_node = 0.02
-config.mutation.scale = 0.025
-config.mutation.copy_branch = 0.025
+config.mutation.angle = 0.15
+config.mutation.remove_node = 0.2
+config.mutation.add_node = 0.2
+config.mutation.scale = 0.25
+config.mutation.copy_branch = 0.2
 
 config.save("growing.cfg")
 
@@ -92,10 +92,10 @@ config.individual.variable_scale = True
 config.individual.growing = True
 config.individual.gradual = True
 
-config.mutation.angle = 0.01
-config.mutation.remove_node = 0.015
-config.mutation.add_node = 0.02
-config.mutation.scale = 0.025
-config.mutation.copy_branch = 0.025
+config.mutation.angle = 0.15
+config.mutation.remove_node = 0.2
+config.mutation.add_node = 0.2
+config.mutation.scale = 0.25
+config.mutation.copy_branch = 0.2
 
 config.save("gradual.cfg")
