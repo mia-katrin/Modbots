@@ -152,9 +152,11 @@ class Body:
             if np.random.rand() <= node_chance:
                 mut_type = node.mutate(config)
                 if mut_type != "None":
+                    if mutated:
+                        self.mutation_history[-1] += ", " + mut_type
+                    else:
+                        self.mutation_history.append(mut_type)
                     mutated = True
-                    self.mutation_history.append(mut_type)
-                    break
 
             for child in node.children:
                 if child != None:

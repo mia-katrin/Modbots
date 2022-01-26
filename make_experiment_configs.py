@@ -8,16 +8,18 @@ with open("experiments/max_cores.txt") as file:
 # EXPERIMENT
 config.experiment.seed = 1
 config.experiment.documentation = True # Must always be True
-config.experiment.n_cores = n_cores
+config.experiment.n_cores = 100
 config.experiment.headless = True # Must always be True
 
 # EA
-config.ea.mut_rate = 0.15
-config.ea.n_generations = 200
-pop_size = 190
+config.ea.mut_rate = 1.00
+config.ea.control_sigma = 0.05
+config.ea.body_sigma = 0.05
+config.ea.n_generations = 100
+pop_size = 100
 config.ea.pop_size = n_cores*(pop_size//n_cores + (1 if pop_size%n_cores!=0 else 0))
 config.ea.nr_parents = 0
-config.ea.tournsize = 2
+config.ea.tournsize = 4
 
 # INDIVIDUAL
 config.individual.torque = 0.0
