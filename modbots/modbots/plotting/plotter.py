@@ -6,6 +6,7 @@ import seaborn as sns
 from random import choice, random
 
 from modbots.plotting.diversity_measure import diversity
+from modbots.util import traverse_get_list
 
 class Plotter:
     def __init__(self):
@@ -23,11 +24,22 @@ class Plotter:
     def save_stats(self, population):
         nr_modules = []
         fitnesses = []
+        mean_scales = []
         for ind in population:
             nr_modules.append(ind.get_nr_modules())
             fitnesses.append(ind.fitness)
+
+            mean_scales.append(0)
+            allModules = []
+            traverse_get_list(ind.body.root, allModules)
+            for module in allModules:
+                mean_scales[-1] += module.scale
+
+            mean_scales[-1] /= len(allModules)
+
         self._save_min_max(nr_modules, "Nr Modules")
         self._save_min_max(fitnesses, "Fitness")
+        self._save_min_max(mean_scales, "Mean Scales")
         self._save_stat(diversity(population), "Diversity")
         self._save_stat(self.nr_mutated(population), "Nr Mutated")
 
