@@ -47,7 +47,8 @@ class DecentralController:
         actions = np.zeros((1,50), dtype=float)
 
         for i, node in enumerate(allNodes):
-            actions[0,i] = node.controller.advance(observation[i*3:i*3+3], **self.kwargs)
+            if i < 50:
+                actions[0,i] = node.controller.advance(observation[i*3:i*3+3], **self.kwargs)
 
         return actions
 
