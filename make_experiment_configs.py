@@ -12,9 +12,9 @@ config.experiment.n_cores = n_cores
 config.experiment.headless = True # Must always be True
 
 # EA
-config.ea.mut_rate = 0.1
-config.ea.n_generations = 100
-pop_size = 90
+config.ea.mut_rate = 0.15
+config.ea.n_generations = 200
+pop_size = 190
 config.ea.pop_size = n_cores*(pop_size//n_cores + (1 if pop_size%n_cores!=0 else 0))
 config.ea.nr_parents = 0
 config.ea.tournsize = 2
@@ -42,8 +42,8 @@ config.control.pre_processing = False
 config.control.request_period = 0.2
 
 # MUTATION
-config.mutation.control = 0.5
-config.mutation.body = 0.5
+config.mutation.control = 0.4
+config.mutation.body = 0.6
 
 # Files remains as default on computer
 
@@ -66,9 +66,9 @@ config.individual.variable_scale = True
 config.individual.growing = False
 config.individual.gradual = False
 
-config.mutation.angle = 0.15
+config.mutation.angle = 0.1
 config.mutation.remove_node = 0.2
-config.mutation.add_node = 0.2
+config.mutation.add_node = 0.25
 config.mutation.scale = 0.25
 config.mutation.copy_branch = 0.2
 
@@ -79,9 +79,9 @@ config.individual.variable_scale = True
 config.individual.growing = True
 config.individual.gradual = False
 
-config.mutation.angle = 0.15
+config.mutation.angle = 0.1
 config.mutation.remove_node = 0.2
-config.mutation.add_node = 0.2
+config.mutation.add_node = 0.25
 config.mutation.scale = 0.25
 config.mutation.copy_branch = 0.2
 
@@ -92,9 +92,9 @@ config.individual.variable_scale = True
 config.individual.growing = True
 config.individual.gradual = True
 
-config.mutation.angle = 0.15
+config.mutation.angle = 0.1
 config.mutation.remove_node = 0.2
-config.mutation.add_node = 0.2
+config.mutation.add_node = 0.25
 config.mutation.scale = 0.25
 config.mutation.copy_branch = 0.2
 
