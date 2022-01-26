@@ -78,10 +78,11 @@ class Node:
 
     def mutate_copy_branch(self, config) -> str:
         occupied_spots = self.occupied_spots_list()
-        if 1 <= len(occupied_spots) <= 2:
+        open_spots = self.open_spots_list()
+        if 1 <= len(occupied_spots) <= 2 and len(open_spots) >= 1:
             child = self.children[np.random.choice(occupied_spots)]
             child = copy.deepcopy(child)
-            self.children[np.random.choice(self.open_spots_list())] = child
+            self.children[np.random.choice(open_spots)] = child
             return "Copy"
         return None
 
@@ -138,6 +139,8 @@ class Node:
         return "None"
 
     def open_spots_list(self):
+        if self.scale < 1.0:
+            return [0] if self.children[0] is None else []
         return self.get_indexes_of(lambda x: x is None)
 
     def occupied_spots_list(self):
