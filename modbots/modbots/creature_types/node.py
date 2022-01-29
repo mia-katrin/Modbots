@@ -2,7 +2,7 @@ import numpy as np
 import random
 import copy
 
-from modbots.util import bounce_back, wrap_around
+from modbots.util import bounce_back, wrap_around, add_on_result
 
 class Node:
     allowable_length = (0.1, 3)
@@ -69,9 +69,6 @@ class Node:
                 val = self.scale + random.gauss(0,config.ea.body_sigma)
                 self.scale = bounce_back(val, self.allowable_length)
 
-            if self.scale < 1.0:
-                self.children[1] = None
-                self.children[2] = None
             return f"Scale {val}"
 
         return None
@@ -90,28 +87,24 @@ class Node:
         func = lambda num: so_far <= num < so_far + mut_perc
         return func, so_far+mut_perc
 
-    def mutate_maybe(self, config):
-        so_far = 0
-        within_angle,       so_far = self._interval_func(so_far, config.mutation.angle)
-        within_remove,      so_far = self._interval_func(so_far, config.mutation.remove_node)
-        within_add_node,    so_far = self._interval_func(so_far, config.mutation.add_node)
-        within_scale,       so_far = self._interval_func(so_far, config.mutation.scale)
-        within_copy_branch, so_far = self._interval_func(so_far, config.mutation.copy_branch)
+    def mutate_maybe(self, config, node_mut_rate):
+        result = ""
+        if np.random.rand() < node_mut_rate * config.mutation.angle:
+            result = add_on_result(self.mutate_angle(config), result)
+        if np.random.rand() < node_mut_rate * config.mutation.remove_node:
+            result = add_on_result(self.mutate_remove(config), result)
+        if np.random.rand() < node_mut_rate * config.mutation.add_node:
+            result = add_on_result(self.mutate_add_node(config), result)
+        if np.random.rand() < node_mut_rate * config.mutation.scale:
+            result = add_on_result(self.mutate_scale(config), result)
+        if np.random.rand() < node_mut_rate * config.mutation.copy_branch:
+            result = add_on_result(self.mutate_copy_branch(config), result)
 
-        rand_num = np.random.rand()
+        if self.scale < 1.0:
+            self.children[1] = None
+            self.children[2] = None
 
-        result = None
-        for mut_type in ["angle", "remove", "add_node", "scale", "copy_branch"]:
-            within_func = eval(f"within_{mut_type}")
-            mutate_func = eval(f"self.mutate_{mut_type}")
-
-            if within_func(rand_num):
-                result = mutate_func(config)
-
-            if result != None:
-                return result
-
-        return result
+        return "(" + result + ")" if result != "" else None
 
     def mutate(self, config):
         so_far = 0
@@ -131,6 +124,10 @@ class Node:
 
                 if within_func(rand_num):
                     result = mutate_func(config)
+
+                if self.scale < 1.0:
+                    self.children[1] = None
+                    self.children[2] = None
 
                 if result != None:
                     return result

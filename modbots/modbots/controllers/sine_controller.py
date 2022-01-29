@@ -33,6 +33,24 @@ class SineController():
 	def reset(self):
 		self.state = 0
 
+	def mutate_maybe(self, config, cont_mut_rate):
+		mutated = False
+
+		if np.random.rand() < cont_mut_rate:
+			self.amp += random.gauss(0,config.ea.control_sigma)
+			mutated = True
+		if np.random.rand() < cont_mut_rate:
+			self.freq += random.gauss(0,config.ea.control_sigma)
+			mutated = True
+		if np.random.rand() < cont_mut_rate:
+			self.phase += random.gauss(0,config.ea.control_sigma)
+			mutated = True
+		if np.random.rand() < cont_mut_rate:
+			self.offset += random.gauss(0,config.ea.control_sigma)
+			mutated = True
+
+		return mutated
+
 	def mutate(self, config):
 		rand_choice = ["amp", "freq", "phase", "offset"][np.random.choice([0,1,2,3])]
 		to_mutate = "self."+rand_choice

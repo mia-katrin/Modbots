@@ -40,7 +40,11 @@ class Plotter:
         self._save_min_max(nr_modules, "Nr Modules")
         self._save_min_max(fitnesses, "Fitness")
         self._save_min_max(mean_scales, "Mean Scales")
-        self._save_stat(diversity(population), "Diversity")
+        try:
+            self._save_stat(diversity(population), "Diversity")
+        except:
+            print("Diversity measure does not work")
+            self._save_stat(0, "Diversity")
         self._save_stat(self.nr_mutated(population), "Nr Mutated")
 
         if hasattr(population[0], "color_id"):

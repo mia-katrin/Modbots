@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
 
-from modbots.util import bool_from_distribution
+from modbots.util import bool_from_distribution, add_on_result
 from modbots.creature_types.node import Node
 
 class Body:
@@ -102,40 +102,28 @@ class Body:
         return res + child_strings
 
     def mutate_maybe(self, config):
-        angle_store = config.mutation.angle
-        add_node_store = config.mutation.add_node
-        remove_node_store = config.mutation.remove_node
-        scale_store = config.mutation.scale
-        copy_branch_store = config.mutation.copy_branch
-        config.mutation.angle /= self.get_nr_modules()
-        config.mutation.add_node /= self.get_nr_modules()
-        config.mutation.remove_node /= self.get_nr_modules()
-        config.mutation.copy_branch /= self.get_nr_modules()
-        config.mutation.scale /= self.get_nr_modules()
+        individual_likelihood = config.mutation.body/self.get_nr_modules()
 
         current_nodes = [self.root]
 
-        mutations = ""
+        result = ""
+
         while len(current_nodes) > 0:
             node = current_nodes.pop(0)
 
-            result = node.mutate_maybe(config)
-            if result != None:
-                mutations += (", " if len(mutations) > 0 else "") + result
+            node_mutation = node.mutate_maybe(config, individual_likelihood)
+            result = add_on_result(
+                node_mutation,
+                result
+            )
 
             for child in node.children:
                 if child != None:
                     current_nodes.append(child)
 
-        config.mutation.angle = angle_store
-        config.mutation.add_node = add_node_store
-        config.mutation.remove_node = remove_node_store
-        config.mutation.scale = scale_store
-        config.mutation.copy_branch = copy_branch_store
-
-        if len(mutations) > 0:
+        if result != "":
             self._nr_expressed_modules = -1
-            return mutations
+            return result
 
         return None
 

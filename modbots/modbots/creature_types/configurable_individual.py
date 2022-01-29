@@ -81,22 +81,26 @@ class Individual:
     def crossover(self, other) -> tuple:
         pass
 
-    def mutate2(self, config):
+    def mutate(self, config):
         if self.fitness >= 0:
             self.needs_evaluation = False
 
-        rand_num = np.random.rand()
-        if rand_num < config.mutation.control and self.controller != None:
-            self.controller.mutate(config) # Force mut if central else very likely but not always
-            self.mutation_history.append("Control")
+        result = ""
+        if self.controller != None:
+            if self.controller.mutate_maybe(config):
+                result = "Control"
+
+        result_body = self.body.mutate_maybe(config)
+        if result_body != None:
+            if result != "":
+                result += ", "
+            result += f"Body:{result_body}"
+
+        if result != "":
+            self.mutation_history.append(result)
             self.needs_evaluation = True
 
-        result = self.body.mutate_maybe(config)
-        if result != None:
-            self.mutation_history.append(f"Body:{result}")
-            self.needs_evaluation = True
-
-    def mutate(self, config):
+    def mutate2(self, config):
         if self.fitness >= 0:
             self.needs_evaluation = False
 

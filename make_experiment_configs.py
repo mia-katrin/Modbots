@@ -8,15 +8,15 @@ with open("experiments/max_cores.txt") as file:
 # EXPERIMENT
 config.experiment.seed = 1
 config.experiment.documentation = True # Must always be True
-config.experiment.n_cores = 100
+config.experiment.n_cores = n_cores
 config.experiment.headless = True # Must always be True
 
 # EA
-config.ea.mut_rate = 1.00
-config.ea.control_sigma = 0.05
-config.ea.body_sigma = 0.05
-config.ea.n_generations = 100
-pop_size = 100
+config.ea.mut_rate = 1.0
+config.ea.control_sigma = 0.5
+config.ea.body_sigma = 0.5
+config.ea.n_generations = 50
+pop_size = 50
 config.ea.pop_size = n_cores*(pop_size//n_cores + (1 if pop_size%n_cores!=0 else 0))
 config.ea.nr_parents = 0
 config.ea.tournsize = 4
@@ -27,6 +27,10 @@ config.individual.ind_depth = 5
 config.individual.force_interesting = True
 config.individual.creation_mu = 0.75
 config.individual.creation_std = 0.35
+
+config.individual.variable_scale = False
+config.individual.growing = False
+config.individual.gradual = False
 
 # EVALUATION
 config.evaluation.n_steps = 100
@@ -44,60 +48,41 @@ config.control.pre_processing = False
 config.control.request_period = 0.2
 
 # MUTATION
-config.mutation.control = 0.4
-config.mutation.body = 0.6
-
-# Files remains as default on computer
-
-# MUTATION + INDIVIDUAL
-# Case 1
-config.individual.variable_scale = False
-config.individual.growing = False
-config.individual.gradual = False
-
-config.mutation.angle = 0.15
+config.mutation.angle = 0.2
 config.mutation.remove_node = 0.25
 config.mutation.add_node = 0.3
 config.mutation.scale = 0.0
-config.mutation.copy_branch = 0.3
+config.mutation.copy_branch = 0.25
 
-config.save("baseline.cfg")
+# Files remains as default on computer
+
+# MUTATION
+# Case 1
+config.mutation.control = 0.01
+config.mutation.body = 0.01
+config.save("001c001b.cfg")
 
 # Case 2
-config.individual.variable_scale = True
-config.individual.growing = False
-config.individual.gradual = False
-
-config.mutation.angle = 0.1
-config.mutation.remove_node = 0.2
-config.mutation.add_node = 0.25
-config.mutation.scale = 0.25
-config.mutation.copy_branch = 0.2
-
-config.save("variable_scale.cfg")
+config.mutation.control = 0.08
+config.mutation.body = 0.08
+config.save("008c008b.cfg")
 
 # Case 3
-config.individual.variable_scale = True
-config.individual.growing = True
-config.individual.gradual = False
-
-config.mutation.angle = 0.1
-config.mutation.remove_node = 0.2
-config.mutation.add_node = 0.25
-config.mutation.scale = 0.25
-config.mutation.copy_branch = 0.2
-
-config.save("growing.cfg")
+config.mutation.control = 0.16
+config.mutation.body = 0.16
+config.save("016c016b.cfg")
 
 # Case 4
-config.individual.variable_scale = True
-config.individual.growing = True
-config.individual.gradual = True
+config.mutation.control = 0.32
+config.mutation.body = 0.32
+config.save("032c032b.cfg")
 
-config.mutation.angle = 0.1
-config.mutation.remove_node = 0.2
-config.mutation.add_node = 0.25
-config.mutation.scale = 0.25
-config.mutation.copy_branch = 0.2
+# Case 5
+config.mutation.control = 0.64
+config.mutation.body = 0.64
+config.save("064c064b.cfg")
 
-config.save("gradual.cfg")
+# Case 6
+config.mutation.control = 1.0
+config.mutation.body = 1.0
+config.save("100c100b.cfg")

@@ -9,6 +9,7 @@ class TestBody(unittest.TestCase):
             def __init__(self):
                 self.growing = True
                 self.variable_scale = False
+                self.gradual = False
                 self.force_interesting = True
                 self.ind_depth = 5
                 self.creation_mu = 0.75
@@ -20,10 +21,16 @@ class TestBody(unittest.TestCase):
                 self.add_node = 0.4
                 self.scale = 0.2
                 self.copy_branch = 0.2
+
+                self.body = 0.5
+        class EAConf:
+            def __init__(self):
+                self.body_sigma = 0.1
         class Config:
             def __init__(self):
                 self.individual = IndividualConf()
                 self.mutation = MutationConf()
+                self.ea = EAConf()
 
         return Config()
 
@@ -152,3 +159,24 @@ class TestBody(unittest.TestCase):
                         print(node1.__dict__, node2.__dict__)
                         mutated = True
                 assert mutated
+
+    def test_mutate_maybe(self):
+        config = self.get_config()
+        config.mutation.angle = 1.0
+        config.mutation.remove_node = 0
+        config.mutation.add_node = 0
+        config.mutation.scale = 1.0
+        config.mutation.copy_branch = 1.0
+
+        config.individual.variable_scale = False
+        config.individual.growing = False
+        config.individual.gradual = False
+
+        body = Body.random(config)
+
+        config.mutation.body = body.get_nr_modules()
+
+        result = body.mutate_maybe(config)
+        print(result)
+
+        assert result != None

@@ -1,5 +1,12 @@
 import numpy as np
 
+def add_on_result(x: str, result: str):
+    if x != None:
+        if result != "":
+            result += ", "
+        result += x
+    return result
+
 def traverse_get_list(node, node_list_out):
     node_list_out.append(node)
 
@@ -9,7 +16,7 @@ def traverse_get_list(node, node_list_out):
 
 def calc_time_evolution(config):
     pop_size = config.ea.pop_size
-    n_cores = config.experiment.n_cores 
+    n_cores = config.experiment.n_cores
     mut_rate = config.ea.mut_rate
     nr_parents = config.ea.nr_parents
     n_steps = config.evaluation.n_steps

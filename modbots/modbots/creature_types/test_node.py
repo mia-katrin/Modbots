@@ -17,10 +17,16 @@ class TestNode(unittest.TestCase):
                 self.add_node = 0.4
                 self.scale = 0.2
                 self.copy_branch = 0.2
+
+                self.body = 0.5
+        class EAConf:
+            def __init__(self):
+                self.body_sigma = 0.1
         class Config:
             def __init__(self):
                 self.individual = IndividualConf()
                 self.mutation = MutationConf()
+                self.ea = EAConf()
 
         return Config()
 
@@ -329,11 +335,11 @@ class TestNode(unittest.TestCase):
 
     def test_mutate_maybe(self):
         config = self.get_config()
-        config.mutation.angle = 0.02
-        config.mutation.remove_node = 0.02
-        config.mutation.add_node = 0.02
-        config.mutation.scale = 0.02
-        config.mutation.copy_branch = 0.02
+        config.mutation.angle = 0.2
+        config.mutation.remove_node = 0.2
+        config.mutation.add_node = 0.2
+        config.mutation.scale = 0.2
+        config.mutation.copy_branch = 0.2
 
         config.individual.variable_scale = True
         config.individual.growing = False
@@ -342,23 +348,32 @@ class TestNode(unittest.TestCase):
         for _ in range(10000):
             node = Node()
             node.children[0] = Node()
-            mutation = node.mutate_maybe(config)
+            mutation = node.mutate_maybe(config,0.1)
 
-            if mutation == None:
-                times["None"] += 1
-            elif mutation.startswith("Angle"):
-                times["Angle"] += 1
-            elif mutation.startswith("Remove"):
-                times["Remove"] += 1
-            elif mutation.startswith("Add"):
-                times["Add"] += 1
-            elif mutation.startswith("Scale"):
-                times["Scale"] += 1
-            elif mutation.startswith("Copy"):
-                times["Copy"] += 1
+            if mutation != None:
+                mutations = mutation[1:-1].split(", ")
+            else:
+                mutations = [None]
+
+            for mut in mutations:
+                if mut == None:
+                    times["None"] += 1
+                elif mut.startswith("Angle"):
+                    times["Angle"] += 1
+                elif mut.startswith("Remove"):
+                    times["Remove"] += 1
+                elif mut.startswith("Add"):
+                    times["Add"] += 1
+                elif mut.startswith("Scale"):
+                    times["Scale"] += 1
+                elif mut.startswith("Copy"):
+                    times["Copy"] += 1
 
         for key in times:
-            assert times[key] > 100
+            if key == "None":
+                assert 8000 < times[key] < 9500
+            else:
+                assert 100 < times[key] < 300, key
 
 if __name__ == '__main__':
     unittest.main()

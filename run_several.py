@@ -11,8 +11,8 @@ if args.label == None:
 else:
     run_label = args.label
 
-OUTER_ROUNDS = 10
-INTERNAL_ROUNDS = 1
+OUTER_ROUNDS = 1
+INTERNAL_ROUNDS = 4
 
 def delete_log_folder_content():
     os.system("rm log_folder/*")
@@ -56,9 +56,11 @@ def write_to_valid_intervals(run_label, key, value, liste=True):
 write_to_valid_intervals(run_label, "Start runNr", get_runNr(), liste=False)
 
 for _ in range(OUTER_ROUNDS):
-    run_on_config("baseline.cfg")
-    run_on_config("variable_scale.cfg")
-    run_on_config("growing.cfg")
-    run_on_config("gradual.cfg")
+    run_on_config("001c001b.cfg")
+    run_on_config("008c008b.cfg")
+    run_on_config("016c016b.cfg")
+    run_on_config("032c032b.cfg")
+    run_on_config("064c064b.cfg")
+    run_on_config("100c100b.cfg")
 
 write_to_valid_intervals(run_label, "End runNr", get_runNr()-1, liste=False)
