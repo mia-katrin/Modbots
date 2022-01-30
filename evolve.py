@@ -101,10 +101,6 @@ def print_time(config):
     )
 
 def init_documentation(runNr, statement):
-    with open("experiments/runNr.txt", "w") as file:
-        file.write(f"{runNr + 1}")
-        file.close()
-
     os.makedirs(f"experiments/run{runNr}/")
 
     # Save statement
@@ -120,13 +116,17 @@ def init_documentation(runNr, statement):
     # Save config
     config.save(f"experiments/run{runNr}/{config.filename}")
 
-def evolve(config, statement=None, show_figs=True):
+def evolve(config, statement=None, show_figs=True, runNr=None):
     assert config.ea.pop_size%config.experiment.n_cores == 0, "Cannot run this POP_SIZE because it will cause non-deterministic evaluations"
 
     print_time(config)
 
     if config.experiment.documentation:
-        runNr = get_runNr()
+        if runNr == None:
+            runNr = get_runNr()
+            with open("experiments/runNr.txt", "w") as file:
+                file.write(f"{runNr + 1}")
+                file.close()
         init_documentation(runNr, statement)
 
     set_env_variables(config=config)

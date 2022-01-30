@@ -62,7 +62,10 @@ class DecentralController:
 
         mutated = False
         for node in allNodes:
-            mutated = mutated or node.controller.mutate_maybe(config, individual_likelihood)
+            if node != self.body.root:
+                # Lazy execution, hence always call mutate alone 
+                res = node.controller.mutate_maybe(config, individual_likelihood)
+                mutated = mutated or res
 
         return mutated
 

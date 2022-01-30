@@ -6,8 +6,8 @@ import random
 from modbots.util import bounce_back
 
 class SineController():
-	allowable_amp = (0.0, 6.0)
-	allowable_freq = (0.0, 6.0)
+	allowable_amp = (0.0, 3.0)
+	allowable_freq = (2.0, 2.0)
 	allowable_phase = (-np.inf, np.inf)
 	allowable_offset = (-1, 1)
 
@@ -15,7 +15,7 @@ class SineController():
 		self.nodeid = hash
 		self.state = 0.0
 		self.amp = np.random.uniform(0.0,1.0)
-		self.freq = 3.0
+		self.freq = 2.0
 		self.phase = np.random.uniform(-1,1)
 		self.offset = np.random.uniform(-1,1)
 
@@ -38,15 +38,19 @@ class SineController():
 
 		if np.random.rand() < cont_mut_rate:
 			self.amp += random.gauss(0,config.ea.control_sigma)
+			self.amp = bounce_back(self.amp, SineController.allowable_amp)
 			mutated = True
-		if np.random.rand() < cont_mut_rate:
-			self.freq += random.gauss(0,config.ea.control_sigma)
-			mutated = True
+		#if np.random.rand() < cont_mut_rate:
+		#	self.freq += random.gauss(0,config.ea.control_sigma)
+		#   self.freq = bounce_back(self.freq, SineController.allowable_freq)
+		#	mutated = True
 		if np.random.rand() < cont_mut_rate:
 			self.phase += random.gauss(0,config.ea.control_sigma)
+			self.phase = bounce_back(self.phase, SineController.allowable_phase)
 			mutated = True
 		if np.random.rand() < cont_mut_rate:
 			self.offset += random.gauss(0,config.ea.control_sigma)
+			self.offset = bounce_back(self.offset, SineController.allowable_offset)
 			mutated = True
 
 		return mutated
@@ -66,5 +70,5 @@ if __name__ == "__main__":
 	plt.show()
 
 	print(controller)
-	controller.mutate(None)
+	controller.mutate_maybe(None)
 	print(controller)

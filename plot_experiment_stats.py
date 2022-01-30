@@ -269,10 +269,10 @@ def print_stats(dataname, stat="Maxs"):
         print("Average", stat+":", avg[-1])
 
 
-#plot_runs("Fitness", stat="Maxs")
+plot_runs("Fitness", stat="Maxs")
 print_stats("Fitness", stat="Maxs")
-#plot_runs("Nr Modules", stat="Means")
-#plot_mutation()
-#boxplot_of_last("Fitness", "Maxs")
+plot_runs("Nr Modules", stat="Means")
+plot_mutation()
+boxplot_of_last("Fitness", "Maxs")
 
-#plt.show()
+plt.show()

@@ -12,23 +12,37 @@ else:
     run_label = args.label
 
 OUTER_ROUNDS = 1
-INTERNAL_ROUNDS = 4
+INTERNAL_ROUNDS = 2
+
+configs = [
+    "016c016b.cfg",
+    "032c032b.cfg",
+    "064c064b.cfg",
+]
+
+runNr = get_runNr()
+with open("experiments/runNr.txt", "w") as file:
+    file.write(f"{runNr + len(configs)*OUTER_ROUNDS*INTERNAL_ROUNDS}")
+    file.close()
 
 def delete_log_folder_content():
     os.system("rm log_folder/*")
 
 def append_runNr(key):
-	write_to_valid_intervals(run_label, key, get_runNr()-1, liste=True)
+	write_to_valid_intervals(run_label, key, runNr, liste=True)
 
 def run_on_config(conf_name):
+    global runNr
+
     print(conf_name)
-    from localconfig import config
+    from localconfig import config # Sorry about this
     config.read(conf_name)
     config.filename = conf_name
 
     for _ in range(INTERNAL_ROUNDS):
-        evolve(config, run_label, show_figs=False)
+        evolve(config, run_label, show_figs=False, runNr=runNr)
         append_runNr(conf_name)
+        runNr += 1
 
         # In order to not use all our memory on rudolph,
         # Delete log_folder content underway
@@ -53,14 +67,9 @@ def write_to_valid_intervals(run_label, key, value, liste=True):
     with open("experiments/valid_intervals", "w") as file:
         json.dump(valid_intervals, file)
 
-write_to_valid_intervals(run_label, "Start runNr", get_runNr(), liste=False)
+write_to_valid_intervals(run_label, "Start runNr", runNr, liste=False)
+write_to_valid_intervals(run_label, "End runNr", runNr + len(configs)*OUTER_ROUNDS*INTERNAL_ROUNDS-1, liste=False)
 
 for _ in range(OUTER_ROUNDS):
-    run_on_config("001c001b.cfg")
-    run_on_config("008c008b.cfg")
-    run_on_config("016c016b.cfg")
-    run_on_config("032c032b.cfg")
-    run_on_config("064c064b.cfg")
-    run_on_config("100c100b.cfg")
-
-write_to_valid_intervals(run_label, "End runNr", get_runNr()-1, liste=False)
+    for cfg in configs:
+        run_on_config(cfg)

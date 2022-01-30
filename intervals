@@ -1,44 +1,121 @@
 #!/usr/bin/env python3
 
 import json
+import argparse
+import os
 
-with open("experiments/valid_intervals", "r") as file:
-    valid_intervals = json.load(file)
+# Add arguments
+parser = argparse.ArgumentParser(description='Info about experiments')
+parser.add_argument(
+    '-a', '--alter',
+    action="store_true",
+    help='Wether to alter the info'
+)
 
-print()
+args = parser.parse_args()
 
-for interval in valid_intervals.keys():
-    print(interval, end=": ")
-    print(valid_intervals[interval]["Start runNr"], end=" - ")
-    if "End runNr" in valid_intervals[interval].keys():
-        print(valid_intervals[interval]["End runNr"])
-    else:
-        rounds = -1
-        runs = 0
-        for key in valid_intervals[interval].keys():
-            if key != "Start runNr" and key != "End runNr":
-                if rounds == -1:
-                    rounds = len(valid_intervals[interval][key])
-                runs += len(valid_intervals[interval][key])
-
-        percent = runs / (8*rounds)
-        print(f"Interrupted or ongoing, {round(100*percent)} %")
-print()
-
-for interval in valid_intervals.keys():
-    print(interval, end=": ")
-
-    for key in valid_intervals[interval].keys():
-        if key != "Start runNr" and key != "End runNr":
-            print(key, end = " ")
+def get_overview():
+    with open("experiments/valid_intervals", "r") as file:
+        valid_intervals = json.load(file)
 
     print()
-print()
 
-for interval in valid_intervals.keys():
-    print(interval, end=": ")
+    def count_runs(interval):
+        count = 0
+        for key in valid_intervals[interval]:
+            if key != "Start runNr" and key != "End runNr" and key != "Outliers":
+                count += len(valid_intervals[interval][key])
+        return count
 
-    for key in valid_intervals[interval].keys():
-        if key != "Start runNr" and key != "End runNr":
-            print("Nr rounds:", len(valid_intervals[interval][key]))
-            break
+    for interval in valid_intervals.keys():
+        print(interval, end=": ")
+        print(valid_intervals[interval]["Start runNr"], end=" - ")
+        if "End runNr" in valid_intervals[interval].keys():
+            nr_runs = 1 + valid_intervals[interval]["End runNr"] - valid_intervals[interval]["Start runNr"]
+            completed_runs = count_runs(interval)
+            if nr_runs == completed_runs:
+                print(completed_runs, end=" - ")
+            else:
+                print(round(completed_runs/nr_runs*100), end="% - ")
+            print(valid_intervals[interval]["End runNr"])
+        else:
+            print(f"Incomplete")
+    print()
+
+    for interval in valid_intervals.keys():
+        print(interval, end=": ")
+
+        for key in valid_intervals[interval].keys():
+            if key != "Start runNr" and key != "End runNr":
+                print(key, end = " ")
+
+        print()
+
+def remove(label, force=False):
+    with open("experiments/valid_intervals", "r") as file:
+        valid_intervals = json.load(file)
+
+    removal = valid_intervals.pop(label, None)
+    if removal == None:
+        print(label, "does not exist. Try again")
+    else:
+        if force:
+            inp = "y"
+        else:
+            inp = input(label + " will be removed. You sure? (y/n)")
+        if inp == "y":
+            with open("experiments/valid_intervals", "w") as file:
+                json.dump(valid_intervals, file)
+            print("Removed")
+        else:
+            print("We kept it")
+    input()
+
+def delete(label):
+    with open("experiments/valid_intervals", "r") as file:
+        valid_intervals = json.load(file)
+
+    if label not in valid_intervals:
+        print(label, "does not exist. Try again")
+        input()
+        return False
+
+    inp = input(label + " will be delted. You sure? (y/n)")
+    if inp == "y":
+        for key in valid_intervals[label]:
+            if key != "Start runNr" and key != "End runNr" and key != "Outliers":
+                runNrs = valid_intervals[label][key]
+                for runNr in runNrs:
+                    os.system(f"rm -rf experiments/run{runNr}")
+        print("Removed")
+        input()
+        return True
+    else:
+        print("We kept it")
+        input()
+        return False
+
+get_overview()
+
+if args.alter:
+    inp = None
+    while inp != "q":
+        print("""
+What would you like to do?
+Remove {label}
+Delete {label}
+Overview
+q to exit
+        """)
+        inp = input()
+
+        if inp.lower().startswith("remove"):
+            label = inp[7:]
+            remove(label)
+        elif inp.lower().startswith("delete"):
+            label = inp[7:]
+            res = delete(label)
+            if res == True:
+                remove(label, force=True)
+        elif inp.lower().startswith("overview"):
+            get_overview()
