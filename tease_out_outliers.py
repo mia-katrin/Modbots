@@ -33,7 +33,7 @@ def check_run(runNr: int, config_file: str):
     print(Fore.BLUE + config_file)
 
     config.read(f"experiments/run{runNr}/{config_file}")
-    ind = Individual.unpack_ind(f"experiments/run{runNr}/bestInd{config.ea.n_generations - 1}.txt", config)
+    ind = Individual.unpack_ind(f"experiments/run{runNr}/bestInd{config.ea.n_generations - 1}", config)
 
     stored_fitness = ind.fitness
     eval_fitness = get_fitness(config, ind)
