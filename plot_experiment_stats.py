@@ -49,46 +49,75 @@ linestyles = {
 }
 
 colors = {}
+labels = {}
+for i, cfg in enumerate(configs):
+    colors[cfg + "_avg"] = color_pairs[i][1]
+    colors[cfg] = color_pairs[i][0]
 
-for i, conf in enumerate(configs):
-    colors[conf + "_avg"] = color_pairs[i][1]
-    colors[conf] = color_pairs[i][0]
+    labels[cfg] = cfg[:-4].replace("_", " ").title()
 
-def plot_runs(dataname, stat="Means"):
-    fig = plt.figure(figsize=(8,4.5))
-    ax = plt.subplot(111)
-    averages = []
-    labels = []
+def get_runs(dataname, stat="Mean"):
+    """ Returns the full data of stat for all runs in all configs
+    runs = {
+        "config 1": [[1,2,3,4,...], [1,2,3,4,...], ...],
+        "config 2": [...],
+        ...
+    }
+    """
+    runs = {}
 
-    last_values = []
     for cfg in configs:
-        last_values.append([])
-
-        label = cfg[:-4].replace("_", " ").title()
-        labels.append(label)
-
-        average = []
-        nr_valid_runs = 0
+        runs[cfg] = []
         for runNr in experiment[cfg]:
             if "Outliers" not in experiment or runNr not in experiment["Outliers"]:
-                nr_valid_runs += 1
                 path = f"experiments/run{runNr}"
                 with open(path+"/data", "rb") as file:
                     data = pickle.load(file)
 
-                last_values[-1].append(data[dataname][stat][-1])
+                runs[cfg].append(
+                    data[dataname][stat]
+                )
+    return runs
 
-                ax.plot(data[dataname][stat], c=colors[cfg], linestyle=linestyles["normal"], label=label)
+def get_averages(runs):
+    """ Returns the average of full data of stat for all runs in all configs
+    runs = {
+        "config 1": [[1,2,3,4,...], [1,2,3,4,...], ...],
+        "config 2": [...],
+        ...
+    }
+    Returns:
+    runs_avg = {
+        "config 1": [1,2,3,4,...],
+        "config 2": [...],
+        ...
+    }
+    """
+    averages = {}
+    for cfg in runs:
+        average = []
+        for run in runs[cfg]:
+            if len(average) == 0:
+                average = np.array(run)
+            else:
+                average += np.array(run)
+        averages[cfg] = average / len(runs[cfg])
+    return averages
 
-                if len(average) == 0:
-                    average = np.array(data[dataname][stat])
-                else:
-                    average += np.array(data[dataname][stat])
-        print("Valid runs:", nr_valid_runs, cfg)
-        averages.append(average / nr_valid_runs)
+def plot_runs(dataname, stat="Means"):
+    runs = get_runs(dataname, stat)
+    averages = get_averages(runs)
 
-    for avg, label, cfg in zip(averages, labels, configs):
-        ax.plot(avg, c=colors[cfg+"_avg"], label=label+" Average", linestyle=linestyles["avg"])
+    fig = plt.figure(figsize=(8,4.5))
+    ax = plt.subplot(111)
+
+    for cfg in runs:
+        for run in runs[cfg]:
+            ax.plot(run, c=colors[cfg], linestyle=linestyles["normal"], label=labels[cfg])
+        print("Valid runs:", len(runs[cfg]), cfg)
+
+    for cfg in averages:
+        ax.plot(averages[cfg], c=colors[cfg+"_avg"], label=labels[cfg]+" Average", linestyle=linestyles["avg"])
 
     # Do legend without duplicatinng labels
     handles, labels2 = plt.gca().get_legend_handles_labels()
@@ -107,9 +136,8 @@ def plot_runs(dataname, stat="Means"):
 
     fig = plt.figure(figsize=(8,4.5))
     ax = plt.subplot(111)
-    for avg, cfg in zip(averages, configs):
-        label = cfg[:-4].replace("_", " ").title()
-        ax.plot(avg, c=colors[cfg+"_avg"], label=label+" Average", linestyle=linestyles["avg"])
+    for cfg in averages:
+        ax.plot(averages[cfg], c=colors[cfg+"_avg"], label=labels[cfg]+" Average", linestyle=linestyles["avg"])
 
     plt.title(title + " only Averages")
     plt.xlabel("Generation")
@@ -117,7 +145,6 @@ def plot_runs(dataname, stat="Means"):
     plt.legend(loc="center left", bbox_to_anchor=(1,0.5))
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width*0.67, box.height])
-    #plt.legend()
 
     plt.savefig((title + " only Averages").replace(" ", "_"))
 
@@ -232,9 +259,20 @@ def boxplot(data, edge_color, fill_color, labels):
 
     return bp
 
-plot_runs("Fitness", stat="Maxs")
-plot_runs("Nr Modules", stat="Means")
-plot_mutation()
-boxplot_of_last("Fitness", "Maxs")
+def print_stats(dataname, stat="Maxs"):
+    runs = get_runs(dataname, stat)
+    averages = get_averages(runs)
 
-plt.show()
+    for cfg in averages:
+        print(cfg, "stats:")
+        avg = averages[cfg]
+        print("Average", stat+":", avg[-1])
+
+
+#plot_runs("Fitness", stat="Maxs")
+print_stats("Fitness", stat="Maxs")
+#plot_runs("Nr Modules", stat="Means")
+#plot_mutation()
+#boxplot_of_last("Fitness", "Maxs")
+
+#plt.show()
