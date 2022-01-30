@@ -23,76 +23,36 @@ experiment = valid_intervals[args.label]
 configs = [i for i in experiment.keys() if i != "End runNr" and i != "Start runNr" and i != "Outliers"]
 
 colors = {
-    'sine.cfg':"gold",
-    'sine.cfg_avg':"orange",
-    'ctrnn.cfg':"lightskyblue",
-    'ctrnn.cfg_avg':"blue",
-    'decentral_ctrnn.cfg':(204/225, 121/225, 167/225),
-    'decentral_ctrnn.cfg_avg':(213/225, 94/225, 0),
-    'copy_ctrnn.cfg':"palegreen",
-    'copy_ctrnn.cfg_avg':(0,158/225, 115/225),
-    'pre_ctrnn.cfg':"green",
-    'pre_ctrnn.cfg_avg':"green",
-
-    'sine_growing.cfg':"gold",
-    'sine_growing.cfg_avg':"orange",
-    'ctrnn_growing.cfg':"lightskyblue",
-    'ctrnn_growing.cfg_avg':"blue",
-    'decentral_ctrnn_growing.cfg':(204/225, 121/225, 167/225),
-    'decentral_ctrnn_growing.cfg_avg':(213/225, 94/225, 0),
-    'copy_ctrnn_growing.cfg':"palegreen",
-    'copy_ctrnn_growing.cfg_avg':(0,158/225, 115/225),
-    'pre_ctrnn_growing.cfg':"green",
-    'pre_ctrnn_growing.cfg_avg':"green",
+    "warm red": (216/256, 67/256, 37/256),
+    "light warm red": (256/256, 157/256, 127/256),
+    "faded orange": (237/256, 162/256, 71/256),
+    "green beige": (230/256, 225/256, 188/256),
+    "warm turqoise": (87/256, 196/256, 173/256),
+    "dark turqoise": (0, 97/256, 100/256),
+    "bluish green": (0,158/256, 115/256),
+    "reddish purple": (204/256, 121/256, 167/256),
+    "light reddish purple": (224/256, 141/256, 187/256)
 }
 
-colors = {
-    'baseline.cfg':"gold",
-    'baseline.cfg_avg':"orange",
-    'variable_scale.cfg':"lightskyblue",
-    'variable_scale.cfg_avg':"blue",
-    'gradual.cfg':(204/225, 121/225, 167/225),
-    'gradual.cfg_avg':(213/225, 94/225, 0),
-    'growing.cfg':"palegreen",
-    'growing.cfg_avg':(0,158/225, 115/225),
-}
+color_pairs = [
+    ["lightskyblue", "blue"],
+    ["palegreen", colors["bluish green"]],
+    [colors["light warm red"], colors["warm red"]],
+    ["gold", colors["faded orange"]],
+    [colors["warm turqoise"], colors["dark turqoise"]],
+    [colors["light reddish purple"], colors["reddish purple"]]
+]
 
 linestyles = {
-    'sine.cfg':"dashed",
-    'ctrnn.cfg':"dashed",
-    'decentral_ctrnn.cfg':"dashed",
-    'copy_ctrnn.cfg':"dashed",
-    'pre_ctrnn.cfg':"dashed",
-
-    'sine_growing.cfg':"dotted",
-    'ctrnn_growing.cfg':"dotted",
-    'decentral_ctrnn_growing.cfg':"dotted",
-    'copy_ctrnn_growing.cfg':"dotted",
-    'pre_ctrnn_growing.cfg':"dotted",
-
-    'sine.cfg_avg':"solid",
-    'ctrnn.cfg_avg':"solid",
-    'decentral_ctrnn.cfg_avg':"solid",
-    'copy_ctrnn.cfg_avg':"solid",
-    'pre_ctrnn.cfg_avg':"solid",
-
-    'sine_growing.cfg_avg':"dashdot",
-    'ctrnn_growing.cfg_avg':"dashdot",
-    'decentral_ctrnn_growing.cfg_avg':"dashdot",
-    'copy_ctrnn_growing.cfg_avg':"dashdot",
-    'pre_ctrnn_growing.cfg_avg':"dashdot",
+    'avg':"solid",
+    'normal':"dashed",
 }
-linestyles = {
-    'baseline.cfg':"dashed",
-    'variable_scale.cfg':"dashed",
-    'gradual.cfg':"dashed",
-    'growing.cfg':"dashed",
 
-    'baseline.cfg_avg':"solid",
-    'variable_scale.cfg_avg':"solid",
-    'gradual.cfg_avg':"solid",
-    'growing.cfg_avg':"solid"
-}
+colors = {}
+
+for i, conf in enumerate(configs):
+    colors[conf + "_avg"] = color_pairs[i][1]
+    colors[conf] = color_pairs[i][0]
 
 def plot_runs(dataname, stat="Means"):
     fig = plt.figure(figsize=(8,4.5))
@@ -118,7 +78,7 @@ def plot_runs(dataname, stat="Means"):
 
                 last_values[-1].append(data[dataname][stat][-1])
 
-                ax.plot(data[dataname][stat], c=colors[cfg], linestyle=linestyles[cfg], label=label)
+                ax.plot(data[dataname][stat], c=colors[cfg], linestyle=linestyles["normal"], label=label)
 
                 if len(average) == 0:
                     average = np.array(data[dataname][stat])
@@ -128,7 +88,7 @@ def plot_runs(dataname, stat="Means"):
         averages.append(average / nr_valid_runs)
 
     for avg, label, cfg in zip(averages, labels, configs):
-        ax.plot(avg, c=colors[cfg+"_avg"], label=label+" Average", linestyle=linestyles[cfg+"_avg"])
+        ax.plot(avg, c=colors[cfg+"_avg"], label=label+" Average", linestyle=linestyles["avg"])
 
     # Do legend without duplicatinng labels
     handles, labels2 = plt.gca().get_legend_handles_labels()
@@ -149,7 +109,7 @@ def plot_runs(dataname, stat="Means"):
     ax = plt.subplot(111)
     for avg, cfg in zip(averages, configs):
         label = cfg[:-4].replace("_", " ").title()
-        ax.plot(avg, c=colors[cfg+"_avg"], label=label+" Average", linestyle=linestyles[cfg+"_avg"])
+        ax.plot(avg, c=colors[cfg+"_avg"], label=label+" Average", linestyle=linestyles["avg"])
 
     plt.title(title + " only Averages")
     plt.xlabel("Generation")
