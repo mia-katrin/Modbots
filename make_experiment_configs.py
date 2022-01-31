@@ -68,39 +68,39 @@ config.mutation.copy_branch = 0.2
 # Case 1
 config.mutation.control = 0.01
 config.mutation.body = 0.01
-config.save("001c001b.cfg")
+config.save("001c001bvariable.cfg")
 
 # Case 2
 config.mutation.control = 0.08
 config.mutation.body = 0.08
-config.save("008c008b.cfg")
+config.save("008c008bvariable.cfg")
 
 # Case 3
 config.mutation.control = 0.16
 config.mutation.body = 0.16
-config.save("016c016b.cfg")
+config.save("016c016bvariable.cfg")
 
 # Case 4
 config.mutation.control = 0.24
 config.mutation.body = 0.24
-config.save("024c024b.cfg")
+config.save("024c024bvariable.cfg")
 
 # Case 5
 config.mutation.control = 0.32
 config.mutation.body = 0.32
-config.save("032c032b.cfg")
+config.save("032c032bvariable.cfg")
 
 # Case 6
 config.mutation.control = 0.48
 config.mutation.body = 0.48
-config.save("048c048b.cfg")
+config.save("048c048bvariable.cfg")
 
 # Case 7
 config.mutation.control = 0.64
 config.mutation.body = 0.64
-config.save("064c064b.cfg")
+config.save("064c064bvariable.cfg")
 
 # Case 8
 config.mutation.control = 0.82
 config.mutation.body = 0.82
-config.save("082c082b.cfg")
+config.save("082c082bvariable.cfg")
