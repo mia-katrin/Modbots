@@ -12,7 +12,7 @@ else:
     run_label = args.label
 
 OUTER_ROUNDS = 1
-INTERNAL_ROUNDS = 2
+INTERNAL_ROUNDS = 4
 
 configs = [
     "032c032b.cfg",
