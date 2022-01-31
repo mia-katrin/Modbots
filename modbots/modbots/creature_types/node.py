@@ -24,11 +24,11 @@ class Node:
         return f"Angle {self.angle - old_angle}"
 
     def mutate_remove(self, config) -> str:
-        if config.individual.growing:
+        if config.individual.gradual:
             leaves = self.get_indexes_of(lambda x: x is not None and x.is_leaf())
             if len(leaves) != 0:
                 index = np.random.choice(leaves)
-                if not config.individual.gradual or self.children[index].scale < 0.25:
+                if self.children[index].scale < 0.25:
                     scale = self.children[index].scale
                     self.children[index] = None
                     return f"Remove {scale}"
