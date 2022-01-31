@@ -3,6 +3,7 @@
 import json
 import argparse
 import os
+import numpy as np
 
 # Add arguments
 parser = argparse.ArgumentParser(description='Info about experiments')
@@ -95,6 +96,104 @@ def delete(label):
         input()
         return False
 
+def concat(label1, label2):
+    with open("experiments/valid_intervals", "r") as file:
+        valid_intervals = json.load(file)
+
+    if label1 not in valid_intervals:
+        print(label1, "does not exist. Try again.")
+    elif label2 not in valid_intervals:
+        print(label2, "does not exist. Try again.")
+    else:
+        exp1 = valid_intervals[label1]
+        exp2 = valid_intervals[label2]
+
+        concat = {}
+
+        smallest_run = 10000000
+        biggest_run = 0
+        for key in exp1:
+            if key != "Start runNr" and key != "End runNr":
+                if key in exp2:
+                    concat[key] = exp1[key] + exp2[key]
+
+                    smallest_run = min(smallest_run, min(concat[key]))
+                    biggest_run = max(biggest_run, max(concat[key]))
+
+        concat["Start runNr"] = smallest_run
+        concat["End runNr"] = biggest_run
+
+        if "Outliers" in exp1 and "Outliers" not in exp2:
+            concat["Outliers"] = exp1["Outliers"]
+
+        if "Outliers" in exp2 and "Outliers" not in exp1:
+            concat["Outliers"] = exp2["Outliers"]
+
+        inp = input("Choose a new label:\n>")
+        valid_intervals[inp] = concat
+
+        with open("experiments/valid_intervals", "w") as file:
+            json.dump(valid_intervals, file)
+
+        print("Concat done!")
+    input()
+
+def merge(label1, label2):
+    with open("experiments/valid_intervals", "r") as file:
+        valid_intervals = json.load(file)
+
+    if label1 not in valid_intervals:
+        print(label1, "does not exist. Try again.")
+    elif label2 not in valid_intervals:
+        print(label2, "does not exist. Try again.")
+    else:
+        exp1 = valid_intervals[label1]
+        exp2 = valid_intervals[label2]
+
+        merge = {}
+        merge["Start runNr"] = min(exp1["Start runNr"], exp2["Start runNr"])
+        merge["End runNr"] = max(exp1["End runNr"], exp2["End runNr"])
+
+        for key in exp1:
+            if key != "Start runNr" and key != "End runNr":
+                merge[key] = exp1[key]
+
+        for key in exp2:
+            if key != "Start runNr" and key != "End runNr":
+                if key in merge:
+                    merge[key] = merge[key] + exp2[key]
+                else:
+                    merge[key] = exp2[key]
+
+        inp = input("Choose a new label:\n>")
+        valid_intervals[inp] = merge
+
+        with open("experiments/valid_intervals", "w") as file:
+            json.dump(valid_intervals, file)
+
+        print("Merge done!")
+    input()
+
+fake_index = 0
+def add_fake():
+    global fake_index
+    with open("experiments/valid_intervals", "r") as file:
+        valid_intervals = json.load(file)
+
+    start_nr = int(round(np.random.rand()*1000))
+    valid_intervals[f"Fake {fake_index}"] = {
+        "conf1.cfg": [start_nr,start_nr+1,start_nr+2],
+        "conf2.cfg": [start_nr+3,start_nr+4,start_nr+5],
+        "conf3.cfg": [start_nr+6,start_nr+7,start_nr+8],
+        "Outliers": [start_nr+3],
+        "Start runNr": start_nr,
+        "End runNr": start_nr+8
+    }
+    fake_index += 1
+
+    with open("experiments/valid_intervals", "w") as file:
+        json.dump(valid_intervals, file)
+
 get_overview()
 
 if args.alter:
@@ -104,6 +203,9 @@ if args.alter:
 What would you like to do?
 Remove {label}
 Delete {label}
+Concat {label1}, {label2} (adds only common configs)
+Merge {label1}, {label2} (adds all configs)
+Add fake
 Overview
 q to exit
         """)
@@ -119,3 +221,14 @@ q to exit
                 remove(label, force=True)
         elif inp.lower().startswith("overview"):
             get_overview()
+        elif inp.lower().startswith("concat"):
+            label = inp[7:]
+            labels = label.split(", ")
+            concat(labels[0], labels[1])
+        elif inp.lower().startswith("merge"):
+            label = inp[6:]
+            labels = label.split(", ")
+            merge(labels[0], labels[1])
+
+        elif inp.lower().startswith("add fake"):
+            add_fake()
