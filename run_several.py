@@ -15,12 +15,9 @@ OUTER_ROUNDS = 1
 INTERNAL_ROUNDS = 2
 
 configs = [
-    "016c016b.cfg",
-    "024c024b.cfg",
     "032c032b.cfg",
     "048c048b.cfg",
     "064c064b.cfg",
-    "082c082b.cfg"
 ]
 
 runNr = get_runNr()
