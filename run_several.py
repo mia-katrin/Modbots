@@ -12,13 +12,17 @@ else:
     run_label = args.label
 
 OUTER_ROUNDS = 1
-INTERNAL_ROUNDS = 2
+INTERNAL_ROUNDS = 4
 
 configs = [
-    "024c024bgrowing.cfg",
-    "032c032bgrowing.cfg",
-    "048c048bgrowing.cfg",
-    "064c064bgrowing.cfg",
+    "064c032b.cfg",
+    "064c048b.cfg",
+    "064c082b.cfg",
+    "032c064b.cfg",
+    "048c064b.cfg",
+    "082c064b.cfg",
+    "048c032b.cfg",
+    "032c048b.cfg"
 ]
 
 runNr = get_runNr()
