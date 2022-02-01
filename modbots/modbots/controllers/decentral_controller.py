@@ -58,7 +58,7 @@ class DecentralController:
         allNodes = []
         traverse_get_list(self.body.root, allNodes)
 
-        individual_likelihood = config.mutation.control/len(allNodes)
+        individual_likelihood = config.mutation.control
 
         mutated = False
         for node in allNodes:

@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
 
-from modbots.util import bool_from_distribution, add_on_result
+from modbots.util import bool_from_distribution, add_on_result, traverse_get_list
 from modbots.creature_types.node import Node
 
 class Body:
@@ -102,7 +102,10 @@ class Body:
         return res + child_strings
 
     def mutate_maybe(self, config):
-        individual_likelihood = config.mutation.body/self.get_nr_modules()
+        individual_likelihood = config.mutation.body
+
+        allNodes = []
+        traverse_get_list(self.root, allNodes)
 
         current_nodes = [self.root]
 
@@ -118,7 +121,7 @@ class Body:
             )
 
             for child in node.children:
-                if child != None:
+                if child != None and child in allNodes:
                     current_nodes.append(child)
 
         if result != "":
