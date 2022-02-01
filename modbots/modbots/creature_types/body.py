@@ -102,10 +102,7 @@ class Body:
         return res + child_strings
 
     def mutate_maybe(self, config):
-        individual_likelihood = config.mutation.body
-
-        allNodes = []
-        traverse_get_list(self.root, allNodes)
+        individual_likelihood = config.mutation.body/self.get_nr_modules()
 
         current_nodes = [self.root]
 
@@ -121,7 +118,7 @@ class Body:
             )
 
             for child in node.children:
-                if child != None and child in allNodes:
+                if child != None:
                     current_nodes.append(child)
 
         if result != "":

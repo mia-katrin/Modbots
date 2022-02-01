@@ -55,10 +55,7 @@ class DecentralController:
     def mutate_maybe(self, config):
         self._check_lack_of_control()
 
-        allNodes = []
-        traverse_get_list(self.body.root, allNodes)
-
-        individual_likelihood = config.mutation.control
+        individual_likelihood = config.mutation.control/self.body.get_nr_modules()
 
         mutated = False
         for node in allNodes:
