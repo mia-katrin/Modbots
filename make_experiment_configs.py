@@ -29,7 +29,7 @@ config.individual.creation_mu = 0.75
 config.individual.creation_std = 0.35
 
 config.individual.variable_scale = True
-config.individual.growing = False
+config.individual.growing = True
 config.individual.gradual = False
 
 # EVALUATION
@@ -66,22 +66,22 @@ config.mutation.copy_branch = 0.2
 
 # MUTATION
 
-# Case 5
-config.mutation.control = 0.32
-config.mutation.body = 0.32
-config.save("032c032bvariable.cfg")
-
-# Case 6
-config.mutation.control = 0.48
-config.mutation.body = 0.48
-config.save("048c048bvariable.cfg")
-
-# Case 7
-config.mutation.control = 0.64
-config.mutation.body = 0.64
-config.save("064c064bvariable.cfg")
-
-# Case 8
+# Case 1
 config.mutation.control = 0.82
 config.mutation.body = 0.82
-config.save("082c082bvariable.cfg")
+config.save("082c082bgrowing.cfg")
+
+# Case 2
+config.mutation.control = 0.32
+config.mutation.body = 0.32
+config.save("032c032bgrowing.cfg")
+
+# Case 3
+config.mutation.control = 0.48
+config.mutation.body = 0.48
+config.save("048c048bgrowing.cfg")
+
+# Case 4
+config.mutation.control = 0.64
+config.mutation.body = 0.64
+config.save("064c064bgrowing.cfg")
