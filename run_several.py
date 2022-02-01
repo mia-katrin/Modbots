@@ -15,9 +15,6 @@ OUTER_ROUNDS = 1
 INTERNAL_ROUNDS = 4
 
 configs = [
-    "032c032bvariable.cfg",
-    "048c048bvariable.cfg",
-    "064c064bvariable.cfg",
     "082c082bvariable.cfg",
 ]
 
