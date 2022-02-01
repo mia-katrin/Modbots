@@ -40,7 +40,9 @@ color_pairs = [
     [colors["light warm red"], colors["warm red"]],
     ["gold", colors["faded orange"]],
     [colors["warm turqoise"], colors["dark turqoise"]],
-    [colors["light reddish purple"], colors["reddish purple"]]
+    [colors["light reddish purple"], colors["reddish purple"]],
+    ["hotpink", "red"],
+    ["thistle", "darkviolet"]
 ]
 
 linestyles = {
