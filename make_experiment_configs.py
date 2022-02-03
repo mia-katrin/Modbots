@@ -30,7 +30,7 @@ config.individual.creation_std = 0.35
 
 config.individual.variable_scale = True
 config.individual.growing = True
-config.individual.gradual = False
+config.individual.gradual = True
 
 # EVALUATION
 config.evaluation.n_steps = 100
@@ -67,31 +67,41 @@ config.mutation.copy_branch = 0.2
 # MUTATION
 
 # Case 1
-config.mutation.control = 0.64
-config.mutation.body = 0.32
-config.save("064c032bgrowing.cfg")
+config.mutation.control = 0.16
+config.mutation.body = 0.24
+config.save("016c024bgradual.cfg")
 
 # Case 2
-config.mutation.control = 0.64
-config.mutation.body = 0.48
-config.save("064c048bgrowing.cfg")
+config.mutation.control = 0.24
+config.mutation.body = 0.16
+config.save("024c016bgradual.cfg")
+
+# Case 3
+config.mutation.control = 0.32
+config.mutation.body = 0.24
+config.save("032c024bgradual.cfg")
 
 # Case 4
-config.mutation.control = 0.32
-config.mutation.body = 0.64
-config.save("032c064bgrowing.cfg")
+config.mutation.control = 0.24
+config.mutation.body = 0.32
+config.save("024c032bgradual.cfg")
 
 # Case 5
+config.mutation.control = 0.32
+config.mutation.body = 0.48
+config.save("032c048bgradual.cfg")
+
+# Case 6
 config.mutation.control = 0.48
-config.mutation.body = 0.64
-config.save("048c064bgrowing.cfg")
+config.mutation.body = 0.32
+config.save("048c032bgradual.cfg")
 
 # Case 7
 config.mutation.control = 0.48
-config.mutation.body = 0.32
-config.save("048c032bgrowing.cfg")
+config.mutation.body = 0.64
+config.save("048c064bgradual.cfg")
 
 # Case 8
-config.mutation.control = 0.32
+config.mutation.control = 0.64
 config.mutation.body = 0.48
-config.save("032c048bgrowing.cfg")
+config.save("064c048bgradual.cfg")
