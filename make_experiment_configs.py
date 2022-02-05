@@ -46,6 +46,8 @@ config.control.copy_decentral = False
 config.control.pre_processing = False
 
 config.control.request_period = 0.2
+# Copy brain mutation
+config.mutation.copy_number = 1
 
 # MUTATION
 # With no scale
@@ -66,17 +68,32 @@ config.mutation.copy_branch = 0.2
 
 # MUTATION
 
-# Case 2
-config.mutation.control = 0.24
-config.mutation.body = 0.48
-config.save("024c048bgrowing.cfg")
-
-# Case 3
-config.mutation.control = 0.24
-config.mutation.body = 0.64
-config.save("024c064bgrowing.cfg")
+# Case 1
+config.mutation.control = 0.82
+config.mutation.body = 0.24
+config.save("082c024bgrowing.cfg")
 
 # Case 1
-config.mutation.control = 0.24
-config.mutation.body = 0.82
-config.save("024c082bgrowing.cfg")
+config.mutation.control = 0.82
+config.mutation.body = 0.32
+config.save("082c032bgrowing.cfg")
+
+# Case 1
+config.mutation.control = 0.82
+config.mutation.body = 0.48
+config.save("082c048bgrowing.cfg")
+
+# Case 1
+config.mutation.control = 0.82
+config.mutation.body = 0.64
+config.save("082c064bgrowing.cfg")
+
+# Case 1
+config.mutation.control = 0.64
+config.mutation.body = 0.24
+config.save("064c024bgrowing.cfg")
+
+# Case 1
+config.mutation.control = 0.48
+config.mutation.body = 0.24
+config.save("048c024bgrowing.cfg")
