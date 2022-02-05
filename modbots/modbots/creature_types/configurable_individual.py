@@ -30,10 +30,10 @@ class Individual:
             self.controller = DecentralController(SineController, self.body, deltaTime=config.control.request_period)
         elif config.control.oscillatory and config.control.copy_decentral:
             print("Oscillatory decentral copy control chosen")
-            self.controller = CopyDecentralController(SineController, self.body, deltaTime=config.control.request_period)
+            self.controller = CopyDecentralController(SineController, config.mutation.copy_number, self.body, deltaTime=config.control.request_period)
         elif config.control.ctrnn and config.control.copy_decentral:
             print("Ctrnn decentral copy control chosen")
-            self.controller = CopyDecentralController(CTRNNInterface, self.body, advance_time=config.control.request_period, time_step=config.control.request_period)
+            self.controller = CopyDecentralController(CTRNNInterface, config.mutation.copy_number, self.body, advance_time=config.control.request_period, time_step=config.control.request_period)
         elif config.control.ctrnn and config.control.decentral:
             print("Ctrnn decentral control chosen")
             self.controller = DecentralController(CTRNNInterface, self.body, advance_time=config.control.request_period, time_step=config.control.request_period)

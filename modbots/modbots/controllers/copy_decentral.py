@@ -4,10 +4,13 @@ import copy
 from modbots.util import traverse_get_list
 
 class CopyDecentralController:
-    def __init__(self, control_type, body, **kwargs):
+    def __init__(self, control_type, copies, body, **kwargs):
         self.kwargs = kwargs
         self.body = body
-        self.controller_clones = [control_type()]
+        cont = control_type()
+        self.controller_clones = [cont]
+        for _ in range(copies-1):
+            self.controller_clones.append(copy.deepcopy(cont))
         self.controllers = []
 
         allNodes = []
@@ -58,26 +61,18 @@ class CopyDecentralController:
 
         return actions
 
-    def mutate(self, config):
+    def mutate_maybe(self, config):
         self._check_lack_of_control()
 
-        # Chance of making new controller
-        if len(self.controller_clones) < config.mutation.copy_number and np.random.rand() < config.mutation.copy_likelihood:
-            self.controller_clones.append(
-                copy.deepcopy(
-                    np.random.choice(
-                        self.controller_clones
-                    )
-                )
-            )
+        mutated = False
 
-        # Mutate which controller each module uses
         allNodes = []
         traverse_get_list(self.body.root, allNodes)
 
+        # Mutate which controller each module uses
         if len(self.controller_clones) > 1:
             for node in allNodes:
-                if np.random.rand() < config.mutation.switch_copy_likelihood:
+                if np.random.rand() < config.mutation.switch_copy_likelihood*config.mutation.control:
                     possibilities = list(range(len(self.controller_clones)))
 
                     orig = node.clone_nr
@@ -85,8 +80,19 @@ class CopyDecentralController:
 
                     node.clone_nr = np.random.choice(possibilities)
 
+                    mutated = True
+
+        # Keep track of which clones are actually used
+        used_clones = []
+        for node in allNodes:
+            if node.clone_nr not in used_clones:
+                used_clones.append(node.clone_nr)
+
         # Mutate controllers
-        rand_nr = np.random.rand()
         for i, cont in enumerate(self.controller_clones):
-            if rand_nr <= i / len(self.controller_clones):
-                cont.mutate(config)
+            if i in used_clones:
+                res = cont.mutate_maybe(config, config.mutation.control)
+                if res == True:
+                    mutated = True
+
+        return mutated

@@ -20,14 +20,17 @@ def calc_time_evolution(config):
     mut_rate = config.ea.mut_rate
     nr_parents = config.ea.nr_parents
     n_steps = config.evaluation.n_steps
+    request_period = config.control.request_period
     n_gen = config.ea.n_generations
     time_scale = config.evaluation.time_scale
 
-    avg_one_ind_time = n_steps*0.2/(n_cores * (time_scale if time_scale != None else 1))
+    modifier = (n_cores * (time_scale if time_scale != None else 1))
 
-    round0 = pop_size*avg_one_ind_time
+    one_ind_time = n_steps*request_period
+
+    round0 = max(pop_size*one_ind_time / modifier, one_ind_time / (time_scale if time_scale != None else 1))
     inds_geni = (pop_size*mut_rate)+nr_parents
-    roundi = inds_geni*avg_one_ind_time
+    roundi = max(inds_geni*one_ind_time / modifier, one_ind_time / (time_scale if time_scale != None else 1))
 
     all_gen = roundi*n_gen
 
