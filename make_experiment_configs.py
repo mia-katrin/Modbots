@@ -67,16 +67,16 @@ config.mutation.copy_branch = 0.2
 # MUTATION
 
 # Case 2
-config.mutation.control = 0.32
-config.mutation.body = 0.82
-config.save("032c082bgrowing.cfg")
+config.mutation.control = 0.24
+config.mutation.body = 0.48
+config.save("024c048bgrowing.cfg")
 
 # Case 3
-config.mutation.control = 0.48
-config.mutation.body = 0.82
-config.save("048c082bgrowing.cfg")
+config.mutation.control = 0.24
+config.mutation.body = 0.64
+config.save("024c064bgrowing.cfg")
 
 # Case 1
-config.mutation.control = 0.64
+config.mutation.control = 0.24
 config.mutation.body = 0.82
-config.save("064c082bgrowing.cfg")
+config.save("024c082bgrowing.cfg")
