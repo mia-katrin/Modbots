@@ -1,6 +1,7 @@
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfigurationChannel
 from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
+from mlagents_envs.exception import UnityWorkerInUseException
 from mlagents_envs.base_env import ActionTuple
 
 import numpy as np
@@ -42,6 +43,21 @@ def set_env_seeds(env_seeds):
     global ENV_SEEDS
     ENV_SEEDS = env_seeds
 
+import socket
+HIGHEST_WORKER_ID = 65535 - UnityEnvironment.BASE_ENVIRONMENT_PORT
+def is_port_in_use(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
+
+def is_worker_id_open(worker_id: int) -> bool:
+    return is_port_in_use(
+        UnityEnvironment.BASE_ENVIRONMENT_PORT + worker_id
+    )
+
+def get_worker_id() -> int:
+    pid = os.getpid() % HIGHEST_WORKER_ID
+    return pid
+
 # singleton equivalent (unsure if this is true, pool map will spawn several envs
 # on different adresses with different variables)
 env_pid = None
@@ -60,29 +76,36 @@ def get_env(runNr=None):
     global env_pid
     if SEED == None:
         SEED = 42
-    #print("Using", SEED, HEADLESS, TIME_SCALE)
-    #pid = multiprocessing.Process()._identity[0]
-    pid = os.getpid() % (65535 - 5005 - 10) # Steinar fix
-    if runNr != None:
-        pid = multiprocessing.Process()._identity[0]
-        print(runNr % 1000, pid % 100, int(str(runNr % 1000) + str(pid % 100)))
-        pid = 65535 - 5005 - 10 - int(str(runNr % 1000) + str(pid % 100))
 
-    if env_pid == None:
-        env_pid = pid
-    #print("Env is fetched:", env_pid, pid)
     if (side_channel == None):
         side_channel = SideChannelPythonside()
     if (env == None):
         param_channel = EnvironmentParametersChannel()
-        if TIME_SCALE != None:
-            ec = EngineConfigurationChannel()
-            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, ec, param_channel],no_graphics = HEADLESS, worker_id=pid, log_folder=LOG_FOLDER)
-            ec.set_configuration_parameters(time_scale=TIME_SCALE)
-            env.reset()
-        else:
-            env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, param_channel],no_graphics = HEADLESS, worker_id=pid, log_folder=LOG_FOLDER)
-            env.reset()
+
+        if env_pid == None:
+            env_pid = get_worker_id()
+
+        env_made = False
+        failed = 0
+        while not env_made:
+            try:
+                if TIME_SCALE != None:
+                    ec = EngineConfigurationChannel()
+                    env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, ec, param_channel],no_graphics = HEADLESS, worker_id=env_pid, log_folder=LOG_FOLDER)
+                    ec.set_configuration_parameters(time_scale=TIME_SCALE)
+                    env.reset()
+                else:
+                    env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, param_channel],no_graphics = HEADLESS, worker_id=env_pid, log_folder=LOG_FOLDER)
+                    env.reset()
+                env_made = True
+            except UnityWorkerInUseException:
+                env_pid += 1
+                if env_pid > HIGHEST_WORKER_ID:
+                    env_pid = 0
+                failed += 1
+                if failed > HIGHEST_WORKER_ID:
+                    raise UnityWorkerInUseException(env_pid)
+
         param_channel.set_float_parameter("torque", TORQUE)
         param_channel.set_float_parameter("envEnum", ENV_ENUM)
     return env, side_channel, param_channel
