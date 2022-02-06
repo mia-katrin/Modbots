@@ -66,7 +66,7 @@ def get_env(runNr=None):
     if runNr != None:
         pid = multiprocessing.Process()._identity[0]
         print(runNr % 1000, pid % 100, int(str(runNr % 1000) + str(pid % 100)))
-        pid = int(str(runNr % 1000) + str(pid % 100))
+        pid = 65535 - 5005 - 10 - int(str(runNr % 1000) + str(pid % 100))
 
     if env_pid == None:
         env_pid = pid
