@@ -69,11 +69,26 @@ config.mutation.copy_branch = 0.25
 # MUTATION
 
 # Case 1
-config.mutation.control = 0.16
+config.mutation.control = 0.01
 config.mutation.body = 0.64
-config.save("016c064b_dec_ctrnn.cfg")
+config.save("001c064b_dec_ctrnn.cfg")
 
 # Case 2
-config.mutation.control = 0.08
+config.mutation.control = 0.24
 config.mutation.body = 0.64
-config.save("008c064b_dec_ctrnn.cfg")
+config.save("024c064b_dec_ctrnn.cfg")
+
+# Case 1
+config.mutation.control = 0.32
+config.mutation.body = 0.64
+config.save("032c064b_dec_ctrnn.cfg")
+
+# Case 2
+config.mutation.control = 0.48
+config.mutation.body = 0.64
+config.save("048c064b_dec_ctrnn.cfg")
+
+# Case 2
+config.mutation.control = 0.48
+config.mutation.body = 0.48
+config.save("048c048b_dec_ctrnn.cfg")
