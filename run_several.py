@@ -15,7 +15,11 @@ OUTER_ROUNDS = 1
 INTERNAL_ROUNDS = 4
 
 configs = [
-    "032c048b_dec_ctrnn.cfg"
+    "001c016bvariable_copy.cfg",
+    "001c024bvariable_copy.cfg",
+    "001c032bvariable_copy.cfg",
+    "001c048bvariable_copy.cfg",
+    "001c064bvariable_copy.cfg"
 ]
 """
 "024c024b_dec_ctrnn.cfg",
