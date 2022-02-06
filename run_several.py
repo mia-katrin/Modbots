@@ -30,12 +30,12 @@ INTERNAL_ROUNDS = 4
 "008c082b_dec_ctrnn.cfg",
 """
 configs = [
-    "032c064bgradual.cfg",
-    "024c064bgradual.cfg",
-    "016c064bgradual.cfg",
-    "016c048bgradual.cfg",
-    "024c048bgradual.cfg",
-    "016c032bgradual.cfg"
+    "082c024bgradual.cfg",
+    "064c024bgradual.cfg",
+    "048c024bgradual.cfg",
+    "082c032bgradual.cfg",
+    "064c032bgradual.cfg",
+    "082c048bgradual.cfg"
 ]
 """
 "024c024b_dec_ctrnn.cfg",
