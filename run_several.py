@@ -16,11 +16,7 @@ INTERNAL_ROUNDS = 4
 """
 
 
-"016c064b_dec_ctrnn.cfg",
-"016c082b_dec_ctrnn.cfg",
-"001c024b_dec_ctrnn.cfg",
-"001c032b_dec_ctrnn.cfg",
-"001c048b_dec_ctrnn.cfg",
+
 "001c064b_dec_ctrnn.cfg",
 "001c082b_dec_ctrnn.cfg",
 "008c024b_dec_ctrnn.cfg",
@@ -30,12 +26,11 @@ INTERNAL_ROUNDS = 4
 "008c082b_dec_ctrnn.cfg",
 """
 configs = [
-    "082c024bgradual.cfg",
-    "064c024bgradual.cfg",
-    "048c024bgradual.cfg",
-    "082c032bgradual.cfg",
-    "064c032bgradual.cfg",
-    "082c048bgradual.cfg"
+    "016c064b_dec_ctrnn.cfg",
+    "016c082b_dec_ctrnn.cfg",
+    "001c024b_dec_ctrnn.cfg",
+    "001c032b_dec_ctrnn.cfg",
+    "001c048b_dec_ctrnn.cfg"
 ]
 """
 "024c024b_dec_ctrnn.cfg",
