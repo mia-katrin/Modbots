@@ -269,12 +269,14 @@ def print_stats(dataname, stat="Maxs"):
         print(cfg, "stats:")
         avg = averages[cfg]
         print("Average", stat+":", avg[-1])
+        print("Runs:", len(runs[cfg]))
 
 
-plot_runs("Fitness", stat="Maxs")
+#plot_runs("Fitness", stat="Maxs")
 print_stats("Fitness", stat="Maxs")
-plot_runs("Nr Modules", stat="Means")
-plot_mutation()
-boxplot_of_last("Fitness", "Maxs")
+print_stats("Nr Modules", stat="Means")
+#plot_runs("Nr Modules", stat="Means")
+#plot_mutation()
+#boxplot_of_last("Fitness", "Maxs")
 
 plt.show()

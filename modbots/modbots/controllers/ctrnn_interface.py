@@ -47,9 +47,12 @@ class CTRNNInterface:
         self.controllerGenome.mutate(self.config.genome_config)
         self.controller = neat.ctrnn.CTRNN.create(self.controllerGenome, self.config, config.control.request_period)
 
-    def mutate_maybe(self, config, cont_mut_rate) -> bool:
+    def mutate_maybe(self, config, cont_mut_rate=None) -> bool:
+        if cont_mut_rate == None:
+            cont_mut_rate = config.mutation.control
+
         # Recording the performance of the controller:
-        obs = [np.random.rand(3)*1000 for _ in range(1000)]
+        obs = [np.random.rand(self.config.genome_config.num_inputs)*1000 for _ in range(1000)]
         self.reset()
         actions = [self.advance(obs[i]) for i in range(1000)]
 

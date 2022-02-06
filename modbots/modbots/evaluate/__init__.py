@@ -64,7 +64,7 @@ env_pid = None
 env = None
 side_channel = None
 param_channel = None
-def get_env(runNr=None):
+def get_env():
     global env
     global side_channel
     global param_channel
@@ -120,13 +120,13 @@ def close_env():
     sc = None
 
 # Evaluate function uses variables of different env instances
-def evaluate(ind, force_evaluate=True, record=False, runNr=None):
+def evaluate(ind, force_evaluate=True, record=False):
     if not force_evaluate and not ind.needs_evaluation:
         return ind.fitness
 
     ind.prepare_for_evaluation()
 
-    env, side_channel, param_channel = get_env(runNr)
+    env, side_channel, param_channel = get_env()
 
     fitness = 0
     for env_seed in ENV_SEEDS:
