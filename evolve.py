@@ -72,11 +72,11 @@ def init_pop(toolbox, config) -> list:
         print(f"Fitness: {fit}, Modules: {ind.get_nr_modules()}")
     return population
 
-def init_toolbox(config) -> tuple:
+def init_toolbox(config, runNr) -> tuple:
     toolbox = base.Toolbox()
     toolbox.register("individual", individual_class.random, config=config)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-    toolbox.register("evaluate", evaluate, force_evaluate=False)
+    toolbox.register("evaluate", evaluate, force_evaluate=False, runNr=runNr)
     toolbox.register("mutate", individual_class.mutate, mutation_rate=config.ea.mut_rate)
     toolbox.register("select", tools.selTournament, tournsize = config.ea.tournsize)
 
@@ -134,7 +134,7 @@ def evolve(config, statement=None, show_figs=True, runNr=None):
         set_env_seeds(np.round(np.random.rand(3)*1000))
 
     # init toolbox
-    toolbox, pool = init_toolbox(config)
+    toolbox, pool = init_toolbox(config, runNr)
 
     # Init pop
     population = init_pop(toolbox, config)

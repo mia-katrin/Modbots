@@ -48,7 +48,7 @@ env_pid = None
 env = None
 side_channel = None
 param_channel = None
-def get_env():
+def get_env(runNr=None):
     global env
     global side_channel
     global param_channel
@@ -62,7 +62,12 @@ def get_env():
         SEED = 42
     #print("Using", SEED, HEADLESS, TIME_SCALE)
     #pid = multiprocessing.Process()._identity[0]
-    pid = os.getpid() % 10000 # Steinar fix
+    pid = os.getpid() % (65535 - 5005 - 10) # Steinar fix
+    if runNr != None:
+        pid = multiprocessing.Process()._identity[0]
+        print(runNr % 1000, pid % 100, int(str(runNr % 1000) + str(pid % 100)))
+        pid = int(str(runNr % 1000) + str(pid % 100))
+
     if env_pid == None:
         env_pid = pid
     #print("Env is fetched:", env_pid, pid)
@@ -92,13 +97,13 @@ def close_env():
     sc = None
 
 # Evaluate function uses variables of different env instances
-def evaluate(ind, force_evaluate=True, record=False):
+def evaluate(ind, force_evaluate=True, record=False, runNr=None):
     if not force_evaluate and not ind.needs_evaluation:
         return ind.fitness
 
     ind.prepare_for_evaluation()
 
-    env, side_channel, param_channel = get_env()
+    env, side_channel, param_channel = get_env(runNr)
 
     fitness = 0
     for env_seed in ENV_SEEDS:
