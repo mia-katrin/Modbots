@@ -30,11 +30,12 @@ INTERNAL_ROUNDS = 4
 "008c082b_dec_ctrnn.cfg",
 """
 configs = [
-    "048c048b_dec_ctrnn.cfg",
-    "048c064b_dec_ctrnn.cfg",
-    "016c024b_dec_ctrnn.cfg",
-    "016c032b_dec_ctrnn.cfg",
-    "016c048b_dec_ctrnn.cfg"
+    "032c064bgradual.cfg",
+    "024c064bgradual.cfg",
+    "016c064bgradual.cfg",
+    "016c048bgradual.cfg",
+    "024c048bgradual.cfg",
+    "016c032bgradual.cfg"
 ]
 """
 "024c024b_dec_ctrnn.cfg",
@@ -47,6 +48,11 @@ configs = [
 "032c064b_dec_ctrnn.cfg",
 "048c024b_dec_ctrnn.cfg",
 "048c032b_dec_ctrnn.cfg"
+"048c048b_dec_ctrnn.cfg",
+"048c064b_dec_ctrnn.cfg",
+"016c024b_dec_ctrnn.cfg",
+"016c032b_dec_ctrnn.cfg",
+"016c048b_dec_ctrnn.cfg"
 """
 
 runNr = get_runNr()
