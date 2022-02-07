@@ -14,42 +14,22 @@ else:
 OUTER_ROUNDS = 1
 INTERNAL_ROUNDS = 4
 
-configs = [
-    "024c064bvariable_copy.cfg",
-    "024c048bvariable_copy.cfg",
-    "024c032bvariable_copy.cfg",
-    "024c024bvariable_copy.cfg",
-    "024c082bvariable_copy.cfg"
-]
-"""
-"024c024b_dec_ctrnn.cfg",
-"024c032b_dec_ctrnn.cfg",
-"024c048b_dec_ctrnn.cfg",
-"024c064b_dec_ctrnn.cfg",
-"032c024b_dec_ctrnn.cfg"
-"032c032b_dec_ctrnn.cfg",
-"032c048b_dec_ctrnn.cfg",
-"032c064b_dec_ctrnn.cfg",
-"048c024b_dec_ctrnn.cfg",
-"048c032b_dec_ctrnn.cfg"
-"048c048b_dec_ctrnn.cfg",
-"048c064b_dec_ctrnn.cfg",
-"016c024b_dec_ctrnn.cfg",
-"016c032b_dec_ctrnn.cfg",
-"016c048b_dec_ctrnn.cfg"
-"016c064b_dec_ctrnn.cfg",
-"016c082b_dec_ctrnn.cfg",
-"001c024b_dec_ctrnn.cfg",
-"001c032b_dec_ctrnn.cfg",
-"001c048b_dec_ctrnn.cfg"
-"001c064b_dec_ctrnn.cfg",
-"001c082b_dec_ctrnn.cfg",
-"008c024b_dec_ctrnn.cfg",
-"008c032b_dec_ctrnn.cfg",
-"008c048b_dec_ctrnn.cfg"
-"008c064b_dec_ctrnn.cfg",
-"008c082b_dec_ctrnn.cfg"
-"""
+configs = list()
+
+cs = [0.82,0.64,0.48,0.32,0.32]
+bs = [0.16,0.16,0.16,0.16,0.24]
+
+mode = "variable"
+brain = ""
+
+for c, b in zip(cs, bs):
+    c = str(c)[2:]
+    b = str(b)[2:]
+    if brain != "":
+        brain = "_" + brain
+    configs.append(f"0{c}c0{b}b{mode}{brain}.cfg")
+    print("Doing", f"0{c}c0{b}b{mode}{brain}.cfg")
+
 
 runNr = get_runNr()
 with open("experiments/runNr.txt", "w") as file:

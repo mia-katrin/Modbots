@@ -13,7 +13,7 @@ config.experiment.headless = True # Must always be True
 
 # EA
 config.ea.mut_rate = 1.0
-config.ea.control_sigma = 0.2
+config.ea.control_sigma = 0.5
 config.ea.body_sigma = 0.5
 config.ea.n_generations = 50
 pop_size = 50
@@ -39,10 +39,10 @@ config.evaluation.time_scale = None
 config.evaluation.env_enum = 0.0
 
 # CONTROL
-config.control.oscillatory = False
-config.control.ctrnn = True
+config.control.oscillatory = True
+config.control.ctrnn = False
 config.control.decentral = True
-config.control.copy_decentral = True
+config.control.copy_decentral = False
 config.control.pre_processing = False
 
 config.control.request_period = 0.2
@@ -69,27 +69,18 @@ config.mutation.copy_branch = 0.2
 
 # MUTATION
 
-# Case 1
-config.mutation.control = 0.24
-config.mutation.body = 0.64
-config.save("024c064bvariable_copy.cfg")
+cs = [0.82,0.64,0.48,0.32,0.32]
+bs = [0.16,0.16,0.16,0.16,0.24]
 
-# Case 1
-config.mutation.control = 0.24
-config.mutation.body = 0.48
-config.save("024c048bvariable_copy.cfg")
+mode = "variable"
+brain = ""
 
-# Case 1
-config.mutation.control = 0.24
-config.mutation.body = 0.32
-config.save("024c032bvariable_copy.cfg")
-
-# Case 1
-config.mutation.control = 0.24
-config.mutation.body = 0.24
-config.save("024c024bvariable_copy.cfg")
-
-# Case 1
-config.mutation.control = 0.24
-config.mutation.body = 0.16
-config.save("024c082bvariable_copy.cfg")
+for c, b in zip(cs, bs):
+    config.mutation.control = c
+    config.mutation.body = b
+    c = str(c)[2:]
+    b = str(b)[2:]
+    if brain != "":
+        brain = "_" + brain
+    config.save(f"0{c}c0{b}b{mode}{brain}.cfg")
+    print("Made", f"0{c}c0{b}b{mode}{brain}.cfg")
