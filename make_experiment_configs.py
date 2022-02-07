@@ -28,7 +28,7 @@ config.individual.force_interesting = True
 config.individual.creation_mu = 0.75
 config.individual.creation_std = 0.35
 
-config.individual.variable_scale = True
+config.individual.variable_scale = False
 config.individual.growing = False
 config.individual.gradual = False
 
@@ -52,44 +52,44 @@ config.mutation.switch_copy_likelihood = 1.0
 
 # MUTATION
 # With no scale
-#config.mutation.angle = 0.2
-#config.mutation.remove_node = 0.25
-#config.mutation.add_node = 0.3
-#config.mutation.scale = 0.0
-#config.mutation.copy_branch = 0.25
+config.mutation.angle = 0.2
+config.mutation.remove_node = 0.25
+config.mutation.add_node = 0.3
+config.mutation.scale = 0.0
+config.mutation.copy_branch = 0.25
 
 # With scale
-config.mutation.angle = 0.15
-config.mutation.remove_node = 0.2
-config.mutation.add_node = 0.25
-config.mutation.scale = 0.2
-config.mutation.copy_branch = 0.2
+#config.mutation.angle = 0.15
+#config.mutation.remove_node = 0.2
+#config.mutation.add_node = 0.25
+#config.mutation.scale = 0.2
+#config.mutation.copy_branch = 0.2
 
 # Files remains as default on computer
 
 # MUTATION
 
 # Case 1
-config.mutation.control = 0.08
-config.mutation.body = 0.16
-config.save("008c016bvariable_copy.cfg")
-
-# Case 1
-config.mutation.control = 0.08
+config.mutation.control = 0.04
 config.mutation.body = 0.24
-config.save("008c024bvariable_copy.cfg")
+config.save("004c024b_copy.cfg")
 
 # Case 1
 config.mutation.control = 0.08
 config.mutation.body = 0.32
-config.save("008c032bvariable_copy.cfg")
+config.save("004c032b_copy.cfg")
 
 # Case 1
-config.mutation.control = 0.08
+config.mutation.control = 0.04
 config.mutation.body = 0.48
-config.save("008c048bvariable_copy.cfg")
+config.save("004c048b_copy.cfg")
 
 # Case 1
-config.mutation.control = 0.08
+config.mutation.control = 0.04
 config.mutation.body = 0.64
-config.save("008c064bvariable_copy.cfg")
+config.save("004c064b_copy.cfg")
+
+# Case 1
+config.mutation.control = 0.04
+config.mutation.body = 0.82
+config.save("004c082b_copy.cfg")
