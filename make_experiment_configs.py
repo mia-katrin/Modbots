@@ -5,11 +5,15 @@ config = get_config()
 with open("experiments/max_cores.txt") as file:
     n_cores = int(file.read())
 
+########## COPY ##########
+
 cs = [0.04,0.04,0.04,0.04,0.04]
 bs = [0.08,0.16,0.24,0.32,0.48]
 
 mode = "gradual"
 brain = "copy"
+
+########## COPY ##########
 
 # EXPERIMENT
 config.experiment.seed = 1
@@ -97,12 +101,12 @@ else:
 
 # MUTATION
 
+if brain != "":
+    brain = "_" + brain
 for c, b in zip(cs, bs):
     config.mutation.control = c
     config.mutation.body = b
     c = str(c)[2:]
     b = str(b)[2:]
-    if brain != "":
-        brain = "_" + brain
     config.save(f"0{c}c0{b}b{mode}{brain}.cfg")
     print("Made", f"0{c}c0{b}b{mode}{brain}.cfg")

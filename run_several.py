@@ -26,11 +26,11 @@ brain = "copy"
 
 ########## COPY ##########
 
+if brain != "":
+    brain = "_" + brain
 for c, b in zip(cs, bs):
     c = str(c)[2:]
     b = str(b)[2:]
-    if brain != "":
-        brain = "_" + brain
     configs.append(f"0{c}c0{b}b{mode}{brain}.cfg")
     print("Doing", f"0{c}c0{b}b{mode}{brain}.cfg")
 
