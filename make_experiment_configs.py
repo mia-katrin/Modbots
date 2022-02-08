@@ -5,11 +5,11 @@ config = get_config()
 with open("experiments/max_cores.txt") as file:
     n_cores = int(file.read())
 
-cs = [0.82,0.64,0.48,0.32,0.82]
-bs = [0.16,0.16,0.16,0.16,0.64]
+cs = [0.04,0.04,0.04,0.04,0.04]
+bs = [0.08,0.16,0.24,0.32,0.48]
 
 mode = "gradual"
-brain = ""
+brain = "copy"
 
 # EXPERIMENT
 config.experiment.seed = 1
