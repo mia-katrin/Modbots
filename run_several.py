@@ -16,10 +16,10 @@ INTERNAL_ROUNDS = 4
 
 configs = list()
 
-cs = [0.82,0.64,0.48,0.32,0.32]
-bs = [0.16,0.16,0.16,0.16,0.24]
+cs = [0.82,0.64,0.48,0.32,0.82]
+bs = [0.16,0.16,0.16,0.16,0.64]
 
-mode = "variable"
+mode = "gradual"
 brain = ""
 
 for c, b in zip(cs, bs):
