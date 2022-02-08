@@ -7,11 +7,11 @@ with open("experiments/max_cores.txt") as file:
 
 ########## COPY ##########
 
-cs = [0.08,0.08,0.08,0.08,0.08,0.08,0.16,0.16,0.16,0.16,0.16,0.16]
-bs = [0.08,0.16,0.24,0.32,0.48,0.64,0.08,0.16,0.24,0.32,0.48,0.64]
+cs = [0.08,0.08,0.08,0.08,0.08,0.08,0.16,0.16,0.16,0.16,0.16,0.16,0.24,0.24,0.24,0.24,0.24,0.24]
+bs = [0.08,0.16,0.24,0.32,0.48,0.64,0.08,0.16,0.24,0.32,0.48,0.64,0.08,0.16,0.24,0.32,0.48,0.64]
 
-mode = "growing"
-brain = "dec_ctrnn"
+mode = ""
+brain = "cen_ctrnn"
 
 ########## COPY ##########
 
@@ -73,6 +73,8 @@ elif brain == "copy":
 elif brain == "dec_ctrnn":
     config.control.ctrnn = True
     config.control.decentral = True
+elif brain == "cen_ctrnn":
+    config.control.ctrnn = True
 else:
     assert False
 
