@@ -72,6 +72,33 @@ def remove(label, force=False):
             print("We kept it")
     input()
 
+def remove_run(runNr):
+    with open("experiments/valid_intervals", "r") as file:
+        valid_intervals = json.load(file)
+
+    overall_found = False
+    for label in valid_intervals:
+        for cfg in valid_intervals[label]:
+            if cfg != "Start runNr" and cfg != "End runNr":
+                found = False
+                for run in valid_intervals[label][cfg]:
+                    if run == runNr:
+                        found = True
+                        overall_found = True
+                if found:
+                    inp = input(str(runNr) + f" will be removed from {cfg}. You sure? (y/n)")
+                    if inp == "y":
+                        valid_intervals[label][cfg].remove(runNr)
+                        print("Removed")
+                    else:
+                        print("We kept it")
+    if overall_found:
+        with open("experiments/valid_intervals", "w") as file:
+            json.dump(valid_intervals, file)
+    else:
+        print("We could not find runNr", runNr)
+    input()
+
 def delete(label):
     with open("experiments/valid_intervals", "r") as file:
         valid_intervals = json.load(file)
@@ -201,7 +228,7 @@ if args.alter:
     while inp != "q":
         print("""
 What would you like to do?
-Remove {label}
+Remove {label/runNr}
 Delete {label}
 Concat {label1}, {label2} (adds only common configs)
 Merge {label1}, {label2} (adds all configs)
@@ -213,7 +240,11 @@ q to exit
 
         if inp.lower().startswith("remove"):
             label = inp[7:]
-            remove(label)
+            try:
+                runNr = int(label)
+                remove_run(runNr)
+            except:
+                remove(label)
         elif inp.lower().startswith("delete"):
             label = inp[7:]
             res = delete(label)
