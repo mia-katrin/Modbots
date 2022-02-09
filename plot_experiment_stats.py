@@ -42,7 +42,16 @@ color_pairs = [
     [colors["warm turqoise"], colors["dark turqoise"]],
     [colors["light reddish purple"], colors["reddish purple"]],
     ["hotpink", "red"],
-    ["thistle", "darkviolet"]
+    ["thistle", "darkviolet"],
+
+    ["lightskyblue", "blue"],
+    ["palegreen", colors["bluish green"]],
+    [colors["light warm red"], colors["warm red"]],
+    ["gold", colors["faded orange"]],
+    [colors["warm turqoise"], colors["dark turqoise"]],
+    [colors["light reddish purple"], colors["reddish purple"]],
+    ["hotpink", "red"],
+    ["thistle", "darkviolet"],
 ]
 
 linestyles = {
