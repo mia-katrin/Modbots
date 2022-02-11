@@ -22,7 +22,7 @@ cs = [0.82,0.82,0.82,0.82]
 bs = [0.01,0.08,0.16,0.24]
 
 mode = "growing"
-brain = "copy"
+brain = "dec_ctrnn"
 
 ########## COPY ##########
 
