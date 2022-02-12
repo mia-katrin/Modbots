@@ -10,8 +10,8 @@ with open("experiments/max_cores.txt") as file:
 
 ########## COPY ##########
 
-cs = [0.16,0.08,0.01,0.01,0.01]
-bs = [0.01,0.01,0.01,0.08,0.16]
+cs = [0.01,0.01,0.01,0.01,0.01]
+bs = [0.24,0.32,0.48,0.64,0.82]
 
 mode = "growing"
 brain = "dec_ctrnn"
