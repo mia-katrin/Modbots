@@ -60,8 +60,12 @@ if __name__ == "__main__":
 
     for cfg in experiment:
         if not cfg.startswith("Start") and not cfg.startswith("End") and not cfg.startswith("Outliers"):
+            broken = False
             for runNr in experiment[cfg]:
                 all_good = check_run(runNr, cfg)
                 if not all_good:
                     print("This run is busted. I recommend deletion")
+                    broken = True
                     break
+            if broken:
+                break
