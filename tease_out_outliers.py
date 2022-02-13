@@ -42,6 +42,7 @@ def check_run(runNr: int, config_file: str):
         print(Fore.RED + "Fitness does not correspond")
         print(Fore.RED + "Stored: " + str(stored_fitness))
         print(Fore.RED + "Eval: " + str(eval_fitness))
+        return False
     else:
         print(Fore.GREEN + "Fitness corresponds")
         print(Fore.GREEN + "Eval: " + str(eval_fitness))
@@ -49,6 +50,7 @@ def check_run(runNr: int, config_file: str):
             print(Fore.CYAN + "Possible outlier")
         if ind.get_nr_modules() <= 2:
             print(Fore.CYAN + f"Possible outlier, {ind.get_nr_modules()} module")
+    return True
 
 if __name__ == "__main__":
     with open("experiments/valid_intervals", "r") as file:
@@ -59,4 +61,7 @@ if __name__ == "__main__":
     for cfg in experiment:
         if not cfg.startswith("Start") and not cfg.startswith("End") and not cfg.startswith("Outliers"):
             for runNr in experiment[cfg]:
-                check_run(runNr, cfg)
+                all_good = check_run(runNr, cfg)
+                if not all_good:
+                    print("This run is busted. I recommend deletion")
+                    break
