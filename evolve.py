@@ -76,7 +76,7 @@ def init_toolbox(config) -> tuple:
     toolbox = base.Toolbox()
     toolbox.register("individual", individual_class.random, config=config)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-    toolbox.register("evaluate", evaluate, force_evaluate=False)
+    toolbox.register("evaluate", evaluate, force_evaluate=True)
     toolbox.register("mutate", individual_class.mutate, mutation_rate=config.ea.mut_rate)
     toolbox.register("select", tools.selTournament, tournsize = config.ea.tournsize)
 
