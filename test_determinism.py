@@ -12,11 +12,11 @@ from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 
 from config_util import get_config
 
-NR_INDS = 2
-ROUNDS = 2
-NR_SEEDS = 2
+NR_INDS = 25
+ROUNDS = 5
+NR_SEEDS = 5
 
-N_CORES = 2 # It seems this determines a factor in population size
+N_CORES = 25 # It seems this determines a factor in population size
 HEADLESS = True
 TIME_SCALE = None
 
@@ -93,7 +93,7 @@ def run_multithreaded(pop:list, seed:int, config) -> list:
 if __name__ == "__main__":
     config = get_config()
 
-    print(f"This will take above {ROUNDS*NR_INDS*NR_SEEDS*(config.evaluation.n_steps*0.02)/N_CORES} seconds")
+    print(f"This will take above {ROUNDS*NR_INDS*NR_SEEDS*(config.evaluation.n_steps*0.2)/N_CORES} seconds")
     #input()
     start = time.time()
     test_determinism(run_multithreaded, config)
