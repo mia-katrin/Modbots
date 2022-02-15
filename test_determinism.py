@@ -94,7 +94,7 @@ if __name__ == "__main__":
     config = get_config()
 
     print(f"This will take above {ROUNDS*NR_INDS*NR_SEEDS*(config.evaluation.n_steps*0.02)/N_CORES} seconds")
-    input()
+    #input()
     start = time.time()
     test_determinism(run_multithreaded, config)
     print("It took", time.time()-start, "seconds")
