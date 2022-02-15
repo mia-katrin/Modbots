@@ -11,6 +11,7 @@ mode = args.mode.title()
 
 label = f"{brain}, {mode}: Tuning " # and then a number
 highest_tune_nr = 0
+found = False
 
 valid_intervals = None
 with open("experiments/valid_intervals", "r") as file:
@@ -18,11 +19,14 @@ with open("experiments/valid_intervals", "r") as file:
 
 for exp_label in valid_intervals.keys():
     if exp_label.startswith(label):
+        found = True
         number = exp_label[len(label):]
         number = int(number)
 
         if number > highest_tune_nr:
             highest_tune_nr = number
+if found:
+    highest_tune_nr += 1
 
 label += str(highest_tune_nr)
 
