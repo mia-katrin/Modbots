@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+import json
+import argparse
+import os
+import numpy as np
+import re
+from localconfig import config
+from tqdm import tqdm
+import pickle
+
+from square import SquareManager
+
+def refresh_treat_experiment_folder(exp_folder, squareManager):
+    for dir in tqdm(os.listdir(exp_folder)):
+        run_folder = f"{exp_folder}/{dir}"
+        if not os.path.isfile(run_folder):
+            squareManager.add_run(run_folder)
+
+if __name__ == "__main__":
+    squareManager = SquareManager()
+
+    refresh_treat_experiment_folder("experiments", squareManager)
+
+    squareManager.print_all()
