@@ -18,7 +18,7 @@ with open("experiments/valid_intervals", "r") as file:
 
 for exp_label in valid_intervals.keys():
     if exp_label.startswith(label):
-        number = exp_label.removeprefix(label)
+        number = exp_label[len(label):]
         number = int(number)
 
         if number > highest_tune_nr:
