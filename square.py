@@ -6,6 +6,7 @@ import re
 from localconfig import config
 from tqdm import tqdm
 import pickle
+import matplotlib.pyplot as plt
 
 config_pattern = re.compile("[0-9]+c[0-9]+b.*\.cfg$")
 
@@ -77,6 +78,22 @@ class SquareManager:
                 print(brain_type.title() if brain_type != "" else "Sine", mode.title(),"\n")
                 self.squares[brain_type][mode].print_fitnesses()
 
+    def plot_all(self):
+        full_matrix = np.zeros((8*4,8*4))
+        for i, brain_type in enumerate(self.squares.keys()):
+            for j, mode in enumerate(self.squares[brain_type].keys()):
+                matrix, cs, bs = self.squares[brain_type][mode].get_valid_runs()
+                full_matrix[i*8:i*8+len(cs),j*8:j*8+len(bs)] = matrix
+
+        fig1, ax1 = plt.subplots(1, sharex = True, sharey = False)
+        ax1.imshow(full_matrix.astype(int))
+        for i, row in enumerate(full_matrix):
+            for j, val in enumerate(row):
+                if val != 0:
+                    ax1.text(j, i, round(val), color='black', ha='center', va='center')
+
+        plt.show()
+
 class Square:
     def __init__(self, experiment_folder: str):
         self.experiment_folder = experiment_folder
@@ -86,6 +103,8 @@ class Square:
         self.print_fitnesses = self.treat_spots(self.internal_fitness_spot)
         self.print_nr_runs = self.treat_spots(self.internal_count_runs_fill)
         self.print_avg_mutated = self.treat_spots(self.internal_avg_mutated_spot)
+
+        self.get_fitness_matrix = self.get_matrix_getter(self.get_fitness)
 
     def add_run(self, runNr, c, b):
         if c not in self.runs.keys():
@@ -205,4 +224,19 @@ class Square:
                 cline += "\n"
 
             print(cline + overline + bline)
+        return internal
+
+    def get_matrix_getter(self, function):
+        def internal():
+            bs = self.get_bs()
+            cs = self.get_cs()
+
+            matrix = np.zeros((len(cs),len(bs)))
+
+            for i, c in enumerate(cs):
+                for j, b in enumerate(bs):
+                    if b in self.runs[c].keys():
+                        matrix[i,j] = function(c,b)
+
+            return matrix, cs, bs
         return internal
