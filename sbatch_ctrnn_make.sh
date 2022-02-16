@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for mode in normal variable growing gradual
+for mode in normal 
 do
   echo $mode
   for c in 0.01 0.02 0.04 0.08 0.16 0.24 0.32 0.48
