@@ -11,31 +11,17 @@ parser.add_argument("--cs", "-c", nargs='+', required=True)
 parser.add_argument("--bs", "-b", nargs='+', required=True)
 
 args = parser.parse_args()
-if args.label == None:
-    run_label = input("Label your run\n> ")
-else:
-    run_label = args.label
 
 OUTER_ROUNDS = 1
 INTERNAL_ROUNDS = 4
 
 configs = list()
 
-########## COPY ##########
-
-cs = [0.32]
-bs = [0.48]
-
-mode = "variable"
-brain = "copy"
-
 mode = args.mode if args.mode != "normal" else ""
 brain = args.brain if args.brain != "sine" else ""
 
 cs = [float(i) for i in args.cs]
 bs = [float(i) for i in args.bs]
-
-########## COPY ##########
 
 if brain != "":
     brain = "_" + brain
@@ -74,7 +60,7 @@ def run_on_config(conf_name):
                 try_again = False
             except:
                 failed += 1
-        append_runNr(conf_name)
+        #append_runNr(conf_name)
         runNr += 1
 
         # In order to not use all our memory on rudolph,
@@ -100,8 +86,8 @@ def write_to_valid_intervals(run_label, key, value, liste=True):
     with open("experiments/valid_intervals", "w") as file:
         json.dump(valid_intervals, file)
 
-write_to_valid_intervals(run_label, "Start runNr", runNr, liste=False)
-write_to_valid_intervals(run_label, "End runNr", runNr + len(configs)*OUTER_ROUNDS*INTERNAL_ROUNDS-1, liste=False)
+#write_to_valid_intervals(run_label, "Start runNr", runNr, liste=False)
+#write_to_valid_intervals(run_label, "End runNr", runNr + len(configs)*OUTER_ROUNDS*INTERNAL_ROUNDS-1, liste=False)
 
 for _ in range(OUTER_ROUNDS):
     for cfg in configs:
