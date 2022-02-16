@@ -9,16 +9,6 @@ import argparse
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 from modbots.creature_types.configurable_individual import Individual
 
-# Add arguments
-parser = argparse.ArgumentParser(description='Find outliers')
-parser.add_argument(
-    'label',
-    type = str,
-    help='The label to check'
-)
-
-args = parser.parse_args()
-
 def get_fitness(config, ind):
     set_env_variables(config=config)
 
@@ -53,19 +43,38 @@ def check_run(runNr: int, config_file: str):
     return True
 
 if __name__ == "__main__":
+    # Add arguments
+    parser = argparse.ArgumentParser(description='Find outliers')
+    parser.add_argument(
+        'label',
+        type = str,
+        help='The label to check'
+    )
+
+    args = parser.parse_args()
+
     with open("experiments/valid_intervals", "r") as file:
         valid_intervals = json.load(file)
 
-    experiment = valid_intervals[args.label]
+    for label in valid_intervals.keys():
+        if label.startswith(args.label):
+            print(Fore.WHITE + label)
+            print()
+            experiment = valid_intervals[label]
 
-    for cfg in experiment:
-        if not cfg.startswith("Start") and not cfg.startswith("End") and not cfg.startswith("Outliers"):
-            broken = False
-            for runNr in experiment[cfg]:
-                all_good = check_run(runNr, cfg)
-                if not all_good:
-                    print("This run is busted. I recommend deletion")
-                    broken = True
-                    break
-            if broken:
-                break
+            for cfg in experiment:
+                if not cfg.startswith("Start") and not cfg.startswith("End") and not cfg.startswith("Outliers"):
+                    broken = False
+                    for runNr in experiment[cfg]:
+                        try:
+                            all_good = check_run(runNr, cfg)
+                            if not all_good:
+                                print("This run is busted. I recommend deletion")
+                                broken = True
+                                break
+                        except:
+                            print(f"Run {runNr} is not fine")
+                    if broken:
+                        break
+
+    print(Fore.WHITE + "Goodbye")
