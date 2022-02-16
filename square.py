@@ -76,7 +76,7 @@ class SquareManager:
         for brain_type in self.squares.keys():
             for mode in self.squares[brain_type].keys():
                 print(brain_type.title() if brain_type != "" else "Sine", mode.title(),"\n")
-                self.squares[brain_type][mode].print_nr_runs()
+                self.squares[brain_type][mode].print_fitnesses()
 
     def plot_all(self):
         full_matrix = np.zeros((8*4,8*4))
