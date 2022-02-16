@@ -21,7 +21,7 @@ configs = list()
 cs = [0.48,0.48,0.48,0.48,0.48,0.48]
 bs = [0.08,0.16,0.24,0.32,0.48,0.64]
 
-mode = "variable"
+mode = "gradual"
 brain = "copy"
 
 ########## COPY ##########
