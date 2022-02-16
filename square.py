@@ -76,13 +76,13 @@ class SquareManager:
         for brain_type in self.squares.keys():
             for mode in self.squares[brain_type].keys():
                 print(brain_type.title() if brain_type != "" else "Sine", mode.title(),"\n")
-                self.squares[brain_type][mode].print_fitnesses()
+                self.squares[brain_type][mode].print_nr_runs()
 
     def plot_all(self):
         full_matrix = np.zeros((8*4,8*4))
         for i, brain_type in enumerate(self.squares.keys()):
             for j, mode in enumerate(self.squares[brain_type].keys()):
-                matrix, cs, bs = self.squares[brain_type][mode].get_valid_runs()
+                matrix, cs, bs = self.squares[brain_type][mode].get_fitness_matrix()
                 full_matrix[i*8:i*8+len(cs),j*8:j*8+len(bs)] = matrix
 
         fig1, ax1 = plt.subplots(1, sharex = True, sharey = False)
