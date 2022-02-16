@@ -1,25 +1,10 @@
-from config_util import get_config
-
-config = get_config()
+from config_util import get_local_config
 
 with open("experiments/max_cores.txt") as file:
     n_cores = int(file.read())
 
 # 0.01,0.08,0.16,0.24,0.32,0.48,0.64,0.82,
-# 0.01,0.02,0.04,0.08,0.16,0.24
-
-"""
-cs = [0.16,0.24,0.32,0.48,0.64,0.82]
-bs = [0.01,0.01,0.01,0.01,0.01,0.01]
-"""
-"""
-cs = [0.16,0.24,0.32,0.48,0.64,0.82]
-bs = [0.82,0.82,0.82,0.82,0.82,0.82]
-"""
-"""
-cs = [0.01,0.08,0.01,0.08]
-bs = [0.01,0.01,0.82,0.82]
-"""
+# 0.01,0.02,0.04,0.08,0.16,0.24,0.32,0.48,
 
 ########## COPY ##########
 
@@ -28,6 +13,30 @@ bs = [0.48]
 
 mode = "variable"
 brain = "copy"
+
+import argparse
+parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description='Default config get parser')
+parser.add_argument(
+    '--config_file',
+    type = str,
+    help='The config file to configure this evolution',
+    default=get_local_config()
+)
+parser.add_argument("--mode", "-m", type=str)
+parser.add_argument("--brain", "-br", type=str)
+parser.add_argument("--cs", "-c", nargs='+', required=True)
+parser.add_argument("--bs", "-b", nargs='+', required=True)
+
+args = parser.parse_args()
+from localconfig import config
+config.read(args.config_file)
+
+mode = args.mode if args.mode != "normal" else ""
+brain = args.brain if args.brain != "sine" else ""
+
+cs = [float(i) for i in args.cs]
+bs = [float(i) for i in args.bs]
 
 ########## COPY ##########
 
