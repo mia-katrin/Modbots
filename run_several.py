@@ -12,6 +12,8 @@ parser.add_argument("--bs", "-b", nargs='+', required=True)
 
 args = parser.parse_args()
 
+run_label = args.label
+
 OUTER_ROUNDS = 1
 INTERNAL_ROUNDS = 4
 
