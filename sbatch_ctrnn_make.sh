@@ -15,7 +15,6 @@ do
         echo $c "0.01 0.08 0.16 0.24"
         python3 make_experiment_configs.py -m $mode -br cen_ctrnn -c $c $c $c $c -b 0.01 0.08 0.16 0.24
       fi
-      sleep 2
     done
   done
 done
