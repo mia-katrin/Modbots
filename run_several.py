@@ -21,7 +21,7 @@ configs = list()
 cs = [0.16,0.24,0.32,0.48,0.64,0.82]
 bs = [0.01,0.01,0.01,0.01,0.01,0.01]
 
-mode = "variable"
+mode = "growing"
 brain = "dec_ctrnn"
 
 ########## COPY ##########
