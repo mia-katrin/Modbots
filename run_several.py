@@ -5,6 +5,11 @@ import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-l", "--label", type=str, default=None)
+parser.add_argument("--mode", "-m", type=str)
+parser.add_argument("--brain", "-br", type=str)
+parser.add_argument("--cs", "-c", nargs='+', required=True)
+parser.add_argument("--bs", "-b", nargs='+', required=True)
+
 args = parser.parse_args()
 if args.label == None:
     run_label = input("Label your run\n> ")
@@ -23,6 +28,12 @@ bs = [0.48]
 
 mode = "variable"
 brain = "copy"
+
+mode = args.mode if args.mode != "normal" else ""
+brain = args.brain if args.brain != "sine" else ""
+
+cs = [float(i) for i in args.cs]
+bs = [float(i) for i in args.bs]
 
 ########## COPY ##########
 

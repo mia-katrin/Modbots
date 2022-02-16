@@ -2,12 +2,21 @@ import argparse
 import json
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-b", "--brain", type=str)
+parser.add_argument("-br", "--brain", type=str)
 parser.add_argument("-m", "--mode", type=str)
+parser.add_argument("--cs", "-c", nargs='+', required=True)
+parser.add_argument("--bs", "-b", nargs='+', required=True)
 
 args = parser.parse_args()
 brain = args.brain.title()
 mode = args.mode.title()
+
+bs = ""
+for b in args.bs:
+    bs += b + " "
+cs = ""
+for c in args.cs:
+    cs += c + " "
 
 label = f"{brain}, {mode}: Tuning " # and then a number
 highest_tune_nr = 0
@@ -54,7 +63,7 @@ set -o nounset
 
 source /fp/homes01/u01/ec-mkkvalsu/evolve_unity_env/bin/activate
 
-srun python3 run_several.py -l \"{label}\"
+srun python3 run_several.py -l \"{label}\" -m {mode.lower()} -br {brain.lower()} -b {bs}-c {cs}
 """)
 
 print("File made")
