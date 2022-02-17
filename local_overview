@@ -8,6 +8,7 @@ import re
 from localconfig import config
 from tqdm import tqdm
 import pickle
+import argparse
 
 from square import SquareManager
 
@@ -18,8 +19,12 @@ def refresh_treat_experiment_folder(exp_folder, squareManager):
             squareManager.add_run(run_folder)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--nr_runs", "-n", action="store_true", default=False)
+    args = parser.parse_args()
+
     squareManager = SquareManager()
 
     refresh_treat_experiment_folder("experiments", squareManager)
 
-    squareManager.print_all()
+    squareManager.print_all(runs=args.nr_runs)
