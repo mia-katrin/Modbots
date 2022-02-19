@@ -104,6 +104,9 @@ def get_env():
                     env_pid = 0
                 failed += 1
                 if failed > HIGHEST_WORKER_ID:
+
+                    print("\n\n\nTRIED TO CONNECT TOO MANY TIMES\n\n\n")
+
                     raise UnityWorkerInUseException(env_pid)
 
         param_channel.set_float_parameter("torque", TORQUE)
