@@ -133,6 +133,7 @@ class Plotter:
 
         if show_figs:
             plt.show()
+        plt.close("all")
 
     def print_stats(self):
         for key in self.stats.keys():
