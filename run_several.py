@@ -56,7 +56,7 @@ def run_on_config(conf_name):
     for _ in range(INTERNAL_ROUNDS):
         evolve(config, run_label, show_figs=False, runNr=runNr)
 
-        #append_runNr(conf_name)
+        append_runNr(conf_name)
         runNr += 1
 
         # In order to not use all our memory on rudolph,
@@ -82,8 +82,8 @@ def write_to_valid_intervals(run_label, key, value, liste=True):
     with open("experiments/valid_intervals", "w") as file:
         json.dump(valid_intervals, file)
 
-#write_to_valid_intervals(run_label, "Start runNr", runNr, liste=False)
-#write_to_valid_intervals(run_label, "End runNr", runNr + len(configs)*OUTER_ROUNDS*INTERNAL_ROUNDS-1, liste=False)
+write_to_valid_intervals(run_label, "Start runNr", runNr, liste=False)
+write_to_valid_intervals(run_label, "End runNr", runNr + len(configs)*OUTER_ROUNDS*INTERNAL_ROUNDS-1, liste=False)
 
 for _ in range(OUTER_ROUNDS):
     for cfg in configs:
