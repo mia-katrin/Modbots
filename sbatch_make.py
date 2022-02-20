@@ -56,7 +56,7 @@ with open("tune_job.sh", "w") as file:
 
 #SBATCH --cpus-per-task=25
 
-#SBATCH --mem-per-cpu=1G
+#SBATCH --mem-per-cpu=3G
 
 set -o errexit
 set -o nounset
