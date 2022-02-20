@@ -95,7 +95,7 @@ elif brain == "copy_sine":
     config.control.ctrnn = True
     config.control.decentral = True
     config.control.copy_decentral = True
-elif brain == "dec_ctrnn":
+elif brain == "dec_ctrnn_sine":
     config.control.ctrnn = True
     config.control.decentral = True
 elif brain == "cen_ctrnn":
