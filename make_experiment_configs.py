@@ -91,7 +91,7 @@ config.control.pre_processing = False
 if brain == "":
     config.control.oscillatory = True
     config.control.decentral = True
-elif brain == "copy":
+elif brain == "copy_sine":
     config.control.ctrnn = True
     config.control.decentral = True
     config.control.copy_decentral = True
