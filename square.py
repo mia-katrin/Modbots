@@ -46,8 +46,8 @@ class SquareManager:
         elif config.control.ctrnn:
             if config.control.decentral:
                 if config.control.copy_decentral:
-                    return "copy"
-                return "dec_ctrnn"
+                    return "copy_sine" if config.file_name[:-4].endswith("sine") else "copy"
+                return "dec_ctrnn_sine" if config.file_name[:-4].endswith("sine") else "dec_ctrnn"
             return "cen_ctrnn"
         else:
             raise Exception("Failure")
@@ -65,6 +65,7 @@ class SquareManager:
         for file in os.listdir(run_folder):
             if config_pattern.match(file):
                 config.read(f"{run_folder}/{file}")
+                config.file_name = file
                 return config
         return None
 
@@ -101,9 +102,9 @@ class SquareManager:
                 else:
                     self.squares[brain_type][mode].print_fitnesses()
 
-    def plot_all(self, runs=False):
+    def plot_all_individual(self, runs=False):
         for i, brain_type in enumerate(self.squares.keys()):
-            fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex = True, sharey = False)
+            fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex = False, sharey = False)
             fig.suptitle(brain_type.title())
 
             subplot_axes = (ax1, ax2, ax3, ax4)
@@ -112,14 +113,21 @@ class SquareManager:
                 ax = subplot_axes[j]
                 ax.title.set_text(mode.title() if mode != "" else "Normal")
 
+                cs, bs = None, None
                 if runs:
                     matrix, cs, bs = self.squares[brain_type][mode].get_nr_runs_matrix()
                 else:
                     matrix, cs, bs = self.squares[brain_type][mode].get_fitness_matrix()
 
                 ax.imshow(matrix.astype(int), vmin=0, vmax=30 if not runs else 4)
-                plt.xticks(list(range(len(bs))), bs)
-                plt.yticks(list(range(len(cs))), cs)
+                ax.set_yticks(list(range(len(cs))))
+                ax.set_yticklabels(cs)
+                ax.set_xticks(list(range(len(bs))))
+                ax.set_xticklabels(bs)
+                """ax.tick_params(
+                    axis="x",
+                    labelbottom=True
+                )"""
                 for i, row in enumerate(matrix):
                     for j, val in enumerate(row):
                         if val != 0:
@@ -127,12 +135,148 @@ class SquareManager:
 
         plt.show()
 
-    def plot_all_collapsed(self):
+    def plot_all(self, runs=False):
+        for i, brain_type in enumerate(self.squares.keys()):
+            fig, ax = plt.subplots(1, sharex = False, sharey = False)
+            fig.suptitle(brain_type.title())
+
+            matrix_overall = []
+            cs_overall, bs_overall = [], []
+
+            for j, mode in enumerate(self.squares[brain_type].keys()):
+                cs, bs = None, None
+                if runs:
+                    matrix, cs, bs = self.squares[brain_type][mode].get_nr_runs_matrix()
+                else:
+                    matrix, cs, bs = self.squares[brain_type][mode].get_fitness_matrix()
+
+                if len(matrix_overall) == 0:
+                    matrix_overall = matrix
+                else:
+                    for i in range(len(matrix_overall)):
+                        for j in range(len(matrix_overall[0])):
+                            matrix_overall[i][j] += matrix[i][j]
+
+                if len(bs) > len(bs_overall):
+                    bs_overall = bs
+                if len(cs) > len(cs_overall):
+                    cs_overall = cs
+
+            matrix_overall /= len(self.squares[brain_type].keys())
+
+            ax.imshow(matrix_overall.astype(int), vmin=0, vmax=30 if not runs else 4)
+            ax.set_yticks(list(range(len(cs_overall))))
+            ax.set_yticklabels(cs_overall)
+            ax.set_xticks(list(range(len(bs_overall))))
+            ax.set_xticklabels(bs_overall)
+
+            for i, row in enumerate(matrix_overall):
+                for j, val in enumerate(row):
+                    if val != 0:
+                        ax.text(j, i, round(val), color='black', ha='center', va='center')
+
+        plt.show()
+
+    def plot_all_collapsed_individual(self):
         for brain_type in self.squares.keys():
             for mode in self.squares[brain_type].keys():
                 square = self.squares[brain_type][mode]
                 self.plot_collapsed(square, brain_type, mode)
         plt.show()
+
+    def plot_all_collapsed(self):
+        for brain_type in self.squares.keys():
+            self.plot_collapsed_brain(brain_type)
+        plt.show()
+
+    def plot_collapsed_brain(self, brain_type):
+
+        b_lines = {}
+        c_lines = {}
+
+        for mode in self.squares[brain_type].keys():
+            square = self.squares[brain_type][mode]
+
+            cs = square.get_cs()
+            bs = square.get_bs()
+
+            for b in bs:
+                if b not in b_lines.keys():
+                    b_lines[b] = []
+
+            for c in cs:
+                if c not in c_lines.keys():
+                    c_lines[c] = []
+
+            for c in cs:
+                for b in square.runs[c].keys():
+                    lines = square.get_stat_lines(c, b)
+                    if len(lines) > 0:
+                        for line, run in zip(lines, square.runs[c][b]):
+                            if mode == "variable" and brain_type == "copy":
+                                if line[-1] > 60:
+                                    continue
+                            b_lines[b].append(line)
+                            c_lines[c].append(line)
+
+        b_all_last_values = []
+        for b, lines in b_lines.items():
+            b_all_last_values.append([])
+            for line in lines:
+                b_all_last_values[-1].append(line[-1])
+
+        c_all_last_values = []
+        for c, lines in c_lines.items():
+            c_all_last_values.append([])
+            for line in lines:
+                c_all_last_values[-1].append(line[-1])
+
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2, sharex = False, sharey = False)
+        fig.suptitle(brain_type.title() + " " + mode.title())
+
+        colors = plt.cm.viridis(np.linspace(0, 1, len(b_lines.keys())))
+        transparents = []
+        for color in colors:
+            transparents.append([color[0], color[1], color[2], 0.3])
+
+        ax1.set_xlabel("Generation")
+        ax1.set_ylabel("Fitness")
+        ax1.title.set_text("Body mut rates plotted for all control mut rates")
+
+        for i, b in enumerate(b_lines.keys()):
+            for line in b_lines[b]:
+                ax1.plot(line, color=transparents[i])
+
+        for i, b in enumerate(b_lines.keys()):
+            if len(b_lines[b]) > 0:
+                ax1.plot(np.sum(b_lines[b], axis=0)/len(b_lines[b]), color=colors[i], linewidth=2)
+
+        boxplot(b_all_last_values, colors, transparents, [str(b) for b in b_lines.keys()], ax2)
+        ax2.set_ylabel("Fitness")
+        ax2.set_xlabel("Body mutation rate")
+        ax2.title.set_text("Body mut rates plotted for all control mut rates")
+
+        colors = plt.cm.viridis(np.linspace(0, 1, len(c_lines)))
+        transparents = []
+        for color in colors:
+            transparents.append([color[0], color[1], color[2], 0.3])
+
+        ax3.set_xlabel("Generation")
+        ax3.set_ylabel("Fitness")
+        ax3.title.set_text("Control mut rates plotted for all body mut rates")
+
+        for i, c in enumerate(c_lines.keys()):
+            for line in c_lines[c]:
+                ax3.plot(line, color=transparents[i])
+
+        for i, c in enumerate(c_lines.keys()):
+            if len(c_lines[c]) > 0:
+                ax3.plot(np.sum(c_lines[c], axis=0)/len(c_lines[c]), color=colors[i], linewidth=2)
+
+        boxplot(c_all_last_values, colors, transparents, [str(c) for c in c_lines.keys()], ax4)
+        ax4.set_ylabel("Fitness")
+        ax4.set_xlabel("Control mutation rate")
+        ax4.title.set_text("Control mut rates plotted for all body mut rates")
 
     def plot_collapsed(self, square, brain_type, mode):
         cs = square.get_cs()
@@ -148,7 +292,10 @@ class SquareManager:
             for b in square.runs[c].keys():
                 lines = square.get_stat_lines(c, b)
                 if len(lines) > 0:
-                    for line in lines:
+                    for line, run in zip(lines, square.runs[c][b]):
+                        if mode == "variable" and brain_type == "copy":
+                            if line[-1] > 60:
+                                continue
                         b_lines[b].append(line)
 
         colors = plt.cm.viridis(np.linspace(0, 1, len(bs)))
@@ -194,7 +341,10 @@ class SquareManager:
             for b in square.runs[c].keys():
                 lines = square.get_stat_lines(c, b)
                 if len(lines) > 0:
-                    for line in lines:
+                    for line, run in zip(lines, square.runs[c][b]):
+                        if mode == "variable" and brain_type == "copy":
+                            if line[-1] > 60:
+                                continue
                         c_lines[c].append(line)
 
         colors = plt.cm.viridis(np.linspace(0, 1, len(cs)))
