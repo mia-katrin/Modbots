@@ -15,11 +15,11 @@ do
       then
         python3 make_experiment_configs.py -m $mode -br copy_sine -c $c $c -b 0.16 0.24
         python3 sbatch_make.py -m $mode -br copy_sine -c $c $c -b 0.16 0.24
-      elif [ $vs -eq 2 ]
+      elif [ $vs -eq 3 ]
       then
         python3 make_experiment_configs.py -m $mode -br copy_sine -c $c $c -b 0.32 0.48
         python3 sbatch_make.py -m $mode -br copy_sine -c $c $c-b 0.32 0.48
-      elif [ $vs -eq 2 ]
+      elif [ $vs -eq 4 ]
       then
         python3 make_experiment_configs.py -m $mode -br copy_sine -c $c $c-b 0.64 0.82
         python3 sbatch_make.py -m $mode -br copy_sine -c $c $c -b 0.64 0.82
