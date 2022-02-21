@@ -27,6 +27,12 @@ parser.add_argument("--mode", "-m", type=str)
 parser.add_argument("--brain", "-br", type=str)
 parser.add_argument("--cs", "-c", nargs='+', required=True)
 parser.add_argument("--bs", "-b", nargs='+', required=True)
+parser.add_argument(
+    '--final', '-f',
+    action="store_true",
+    help='Final run? Yields different config name and generations',
+    default=False
+)
 
 args = parser.parse_args()
 from localconfig import config
@@ -37,6 +43,8 @@ brain = args.brain if args.brain != "sine" else ""
 
 cs = [float(i) for i in args.cs]
 bs = [float(i) for i in args.bs]
+
+final = args.final
 
 ########## COPY ##########
 
@@ -53,7 +61,10 @@ if brain == "":
 else:
     config.ea.control_sigma = 0.2
 config.ea.body_sigma = 0.5
-config.ea.n_generations = 50
+if final:
+    config.ea.n_generations = 200
+else:
+    config.ea.n_generations = 50
 pop_size = 50
 config.ea.pop_size = n_cores*(pop_size//n_cores + (1 if pop_size%n_cores!=0 else 0))
 config.ea.nr_parents = 0
@@ -140,7 +151,13 @@ if brain != "":
 for c, b in zip(cs, bs):
     config.mutation.control = c
     config.mutation.body = b
-    c = str(c)[2:]
-    b = str(b)[2:]
-    config.save(f"0{c}c0{b}b{mode}{brain}.cfg")
-    print("Made", f"0{c}c0{b}b{mode}{brain}.cfg")
+    if final:
+        if mode != "":
+            mode = "_" + mode
+        config.save(f"final{mode}{brain}.cfg")
+        print("Made", f"final{mode}{brain}.cfg")
+    else:
+        c = str(c)[2:]
+        b = str(b)[2:]
+        config.save(f"0{c}c0{b}b{mode}{brain}.cfg")
+        print("Made", f"0{c}c0{b}b{mode}{brain}.cfg")
