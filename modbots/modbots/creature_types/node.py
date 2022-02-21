@@ -11,6 +11,7 @@ class Node:
         self.scale = .05 if growing else 1. if not variable_scale else np.random.rand() * 2. + .05
         self.angle = np.random.choice([0,90,180,270]).item() # to int
         self.children = [None,None,None]
+        self.not_full_grown = True if growing else False
 
     def mutate_angle(self, config) -> str:
         possibilities = [
@@ -47,7 +48,11 @@ class Node:
         if config.individual.gradual and self.scale < 1.0:
             val = self.scale + (np.random.rand()*config.ea.body_sigma)
             self.scale = min(val, self.allowable_length[1])
-            return "Add on grow"
+            if self.not_full_grown and self.scale >= 1.0:
+                self.not_full_grown = False
+                return "Add on grow [Fully grown]"
+            else:
+                return "Add on grow"
         else:
             if len(self.open_spots_list()) > 0:
                 new_node = Node(variable_scale=config.individual.variable_scale, growing=config.individual.growing)
@@ -69,7 +74,11 @@ class Node:
                 val = self.scale + random.gauss(0,config.ea.body_sigma)
                 self.scale = bounce_back(val, self.allowable_length)
 
-            return f"Scale {val}"
+            if self.not_full_grown and self.scale >= 1.0:
+                self.not_full_grown = False
+                return f"Scale {val} [Fully grown]"
+            else:
+                return f"Scale {val}"
 
         return None
 
