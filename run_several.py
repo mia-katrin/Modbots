@@ -4,18 +4,20 @@ import argparse
 import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-l", "--label", type=str, default=None)
+parser.add_argument("-l", "--label", type=str, required=True)
 parser.add_argument("--mode", "-m", type=str)
 parser.add_argument("--brain", "-br", type=str)
 parser.add_argument("--cs", "-c", nargs='+', required=True)
 parser.add_argument("--bs", "-b", nargs='+', required=True)
+parser.add_argument("--outer_rounds", "-o", type=int, default=1)
+parser.add_argument("--inner_rounds", "-i", type=int, default=4)
 
 args = parser.parse_args()
 
 run_label = args.label
 
-OUTER_ROUNDS = 1
-INTERNAL_ROUNDS = 4
+OUTER_ROUNDS = args.outer_rounds
+INTERNAL_ROUNDS = args.inner_rounds
 
 configs = list()
 

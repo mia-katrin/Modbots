@@ -6,6 +6,8 @@ parser.add_argument("-br", "--brain", type=str)
 parser.add_argument("-m", "--mode", type=str)
 parser.add_argument("--cs", "-c", nargs='+', required=True)
 parser.add_argument("--bs", "-b", nargs='+', required=True)
+parser.add_argument("--outer_rounds", "-o", type=int, default=1)
+parser.add_argument("--inner_rounds", "-i", type=int, default=4)
 
 args = parser.parse_args()
 brain = args.brain.title()
@@ -63,7 +65,7 @@ set -o nounset
 
 source /fp/homes01/u01/ec-mkkvalsu/evolve_unity_env/bin/activate
 
-srun python3 run_several.py -l \"{label}\" -m {mode.lower()} -br {brain.lower()} -b {bs}-c {cs}
+srun python3 run_several.py -l \"{label}\" -m {mode.lower()} -br {brain.lower()} -b {bs}-c {cs}-o {args.outer_rounds} -i {args.inner_rounds}
 """)
 
 print("File made")
