@@ -56,16 +56,8 @@ def run_on_config(conf_name):
     config.filename = conf_name
 
     for _ in range(INTERNAL_ROUNDS):
-        failed = 0
-        try_again = True
-        while failed < 10 and try_again:
-            try:
-                evolve(config, run_label, show_figs=False, runNr=runNr)
-                try_again = False
-            except:
-                failed += 1
-        if failed >= 10:
-            print("\n\nEvolution has failed\n\n")
+        evolve(config, run_label, show_figs=False, runNr=runNr)
+
         #append_runNr(conf_name)
         runNr += 1
 
