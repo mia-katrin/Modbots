@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     squareManager = SquareManager()
 
-    refresh_treat_experiment_folder("experiments", squareManager)
+    refresh_treat_experiment_folder("experiments_temp", squareManager)
 
     if args.record:
         failed = 0
