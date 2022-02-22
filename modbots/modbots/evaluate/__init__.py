@@ -5,6 +5,7 @@ from mlagents_envs.exception import UnityWorkerInUseException
 from mlagents_envs.base_env import ActionTuple
 
 import numpy as np
+import random
 import os
 import multiprocessing
 
@@ -50,12 +51,15 @@ def is_port_in_use(port: int) -> bool:
         return s.connect_ex(('localhost', port)) == 0
 
 def is_worker_id_open(worker_id: int) -> bool:
-    return is_port_in_use(
+    return not is_port_in_use(
         UnityEnvironment.BASE_ENVIRONMENT_PORT + worker_id
     )
 
 def get_worker_id() -> int:
-    pid = os.getpid() % HIGHEST_WORKER_ID
+    pid = random.randrange(HIGHEST_WORKER_ID)
+    while not is_worker_id_open(pid):
+        print("Not open!")
+        pid = random.randrange(HIGHEST_WORKER_ID)
     return pid
 
 # singleton equivalent (unsure if this is true, pool map will spawn several envs

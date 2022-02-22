@@ -60,14 +60,16 @@ class DecentralController:
 
         individual_likelihood = config.mutation.control/len(allNodes)
 
-        mutated = False
+        mutation_story = ""
         for node in allNodes:
             if node != self.body.root:
-                # Lazy execution, hence always call mutate alone
                 res = node.controller.mutate_maybe(config, individual_likelihood)
-                mutated = mutated or res
+                if res != None:
+                    if mutation_story != "":
+                        mutation_story += ", "
+                    mutation_story += res
 
-        return mutated
+        return mutation_story if mutation_story != "" else None
 
     def mutate(self, config):
         self._check_lack_of_control()

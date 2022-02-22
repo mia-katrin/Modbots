@@ -1,6 +1,8 @@
 import os
 import neat
 import numpy as np
+from copy import deepcopy
+from modbots.controllers.mutation_detection_ctrnn import mutation_story
 
 class CTRNNInterface:
     static_genome_key = 1
@@ -51,6 +53,8 @@ class CTRNNInterface:
         if cont_mut_rate == None:
             cont_mut_rate = config.mutation.control
 
+        self_deepcopy = deepcopy(self)
+
         # Recording the performance of the controller:
         obs = [np.random.rand(self.config.genome_config.num_inputs)*1000 for _ in range(1000)]
         self.reset()
@@ -79,13 +83,17 @@ class CTRNNInterface:
 
         self.mutate(config)
 
+        story = mutation_story(self_deepcopy, self)
+        if bool(story):
+            return str(story)
+
         # Checking if the performance is the same as it was
         # If not, it's mutated
         self.reset()
         actions2 = [self.advance(obs[i]) for i in range(1000)]
         if np.all(actions == actions2):
-            return False
-        return True
+            return None
+        return str({"Unknown CTRNN mutation": 1})
 
 if __name__ == "__main__":
     cont = CTRNNInterface(config="3to1", advance_time=0.2, time_step=0.2)

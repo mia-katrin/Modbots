@@ -2,6 +2,7 @@ import numpy as np
 import copy
 
 from modbots.util import traverse_get_list
+from modbots.controllers.mutation_detection_ctrnn import add_count
 
 class CopyDecentralController:
     def __init__(self, control_type, copies, body, **kwargs):
@@ -64,11 +65,12 @@ class CopyDecentralController:
     def mutate_maybe(self, config):
         self._check_lack_of_control()
 
-        mutated = False
+        mutation_story = ""
 
         allNodes = []
         traverse_get_list(self.body.root, allNodes)
 
+        clone_shifts = 0
         # Mutate which controller each module uses
         if len(self.controller_clones) > 1:
             for node in allNodes:
@@ -80,7 +82,10 @@ class CopyDecentralController:
 
                     node.clone_nr = np.random.choice(possibilities)
 
-                    mutated = True
+                    clone_shifts += 1
+
+        if clone_shifts > 0:
+            mutation_story = "Clone shifts: " + str(clone_shifts)
 
         # Keep track of which clones are actually used
         used_clones = []
@@ -92,7 +97,9 @@ class CopyDecentralController:
         for i, cont in enumerate(self.controller_clones):
             if i in used_clones:
                 res = cont.mutate_maybe(config, config.mutation.control)
-                if res == True:
-                    mutated = True
+                if res != None:
+                    if mutation_story != "":
+                        mutation_story += ", "
+                    mutation_story += res
 
-        return mutated
+        return mutation_story if mutation_story != "" else None

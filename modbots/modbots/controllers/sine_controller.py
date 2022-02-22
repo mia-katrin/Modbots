@@ -34,26 +34,32 @@ class SineController():
 		self.state = 0
 
 	def mutate_maybe(self, config, cont_mut_rate):
-		mutated = False
+		story = ""
 
 		if np.random.rand() < cont_mut_rate:
 			self.amp += random.gauss(0,config.ea.control_sigma)
 			self.amp = bounce_back(self.amp, SineController.allowable_amp)
-			mutated = True
+			story += "Amp"
 		#if np.random.rand() < cont_mut_rate:
 		#	self.freq += random.gauss(0,config.ea.control_sigma)
 		#   self.freq = bounce_back(self.freq, SineController.allowable_freq)
-		#	mutated = True
+		#	if story != "":
+		#		story += ", "
+		#	story += "Freq"
 		if np.random.rand() < cont_mut_rate:
 			self.phase += random.gauss(0,config.ea.control_sigma)
 			self.phase = bounce_back(self.phase, SineController.allowable_phase)
-			mutated = True
+			if story != "":
+				story += ", "
+			story += "Phase"
 		if np.random.rand() < cont_mut_rate:
 			self.offset += random.gauss(0,config.ea.control_sigma)
 			self.offset = bounce_back(self.offset, SineController.allowable_offset)
-			mutated = True
+			if story != "":
+				story += ", "
+			story += "Offset"
 
-		return mutated
+		return "{"  + story + "}" if story != "" else None
 
 	def mutate(self, config):
 		rand_choice = ["amp", "freq", "phase", "offset"][np.random.choice([0,1,2,3])]

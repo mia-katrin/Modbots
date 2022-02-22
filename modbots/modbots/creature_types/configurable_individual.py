@@ -87,8 +87,9 @@ class Individual:
 
         result = ""
         if self.controller != None:
-            if self.controller.mutate_maybe(config):
-                result = "Control"
+            result_control = self.controller.mutate_maybe(config)
+            if result_control != None:
+                result = f"Control:{str(result_control)}"
 
         result_body = self.body.mutate_maybe(config)
         if result_body != None:
