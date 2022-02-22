@@ -39,8 +39,8 @@ if __name__ == "__main__":
             mode = args.mode if args.mode != None else np.random.choice(list(squareManager.squares[brain].keys()))
             square = squareManager.squares[brain][mode]
 
-            c = np.random.choice(args.cs) if args.cs != None and len(args.cs) != 0 else np.random.choice(list(square.runs.keys()))
-            b = np.random.choice(args.bs) if args.bs != None and len(args.bs) != 0 else np.random.choice(list(square.runs[c].keys()))
+            c = float(np.random.choice(args.cs)) if args.cs != None and len(args.cs) != 0 else np.random.choice(list(square.runs.keys()))
+            b = float(np.random.choice(args.bs)) if args.bs != None and len(args.bs) != 0 else np.random.choice(list(square.runs[c].keys()))
 
             runNr = np.random.choice(square.runs[c][b])
             file = square.experiment_folder + "/run" + str(runNr) + "/bestInd49"
