@@ -7,10 +7,16 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-l", "--label", type=str, required=True)
 parser.add_argument("--mode", "-m", type=str)
 parser.add_argument("--brain", "-br", type=str)
-parser.add_argument("--cs", "-c", nargs='+', required=True)
-parser.add_argument("--bs", "-b", nargs='+', required=True)
+parser.add_argument("--cs", "-c", nargs='+', required=False)
+parser.add_argument("--bs", "-b", nargs='+', required=False)
 parser.add_argument("--outer_rounds", "-o", type=int, default=1)
 parser.add_argument("--inner_rounds", "-i", type=int, default=4)
+parser.add_argument(
+    '--final', '-f',
+    action="store_true",
+    help='Final run? Yields different config name and generations',
+    default=False
+)
 
 args = parser.parse_args()
 
@@ -24,17 +30,23 @@ configs = list()
 mode = args.mode if args.mode != "normal" else ""
 brain = args.brain if args.brain != "sine" else ""
 
-cs = [float(i) for i in args.cs]
-bs = [float(i) for i in args.bs]
-
 if brain != "":
     brain = "_" + brain
-for c, b in zip(cs, bs):
-    c = str(c)[2:]
-    b = str(b)[2:]
-    configs.append(f"0{c}c0{b}b{mode}{brain}.cfg")
-    print("Doing", f"0{c}c0{b}b{mode}{brain}.cfg")
 
+if args.final:
+    if mode != "":
+        mode = "_" + mode
+    configs.append(f"final{mode}{brain}.cfg")
+    print("Doing", f"final{mode}{brain}.cfg")
+else:
+    cs = [float(i) for i in args.cs]
+    bs = [float(i) for i in args.bs]
+
+    for c, b in zip(cs, bs):
+        c = str(c)[2:]
+        b = str(b)[2:]
+        configs.append(f"0{c}c0{b}b{mode}{brain}.cfg")
+        print("Doing", f"0{c}c0{b}b{mode}{brain}.cfg")
 
 runNr = get_runNr()
 with open("experiments/runNr.txt", "w") as file:
