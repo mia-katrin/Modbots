@@ -223,6 +223,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    sec = int(np.random.rand()*60)
+    print(f"About to sleep {sec} seconds")
+    time.sleep(sec)
+    print("Woke up")
+
     config.read(args.config_file)
     config.filename = args.config_file
 
