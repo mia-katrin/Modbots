@@ -99,7 +99,15 @@ def get_env():
                     ec.set_configuration_parameters(time_scale=TIME_SCALE)
                     env.reset()
                 else:
-                    env = UnityEnvironment(file_name=PATH, seed = SEED, side_channels=[side_channel, param_channel],no_graphics = HEADLESS, worker_id=env_pid, log_folder=LOG_FOLDER, timeout_wait=300)
+                    env = UnityEnvironment(
+                        file_name=PATH,
+                        seed = SEED,
+                        side_channels=[side_channel, param_channel],
+                        no_graphics = HEADLESS,
+                        worker_id=env_pid, 
+                        log_folder=LOG_FOLDER,
+                        timeout_wait=300
+                    )
                     env.reset()
                 env_made = True
             except:

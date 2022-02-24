@@ -37,14 +37,11 @@ def calc_time_evolution(config):
     return all_gen + round0
 
 def bounce_back(value, allowable_range):
-    if value < allowable_range[0]:
-        if value + 2*(allowable_range[0] - value) > allowable_range[1]:
-            raise ValueError
-        return value + 2*(allowable_range[0] - value)
-    elif value > allowable_range[1]:
-        if value - 2*(value - allowable_range[1]) < allowable_range[0]:
-            raise ValueError
-        return value - 2*(value - allowable_range[1])
+    while allowable_range[0] >  value or value > allowable_range[1]:
+        if value < allowable_range[0]:
+            value += 2*(allowable_range[0] - value)
+        elif value > allowable_range[1]:
+            value -= 2*(value - allowable_range[1])
     return value
 
 def wrap_around(value, allowable_range):
