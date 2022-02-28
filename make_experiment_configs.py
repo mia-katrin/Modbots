@@ -62,7 +62,7 @@ else:
     config.ea.control_sigma = 0.2
 config.ea.body_sigma = 0.5
 if final:
-    config.ea.n_generations = 500
+    config.ea.n_generations = 200
 else:
     config.ea.n_generations = 50
 pop_size = 50

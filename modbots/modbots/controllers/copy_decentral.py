@@ -58,7 +58,8 @@ class CopyDecentralController:
         actions = np.zeros((1,50), dtype=float)
 
         for i, cont in enumerate(self.controllers):
-            actions[0,i] = cont.advance(observation[i*3:i*3+3], **self.kwargs)
+            if i < 50:
+                actions[0,i] = cont.advance(observation[i*3:i*3+3], **self.kwargs)
 
         return actions
 
