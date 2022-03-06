@@ -8,6 +8,8 @@ from tqdm import tqdm
 import pickle
 import matplotlib.pyplot as plt
 
+from modbots.creature_types.configurable_individual import Individual
+
 config_pattern = re.compile("[0-9]+c[0-9]+b.*\.cfg$")
 
 def boxplot(data, edge_color, fill_color, labels, ax):
@@ -61,7 +63,8 @@ class SquareManager:
             return "variable"
         return ""
 
-    def get_config(self, run_folder):
+    @staticmethod
+    def get_config(run_folder):
         for file in os.listdir(run_folder):
             if config_pattern.match(file):
                 config.read(f"{run_folder}/{file}")
@@ -72,7 +75,7 @@ class SquareManager:
     def add_run(self, run_folder) -> bool:
         runNr = int(run_folder.split("/")[-1][3:])
 
-        cfg = self.get_config(run_folder)
+        cfg = SquareManager.get_config(run_folder)
         if cfg is None:
             return False
 
@@ -102,10 +105,10 @@ class SquareManager:
                 else:
                     self.squares[brain_type][mode].print_fitnesses()
 
-    def plot_all_individual(self, runs=False):
+    def plot_all_individual(self, runs=False, nr_modules=False):
         for i, brain_type in enumerate(self.squares.keys()):
             fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex = False, sharey = False)
-            fig.suptitle(brain_type.title())
+            fig.suptitle(brain_type.title() + ("\nNumber of Completed Runs Averaged" if runs else "\nNumber of Modules in Elites Averaged" if nr_modules else "\nFitness averaged"))
 
             subplot_axes = (ax1, ax2, ax3, ax4)
 
@@ -116,10 +119,12 @@ class SquareManager:
                 cs, bs = None, None
                 if runs:
                     matrix, cs, bs = self.squares[brain_type][mode].get_nr_runs_matrix()
+                elif nr_modules:
+                    matrix, cs, bs = self.squares[brain_type][mode].get_nr_modules_matrix()
                 else:
                     matrix, cs, bs = self.squares[brain_type][mode].get_fitness_matrix()
 
-                ax.imshow(matrix.astype(int), vmin=0, vmax=30 if not runs else 4)
+                ax.imshow(matrix.astype(int), vmin=2 if nr_modules else 0, vmax=4 if runs else 13 if nr_modules else 30)
                 ax.set_yticks(list(range(len(cs))))
                 ax.set_yticklabels(cs)
                 ax.set_xticks(list(range(len(bs))))
@@ -135,10 +140,14 @@ class SquareManager:
 
         plt.show()
 
-    def plot_all(self, runs=False):
+    def plot_all(self, runs=False, nr_modules=False):
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2, sharex = False, sharey = False)
+        axes = [ax1, ax2, ax3, ax4]
         for i, brain_type in enumerate(self.squares.keys()):
-            fig, ax = plt.subplots(1, sharex = False, sharey = False)
-            fig.suptitle(brain_type.title())
+            ax = axes[i]
+            if brain_type.endswith("sine"):
+                continue
+            ax.title.set_text(brain_type.title() if brain_type != "" else "Sine")
 
             matrix_overall = []
             cs_overall, bs_overall = [], []
@@ -147,6 +156,8 @@ class SquareManager:
                 cs, bs = None, None
                 if runs:
                     matrix, cs, bs = self.squares[brain_type][mode].get_nr_runs_matrix()
+                elif nr_modules:
+                    matrix, cs, bs = self.squares[brain_type][mode].get_nr_modules_matrix()
                 else:
                     matrix, cs, bs = self.squares[brain_type][mode].get_fitness_matrix()
 
@@ -164,11 +175,11 @@ class SquareManager:
 
             matrix_overall /= len(self.squares[brain_type].keys())
 
-            ax.imshow(matrix_overall.astype(int), vmin=0, vmax=30 if not runs else 4)
+            ax.imshow(matrix_overall.astype(int), vmin=2 if nr_modules else 0, vmax=4 if runs else 13 if nr_modules else 30)
             ax.set_yticks(list(range(len(cs_overall))))
             ax.set_yticklabels(cs_overall)
             ax.set_xticks(list(range(len(bs_overall))))
-            ax.set_xticklabels(bs_overall)
+            ax.set_xticklabels(bs_overall, rotation=45)
 
             for i, row in enumerate(matrix_overall):
                 for j, val in enumerate(row):
@@ -232,7 +243,7 @@ class SquareManager:
                 c_all_last_values[-1].append(line[-1])
 
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2, sharex = False, sharey = False)
-        fig.suptitle(brain_type.title() + " " + mode.title())
+        fig.suptitle(brain_type.title() if brain_type != "" else "Sine")
 
         colors = plt.cm.viridis(np.linspace(0, 1, len(b_lines.keys())))
         transparents = []
@@ -241,7 +252,7 @@ class SquareManager:
 
         ax1.set_xlabel("Generation")
         ax1.set_ylabel("Fitness")
-        ax1.title.set_text("Body mut rates plotted for all control mut rates")
+        ax1.title.set_text("Body mutation rates fitnesses")
 
         for i, b in enumerate(b_lines.keys()):
             for line in b_lines[b]:
@@ -254,7 +265,7 @@ class SquareManager:
         boxplot(b_all_last_values, colors, transparents, [str(b) for b in b_lines.keys()], ax2)
         ax2.set_ylabel("Fitness")
         ax2.set_xlabel("Body mutation rate")
-        ax2.title.set_text("Body mut rates plotted for all control mut rates")
+        ax2.title.set_text("Body mutation rates last fitnesses")
 
         colors = plt.cm.viridis(np.linspace(0, 1, len(c_lines)))
         transparents = []
@@ -263,7 +274,7 @@ class SquareManager:
 
         ax3.set_xlabel("Generation")
         ax3.set_ylabel("Fitness")
-        ax3.title.set_text("Control mut rates plotted for all body mut rates")
+        ax3.title.set_text("Control mutation rates fitnesses")
 
         for i, c in enumerate(c_lines.keys()):
             for line in c_lines[c]:
@@ -276,7 +287,7 @@ class SquareManager:
         boxplot(c_all_last_values, colors, transparents, [str(c) for c in c_lines.keys()], ax4)
         ax4.set_ylabel("Fitness")
         ax4.set_xlabel("Control mutation rate")
-        ax4.title.set_text("Control mut rates plotted for all body mut rates")
+        ax4.title.set_text("Control mutation rates last fitnesses")
 
     def plot_collapsed(self, square, brain_type, mode):
         cs = square.get_cs()
@@ -308,7 +319,7 @@ class SquareManager:
 
         ax1.set_xlabel("Generation")
         ax1.set_ylabel("Fitness")
-        ax1.title.set_text("Body mut rates plotted for all control mut rates")
+        ax1.title.set_text("Body mutation rates fitnesses")
 
         for i, b in enumerate(b_lines.keys()):
             for line in b_lines[b]:
@@ -329,7 +340,7 @@ class SquareManager:
         boxplot(all_last_values, colors, transparents, [str(b) for b in bs], ax2)
         ax2.set_ylabel("Fitness")
         ax2.set_xlabel("Body mutation rate")
-        ax2.title.set_text("Body mut rates plotted for all control mut rates")
+        ax2.title.set_text("Body mutation rates last fitnesses")
 
         ### C collapsed
 
@@ -354,7 +365,7 @@ class SquareManager:
 
         ax3.set_xlabel("Generation")
         ax3.set_ylabel("Fitness")
-        ax3.title.set_text("Control mut rates plotted for all body mut rates")
+        ax3.title.set_text("Control mutation rates fitnesses")
 
         for i, c in enumerate(c_lines.keys()):
             for line in c_lines[c]:
@@ -375,7 +386,7 @@ class SquareManager:
         boxplot(all_last_values, colors, transparents, [str(c) for c in cs], ax4)
         ax4.set_ylabel("Fitness")
         ax4.set_xlabel("Control mutation rate")
-        ax4.title.set_text("Control mut rates plotted for all body mut rates")
+        ax4.title.set_text("Control mutation rates last fitnesses")
 
 class Square:
     def __init__(self, experiment_folder: str):
@@ -389,6 +400,7 @@ class Square:
 
         self.get_fitness_matrix = self.get_matrix_getter(self.get_fitness)
         self.get_nr_runs_matrix = self.get_matrix_getter(self.get_valid_runs)
+        self.get_nr_modules_matrix = self.get_matrix_getter(self.get_nr_modules)
 
     def add_run(self, runNr, c, b):
         if c not in self.runs.keys():
@@ -437,6 +449,22 @@ class Square:
                     data = pickle.load(file)
                     average += data["Fitness"]["Maxs"][-1]
                     valid_runs += 1
+            except:
+                pass
+
+        return 0 if valid_runs == 0 else average / valid_runs
+
+    def get_nr_modules(self, c, b):
+        average = 0
+        valid_runs = 0
+        for runNr in self.runs[c][b]:
+            path = f"{self.experiment_folder}/run{runNr}"
+            try:
+                cfg = SquareManager.get_config(path)
+                ind = Individual.unpack_ind(path+"/bestInd49", cfg)
+                print(ind.get_nr_modules())
+                average += ind.get_nr_modules()
+                valid_runs += 1
             except:
                 pass
 
