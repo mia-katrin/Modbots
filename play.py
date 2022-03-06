@@ -27,6 +27,16 @@ env.reset()
 param_channel.set_float_parameter("torque", config.individual.torque)
 param_channel.set_float_parameter("envEnum", config.evaluation.env_enum)
 
+# Interesting ones: 601, 603, 606, 610, 618
+# Attractive optima: 604, 605, 607, 608, 609, 611, 619, 620, 621, 623, 624, 627, 628
+# Shambling messes: 612, 613, 614, 616, 617, 626, 629
+# I think they're too light: 602, 615, 622
+
+# 634, 637, 644, 646, 651, 654, 658
+# Too powerful: 656
+
+# 743 - 747
+# My fave boy: 747
 side_channel.send_string("Play,recorded_ind.txt")
 
 env.reset()
