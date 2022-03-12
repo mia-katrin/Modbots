@@ -5,9 +5,56 @@ import os
 
 from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
 
-from config_util import get_config
+from config_util import get_config_no_args
 
-config = get_config()
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--choose", "-c",
+    action="store_true",
+    help='To choose or not',
+    default=False
+)
+
+filename = None
+args = parser.parse_args()
+if not args.choose:
+    filename = "recorded_ind.txt"
+else:
+    print("Choose a folder:\n")
+
+    path = "recordings"
+
+    choices = []
+    for i, folder in enumerate(os.listdir(path)):
+        choices.append(folder)
+        print(i, ":", folder)
+    inp = input(">")
+
+    if not(0 <= int(inp) < len(choices)):
+        print("Yo failed")
+        assert False
+
+    folder = choices[int(inp)]
+
+    print("Choose recording:\n")
+
+    choices = []
+    for i, file in enumerate(os.listdir(path + "/" + folder)):
+        choices.append(file)
+        print(i, ":", file)
+    inp = input(">")
+
+    if not(0 <= int(inp) < len(choices)):
+        print("Yo failed")
+        assert False
+
+    file = choices[int(inp)]
+    filename = path + "/" + folder + "/" + file
+
+    print("Chose", filename)
+
+config = get_config_no_args()
 
 side_channel = SideChannelPythonside()
 param_channel = EnvironmentParametersChannel()
@@ -37,7 +84,7 @@ param_channel.set_float_parameter("envEnum", config.evaluation.env_enum)
 
 # 743 - 747
 # My fave boy: 747
-side_channel.send_string("Play,recorded_ind.txt")
+side_channel.send_string(f"Play,{filename}")
 
 env.reset()
 
