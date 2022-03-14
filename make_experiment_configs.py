@@ -3,17 +3,6 @@ from config_util import get_local_config
 with open("experiments/max_cores.txt") as file:
     n_cores = int(file.read())
 
-# 0.01,0.08,0.16,0.24,0.32,0.48,0.64,0.82,
-# 0.01,0.02,0.04,0.08,0.16,0.24,0.32,0.48,
-
-########## COPY ##########
-
-cs = [0.32]
-bs = [0.48]
-
-mode = "variable"
-brain = "copy"
-
 import argparse
 parser = argparse.ArgumentParser()
 parser = argparse.ArgumentParser(description='Default config get parser')
@@ -46,7 +35,7 @@ bs = [float(i) for i in args.bs]
 
 final = args.final
 
-########## COPY ##########
+########## Config Make ##########
 
 # EXPERIMENT
 config.experiment.seed = 1
@@ -62,7 +51,7 @@ else:
     config.ea.control_sigma = 0.2
 config.ea.body_sigma = 0.5
 if final:
-    config.ea.n_generations = 200
+    config.ea.n_generations = 500
 else:
     config.ea.n_generations = 50
 pop_size = 50
