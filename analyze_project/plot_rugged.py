@@ -10,12 +10,12 @@ from modbots.evaluate import evaluate, set_env_variables, close_env
 from evolve import evolve
 from config_util import get_config
 
-N_INDS = 5
-ROUNDS = 5
+N_INDS = 10
+ROUNDS = 1
 
 def body_mut(name, ind):
     config.mutation.control = 0.0
-    config.mutation.body = 1.0
+    config.mutation.body = 0.64
 
     for var in ["angle", "remove_node", "add_node", "scale", "copy_branch"]:
         exec(f"config.mutation.{var} = {1.0 if var == name else 0.0}")
@@ -24,36 +24,22 @@ def body_mut(name, ind):
     ind_mut.mutate(config)
     fitness = evaluate(ind_mut)
     print(ind_mut.mutation_history)
-    return abs(fitness - ind.fitness)
+    return fitness - ind.fitness
 
 def cont_mut(ind):
-    config.mutation.control = 1.0
+    config.mutation.control = 0.16
     config.mutation.body = 0.0
 
     ind_mut = deepcopy(ind)
     ind_mut.mutate(config)
     fitness = evaluate(ind_mut)
-    return abs(fitness - ind.fitness)
+    return fitness - ind.fitness
 
 config = get_config()
-
-# Configure config
-config.individual.variable_scale = True
-config.individual.growing = True
 
 labels = ["angle", "remove_node", "add_node", "scale", "copy_branch", "control"]
 
 for i in range(N_INDS):
-    config.ea.mut_rate = 0.1
-    config.mutation.control = 0.5
-    config.mutation.body = 0.5
-
-    config.mutation.angle = 0.1
-    config.mutation.remove_node = 0.2
-    config.mutation.add_node = 0.3
-    config.mutation.scale = 0.2
-    config.mutation.copy_branch = 0.2
-
     set_env_variables(config=config)
 
     #evolve(config, show_figs=False)
@@ -64,8 +50,6 @@ for i in range(N_INDS):
     # Get first ind
     fitness = evaluate(ind)
     ind.fitness = fitness
-
-    config.ea.mut_rate = 1.0
 
     fitnesses = np.zeros(6)
 

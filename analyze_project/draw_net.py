@@ -95,42 +95,44 @@ def draw_net(config, genome, view=False, filename=None, node_names=None, show_di
 from modbots.creature_types.configurable_individual import Individual
 import os
 import sys
-sys.path.insert(0, "/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots")
-print(sys.path)
-from config_util import get_config
-config = get_config()
-ind = Individual.unpack_ind("bestInd/ind", config)
 
-config = neat.Config(
-    neat.DefaultGenome,
-    neat.DefaultReproduction,
-    neat.DefaultSpeciesSet,
-    neat.DefaultStagnation,
-    "../Modbots/modbots/modbots/controllers/configs/config-ctrnn-3to1"
-)
-#genome = neat.genome.DefaultGenome(0)
-#genome.configure_new(config.genome_config)
+if __name__ == "__main__":
+    sys.path.insert(0, "/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots")
+    print(sys.path)
+    from config_util import get_config
+    config = get_config()
+    ind = Individual.unpack_ind("bestInd/ind", config)
 
-draw_net(
-    config,
-    ind.controller.controller_clones[0].controllerGenome,
-    view=True,
-    filename="net1"
-)
+    config = neat.Config(
+        neat.DefaultGenome,
+        neat.DefaultReproduction,
+        neat.DefaultSpeciesSet,
+        neat.DefaultStagnation,
+        "../Modbots/modbots/modbots/controllers/configs/config-ctrnn-3to1"
+    )
+    #genome = neat.genome.DefaultGenome(0)
+    #genome.configure_new(config.genome_config)
 
-draw_net(
-    config,
-    ind.controller.controller_clones[1].controllerGenome,
-    view=True,
-    filename="net2"
-)
+    draw_net(
+        config,
+        ind.controller.controller_clones[0].controllerGenome,
+        view=True,
+        filename="net1"
+    )
 
-from modbots.util import traverse_get_list
+    draw_net(
+        config,
+        ind.controller.controller_clones[1].controllerGenome,
+        view=True,
+        filename="net2"
+    )
 
-allNodes = []
-traverse_get_list(ind.body.root, allNodes)
+    from modbots.util import traverse_get_list
 
-for node in allNodes:
-    print(node.clone_nr)
+    allNodes = []
+    traverse_get_list(ind.body.root, allNodes)
 
-print(ind.mutation_history)
+    for node in allNodes:
+        print(node.clone_nr)
+
+    print(ind.mutation_history)
