@@ -12,6 +12,13 @@ from modbots.creature_types.configurable_individual import Individual
 
 config_pattern = re.compile("[0-9]+c[0-9]+b.*\.cfg$")
 
+titles = {
+    "": "Sine",
+    "copy": "Copy CTRNN",
+    "dec_ctrnn": "Decentralized CTRNN",
+    "cen_ctrnn": "Centralized CTRNN"
+}
+
 def boxplot(data, edge_color, fill_color, labels, ax):
     bp = ax.boxplot(data, patch_artist=True, showmeans=True, labels=labels)
 
@@ -141,15 +148,15 @@ class SquareManager:
         plt.show()
 
     def plot_all(self, runs=False, nr_modules=False):
-        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2, sharex = False, sharey = False)
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2, sharex = True, sharey = False)
         axes = [ax1, ax2, ax3, ax4]
-        for i, brain_type in enumerate(self.squares.keys()):
+        for i, brain_type in enumerate(["", "dec_ctrnn", "cen_ctrnn", "copy"]):
             ax = axes[i]
             if brain_type.endswith("sine"):
                 continue
-            ax.title.set_text(brain_type.title() if brain_type != "" else "Sine")
+            ax.title.set_text(titles[brain_type])
 
-            matrix_overall = []
+            matrixes = []
             cs_overall, bs_overall = [], []
 
             for j, mode in enumerate(self.squares[brain_type].keys()):
@@ -161,25 +168,35 @@ class SquareManager:
                 else:
                     matrix, cs, bs = self.squares[brain_type][mode].get_fitness_matrix()
 
-                if len(matrix_overall) == 0:
-                    matrix_overall = matrix
-                else:
-                    for i in range(len(matrix_overall)):
-                        for j in range(len(matrix_overall[0])):
-                            matrix_overall[i][j] += matrix[i][j]
+                matrixes.append(matrix)
 
                 if len(bs) > len(bs_overall):
                     bs_overall = bs
                 if len(cs) > len(cs_overall):
                     cs_overall = cs
 
-            matrix_overall /= len(self.squares[brain_type].keys())
+            matrix_overall = np.zeros((len(bs_overall), len(cs_overall)))
+
+            for i in range(len(bs_overall)):
+                for j in range(len(cs_overall)):
+                    counts = 0
+                    matrix_overall[i,j] = 0
+                    for matrix in matrixes:
+                        if i < len(matrix) and j < len(matrix[0]) and matrix[i,j] != 0:
+                            matrix_overall[i,j] += matrix[i,j]
+                            counts += 1
+                    matrix_overall[i,j] /= counts
 
             ax.imshow(matrix_overall.astype(int), vmin=2 if nr_modules else 0, vmax=4 if runs else 13 if nr_modules else 30)
             ax.set_yticks(list(range(len(cs_overall))))
             ax.set_yticklabels(cs_overall)
             ax.set_xticks(list(range(len(bs_overall))))
             ax.set_xticklabels(bs_overall, rotation=45)
+
+            if brain_type == "copy" or brain_type == "cen_ctrnn":
+                ax.set_xlabel("Morph. mut. rate")
+            if brain_type == "" or brain_type == "cen_ctrnn":
+                ax.set_ylabel("Control mut. rate")
 
             for i, row in enumerate(matrix_overall):
                 for j, val in enumerate(row):
