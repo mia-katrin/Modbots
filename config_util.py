@@ -34,3 +34,15 @@ def get_config(pardir=False):
         config.read(args.config_file)
 
     return config
+
+def get_config_no_args(pardir=False):
+
+    config_file = get_local_config(pardir)
+
+    from localconfig import config
+    if pardir:
+        config.read(os.path.abspath(os.pardir) + "/" + config_file)
+    else:
+        config.read(config_file)
+
+    return config
