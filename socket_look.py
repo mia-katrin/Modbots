@@ -1,5 +1,6 @@
 from mlagents_envs.environment import UnityEnvironment
 import socket
+import time
 
 HIGHEST_WORKER_ID = 65535 - UnityEnvironment.BASE_ENVIRONMENT_PORT
 
@@ -12,6 +13,9 @@ def is_worker_id_open(worker_id: int) -> bool:
         UnityEnvironment.BASE_ENVIRONMENT_PORT + worker_id
     )
 
-for id in range(0, HIGHEST_WORKER_ID):
-    if not is_worker_id_open(id):
-        print(id, "is not open")
+start = time.time()
+for _ in range(25):
+    for id in range(0, HIGHEST_WORKER_ID):
+        if not is_worker_id_open(id):
+            print(id, "is not open")
+print(time.time() - start)
