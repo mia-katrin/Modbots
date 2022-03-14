@@ -2,6 +2,7 @@ experiments/
 experiments_mac/
 experiments_rud/
 Build.app
+Modbot-master-*
 .DS_Store
 .pytest_cache
 __pycache__
@@ -25,3 +26,6 @@ Modbots_v2/Modbots*
 log_folder
 
 count_lines.py
+new_exp.sh
+remote_experiments/
+remote_results/
