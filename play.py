@@ -17,6 +17,7 @@ parser.add_argument(
 )
 
 filename = None
+folder = None
 args = parser.parse_args()
 if not args.choose:
     filename = "recorded_ind.txt"
@@ -55,6 +56,8 @@ else:
     print("Chose", filename)
 
 config = get_config_no_args()
+folder = folder.replace("_", "-")
+config.files.build_path = f"/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots-master-{folder}.app"
 
 side_channel = SideChannelPythonside()
 param_channel = EnvironmentParametersChannel()
@@ -88,7 +91,7 @@ side_channel.send_string(f"Play,{filename}")
 
 env.reset()
 
-for i in range(config.evaluation.n_steps):
+for i in range(config.evaluation.n_steps*2):
     env.step()
 
 env.close()
