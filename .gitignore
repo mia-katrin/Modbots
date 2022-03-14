@@ -2,7 +2,7 @@ experiments/
 experiments_mac/
 experiments_rud/
 Build.app
-Modbot-master-*
+Modbot-master-*.app
 .DS_Store
 .pytest_cache
 __pycache__
