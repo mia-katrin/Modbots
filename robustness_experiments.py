@@ -170,6 +170,8 @@ def plot_leaves():
         fitness = evaluate(ind, force_evaluate=True)
         if orig != fitness:
             print("Diff:", orig, fitness)
+        else:
+            print("All good")
 
     close_env()
     #boxplot(data, colors, transparents, labels)
