@@ -104,7 +104,7 @@ def get_env():
                         seed = SEED,
                         side_channels=[side_channel, param_channel],
                         no_graphics = HEADLESS,
-                        worker_id=env_pid, 
+                        worker_id=env_pid,
                         log_folder=LOG_FOLDER,
                         timeout_wait=300
                     )
@@ -204,6 +204,12 @@ def evaluate(ind, force_evaluate=True, record=False):
         #    plt.plot(line)
         #plt.show()
 
+        count = 0
+        for o in obs[index[0]][0][0][3:]:
+            if o != 0:
+                count += 1
+        counted = count // 3
+
         # Get fitness
         index = list(obs.agent_id_to_index)
         current_pos = obs[index[0]][0][0][:3]
@@ -213,4 +219,4 @@ def evaluate(ind, force_evaluate=True, record=False):
         distance_vec = np.array(current_pos) - np.array(save_pos)
         fitness += np.sqrt(distance_vec[0]**2 + distance_vec[2]**2)
 
-    return fitness / len(ENV_SEEDS)
+    return fitness / len(ENV_SEEDS), counted
