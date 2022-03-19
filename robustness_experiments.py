@@ -163,13 +163,22 @@ def plot_leaves():
             data.append([])
 
         ind = get_best_ind(path + folder)
+
+        # First get True number of modules
+        fitness, counted = evaluate(ind, force_evaluate=True)
+        orig_fit = fitness
+        orig_count = counted
+
+        # Then get pruned versions
         prune_ind(ind)
+        fitness, counted = evaluate(ind, force_evaluate=True)
 
-        orig = ind.fitness
-
-        fitness = evaluate(ind, force_evaluate=True)
-        if orig != fitness:
-            print("Diff:", orig, fitness)
+        if orig_count != counted and orig_fit != fitness:
+            print("Diff count:", orig_count, counted, "   Diff fit:", orig_fit, fitness)
+        elif orig_count != counted:
+            print("Diff count:", orig_count, counted)
+        elif orig_fit != fitness:
+            print("Diff fitness:", orig_fit, fitness)
         else:
             print("All good")
 
