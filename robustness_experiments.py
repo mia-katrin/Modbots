@@ -20,12 +20,10 @@ import ptitprince as pt
 from modbots.creature_types.configurable_individual import Individual
 from modbots.plotting.diversity_measure import get_image_of_pop
 from modbots.plotting import plot_voxels
-from look_at_inds import prune_ind
+from modbots.util import prune_ind
 from morphology_changes import get_morphology_diff
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
-from config_util import get_config_no_args
-
-config_pattern = re.compile("final_?.*\.cfg$")
+from config_util import get_config_no_args, get_config_from_folder
 
 colors = plt.cm.viridis(np.linspace(0, 1, 4))
 transparents = []
@@ -65,15 +63,6 @@ def boxplot(data, edge_color, fill_color, labels):
         patch.set(color=edge_color[i])
 
     return bp
-
-def get_config(run_folder):
-    for file in os.listdir(run_folder):
-        if config_pattern.match(file):
-            from localconfig import config
-            config.read(f"{run_folder}/{file}")
-            config.file_name = file
-            return config
-    return None
 
 def get_brain_type(config):
     if config.control.oscillatory:
@@ -153,34 +142,24 @@ def plot_leaves():
     with open("runs500_folders.txt", "r") as file:
         folders = file.read().split("\n")[:-1]
 
-    path = "experiments/"
+    path = "remote_results/experiments500/"
 
     for folder in folders:
-        config = get_config(path + folder)
+        config = get_config_from_folder(path + folder)
         brain = get_brain_type(config)
         if brain not in labels:
             labels.append(brain)
             data.append([])
 
         ind = get_best_ind(path + folder)
+        orig = ind.get_nr_modules()
 
-        # First get True number of modules
-        fitness, counted = evaluate(ind, force_evaluate=True)
-        orig_fit = fitness
-        orig_count = counted
-
-        # Then get pruned versions
         prune_ind(ind)
-        fitness, counted = evaluate(ind, force_evaluate=True)
+        ind.body._nr_expressed_modules = -1
+        new = ind.get_nr_modules()
 
-        if orig_count != counted and orig_fit != fitness:
-            print("Diff count:", orig_count, counted, "   Diff fit:", orig_fit, fitness)
-        elif orig_count != counted:
-            print("Diff count:", orig_count, counted)
-        elif orig_fit != fitness:
-            print("Diff fitness:", orig_fit, fitness)
-        else:
-            print("All good")
+        if orig - new > 0:
+            print(brain, orig - new)
 
     close_env()
     #boxplot(data, colors, transparents, labels)

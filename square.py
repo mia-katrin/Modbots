@@ -1,3 +1,5 @@
+""" Class for managing tuning squares data. Plots and prints """
+
 import json
 import argparse
 import os

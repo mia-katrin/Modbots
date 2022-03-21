@@ -2,48 +2,21 @@ import argparse
 import json
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-br", "--brain", type=str)
-parser.add_argument("-m", "--mode", type=str)
-parser.add_argument("--cs", "-c", nargs='+', required=True)
-parser.add_argument("--bs", "-b", nargs='+', required=True)
-parser.add_argument("--outer_rounds", "-o", type=int, default=1)
-parser.add_argument("--inner_rounds", "-i", type=int, default=4)
+parser.add_argument("-c", "--config_file", type=str)
 
 args = parser.parse_args()
-brain = args.brain.title()
-mode = args.mode.title()
 
-bs = ""
-for b in args.bs:
-    bs += b + " "
-cs = ""
-for c in args.cs:
-    cs += c + " "
+label = args.config_file[:-4].replace("_", " ").title()
 
-label = f"{brain}, {mode}: Tuning " # and then a number
-highest_tune_nr = 0
-found = False
+if label == "Final":
+    label = "Final Sine"
 
-valid_intervals = None
-with open("experiments/valid_intervals", "r") as file:
-    valid_intervals = json.load(file)
+jobname = ""
+if label.startswith("Final"):
+    for item in label.split(" ")[1:]:
+        jobname += item[:3].lower()
 
-for exp_label in valid_intervals.keys():
-    if exp_label.startswith(label):
-        found = True
-        number = exp_label[len(label):]
-        number = int(number)
-
-        if number > highest_tune_nr:
-            highest_tune_nr = number
-if found:
-    highest_tune_nr += 1
-
-label += str(highest_tune_nr)
-
-jobname = brain[0] + mode[0] + mode[2] + "Tun" + str(highest_tune_nr)
-
-with open("tune_job.sh", "w") as file:
+with open(jobname + "_job.sh", "w") as file:
     file.write(f"""#!/bin/bash
 
 #SBATCH --job-name={jobname}
@@ -52,7 +25,7 @@ with open("tune_job.sh", "w") as file:
 
 #SBATCH --partition=normal
 
-#SBATCH --time=30:00:00
+#SBATCH --time=10:00:00
 
 #SBATCH --ntasks=1
 
@@ -65,7 +38,7 @@ set -o nounset
 
 source /fp/homes01/u01/ec-mkkvalsu/evolve_unity_env/bin/activate
 
-srun python3 run_several.py -l \"{label}\" -m {mode.lower()} -br {brain.lower()} -b {bs}-c {cs}-o {args.outer_rounds} -i {args.inner_rounds}
+srun python3 evolve.py -s \"{label}\" --config_file {args.config_file}
 """)
 
-print("File made")
+print(f"File made: " + jobname + "_job.sh")

@@ -46,3 +46,14 @@ def get_config_no_args(pardir=False):
         config.read(config_file)
 
     return config
+
+config_pattern = re.compile("final_?.*\.cfg$")
+
+def get_config_from_folder(run_folder):
+    for file in os.listdir(run_folder):
+        if config_pattern.match(file):
+            from localconfig import config
+            config.read(f"{run_folder}/{file}")
+            config.file_name = file
+            return config
+    return None

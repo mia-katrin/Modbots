@@ -111,15 +111,25 @@ class Body:
         while len(current_nodes) > 0:
             node = current_nodes.pop(0)
 
+            nr_nodes = self.get_nr_modules()
+            orig_children = deepcopy(node.children)
+
             node_mutation = node.mutate_maybe(config, individual_likelihood)
-            result = add_on_result(
-                node_mutation,
-                result
-            )
+
+            self._nr_expressed_modules = -1
+            if self.get_nr_modules() >= 50 and ("Add" in node_mutation or "Copy" in node_mutation):
+                node.children = orig_children
+            else:
+                result = add_on_result(
+                    node_mutation,
+                    result
+                )
 
             for child in node.children:
                 if child != None:
                     current_nodes.append(child)
+
+
 
         if result != "":
             self._nr_expressed_modules = -1

@@ -1,3 +1,7 @@
+""" Script for finding individuals that don't have the same fitness as their
+recorded fitness. Also to find small and too good individuals.
+Not very important, just used for debugging. """
+
 import json
 import matplotlib.pyplot as plt
 import numpy as np

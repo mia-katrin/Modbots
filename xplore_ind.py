@@ -1,15 +1,11 @@
 """
 A file for exploring individuals, specifying configs, ind files, or random inds.
 """
-
-import time
-
 from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 from modbots.creature_types.configurable_individual import Individual
 
 import argparse
-import re
 
 from config_util import get_local_config
 from localconfig import config
@@ -31,14 +27,17 @@ parser.add_argument(
 parser.add_argument(
     '--record',
     action="store_true",
-    help='To record or not',
+    help='To record or not. Recording saved in recorded_ind.txt, and can be played with play.py',
     default=False
 )
 
+# Rad arguments
 args = parser.parse_args()
 
+# Get the config to use
 config.read(args.config_file)
 
+# Get individual
 if args.gene == "random":
     ind = Individual.random(config)
     print("Starting random ind")
@@ -46,6 +45,7 @@ else:
     ind = Individual.unpack_ind(args.gene, config)
     print("Stored fitness:", ind.fitness)
 
+# Evaluate
 set_env_variables(config=config)
 
 fitness = evaluate(ind, force_evaluate=True, record=args.record)
@@ -53,6 +53,6 @@ print(f"We got fitness {fitness}")
 
 close_env()
 
-if args.gene != "random":
+"""if args.gene != "random":
     print("\nMutation history:")
-    print(ind.mutation_history)
+    print(ind.mutation_history)"""
