@@ -47,7 +47,7 @@ def get_config_no_args(pardir=False):
 
     return config
 
-config_pattern = re.compile("final_?.*\.cfg$")
+config_pattern = re.compile(".*\.cfg$")
 
 def get_config_from_folder(run_folder):
     for file in os.listdir(run_folder):
@@ -57,3 +57,24 @@ def get_config_from_folder(run_folder):
             config.file_name = file
             return config
     return None
+
+def get_brain_type(config):
+    if config.control.oscillatory:
+        return "sine"
+    elif config.control.ctrnn:
+        if config.control.decentral:
+            if config.control.copy_decentral:
+                return "copy_sine" if config.file_name[:-4].endswith("sine") else "copy"
+            return "dec_ctrnn_sine" if config.file_name[:-4].endswith("sine") else "dec_ctrnn"
+        return "cen_ctrnn"
+    else:
+        raise Exception("Failure")
+
+def get_mode(config):
+    if config.individual.variable_scale:
+        if config.individual.growing:
+            if config.individual.gradual:
+                return "gradual"
+            return "growing"
+        return "variable"
+    return "normal"
