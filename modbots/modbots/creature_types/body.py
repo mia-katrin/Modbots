@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+from copy import deepcopy
 
 from modbots.util import bool_from_distribution, add_on_result, traverse_get_list
 from modbots.creature_types.node import Node
