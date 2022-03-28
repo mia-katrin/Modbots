@@ -39,10 +39,10 @@ def set_env_variables(config=None, path=None, log_folder=None, seed=None, headle
     ENV_ENUM   = env_enum     if env_enum != None       else config.evaluation.env_enum
     TORQUE     = torque       if torque != None         else config.individual.torque
 
-ENV_SEEDS = [0.0]
+"""ENV_SEEDS = [0.0]
 def set_env_seeds(env_seeds):
     global ENV_SEEDS
-    ENV_SEEDS = env_seeds
+    ENV_SEEDS = env_seeds"""
 
 import socket
 HIGHEST_WORKER_ID = 65535 - UnityEnvironment.BASE_ENVIRONMENT_PORT
@@ -143,80 +143,75 @@ def evaluate(ind, force_evaluate=True, record=False):
 
     env, side_channel, param_channel = get_env()
 
-    fitness = 0
-    for env_seed in ENV_SEEDS:
+    side_channel.send_string(ind.body_to_str())
+    param_channel.set_float_parameter("seed", env_seed)
+    if record:
+        side_channel.send_string("Record, recorded_ind.txt")
 
-        side_channel.send_string(ind.body_to_str())
-        param_channel.set_float_parameter("seed", env_seed)
-        if record:
-            side_channel.send_string("Record, recorded_ind.txt")
+    env.reset()
 
-        env.reset()
+    # Action plotting
+    #lines = [[] for _ in range(ind.get_nr_modules())]
 
-        # Action plotting
-        #lines = [[] for _ in range(ind.get_nr_modules())]
+    save_pos = [0,0,0]
+    last_100 = [0,0,0]
+    for i in range(N_STEPS):
+        # Get env observation space
+        obs,other = env.get_steps(list(env._env_specs)[0])
+        assert len(obs.agent_id) > 0
 
-        save_pos = [0,0,0]
-        last_100 = [0,0,0]
-        for i in range(N_STEPS):
-            # Get env observation space
-            obs,other = env.get_steps(list(env._env_specs)[0])
-            assert len(obs.agent_id) > 0
+        if i == N_START_EVAL:
+            index = list(obs.agent_id_to_index)
+            save_pos = obs[index[0]][0][0][:3]
 
-            if i == N_START_EVAL:
-                index = list(obs.agent_id_to_index)
-                save_pos = obs[index[0]][0][0][:3]
+            last_100 = obs[index[0]][0][0][:3]
+        elif i > N_START_EVAL+19 and i % 10 == 0:
+            index = list(obs.agent_id_to_index)
 
-                last_100 = obs[index[0]][0][0][:3]
-            elif i > N_START_EVAL+19 and i % 10 == 0:
-                index = list(obs.agent_id_to_index)
+            if np.allclose(obs[index[0]][0][0][:3], last_100, atol=0.1):
+                print(f"Broke early {i}")
+                break
 
-                if np.allclose(obs[index[0]][0][0][:3], last_100, atol=0.1):
-                    print(f"Broke early {i}")
-                    break
+            last_100 = obs[index[0]][0][0][:3]
 
-                last_100 = obs[index[0]][0][0][:3]
-
-            # Make action array
-            if (i >= 10):
-                index = list(obs.agent_id_to_index)
-                actions = ind.get_actions(obs[index[0]][0][0][3:])
-            else:
-                actions = np.zeros(shape=(1,50),dtype=np.float32)
-
-            # Action plotting
-            #for i, liste in enumerate(lines):
-            #    liste.append(actions[0,i])
-
-            # Send actions
-            env.set_action_for_agent("ModularBehavior?team=0",0,ActionTuple(actions))
-            env.step()  # Move the simulation forward
-
-        if record:
-            side_channel.send_string("Stop recording")
-            import time
-            env.step()
-            time.sleep(1)
+        # Make action array
+        if (i >= 10):
+            index = list(obs.agent_id_to_index)
+            actions = ind.get_actions(obs[index[0]][0][0][3:])
+        else:
+            actions = np.zeros(shape=(1,50),dtype=np.float32)
 
         # Action plotting
-        #import matplotlib.pyplot as plt
-        #for line in lines:
-        #    plt.plot(line)
-        #plt.show()
+        #for i, liste in enumerate(lines):
+        #    liste.append(actions[0,i])
 
-        """count = 0
-        for o in obs[index[0]][0][0][3:]:
-            if o != 0:
-                count += 1
-        counted = count // 3"""
+        # Send actions
+        env.set_action_for_agent("ModularBehavior?team=0",0,ActionTuple(actions))
+        env.step()  # Move the simulation forward
 
-        # Get fitness
-        index = list(obs.agent_id_to_index)
-        current_pos = obs[index[0]][0][0][:3]
+    if record:
+        side_channel.send_string("Stop recording")
+        import time
+        env.step()
+        time.sleep(1)
 
-        # This all should work even when the value sentback is how far into
-        # the maze/corridor it has gotten, however be careful
-        distance_vec = np.array(current_pos) - np.array(save_pos)
-        fitness += np.sqrt(distance_vec[0]**2 + distance_vec[2]**2)
+    # Action plotting
+    #import matplotlib.pyplot as plt
+    #for line in lines:
+    #    plt.plot(line)
+    #plt.show()
 
-    return fitness / len(ENV_SEEDS) #, counted
+    """count = 0
+    for o in obs[index[0]][0][0][3:]:
+        if o != 0:
+            count += 1
+    counted = count // 3"""
+
+    # Get fitness
+    index = list(obs.agent_id_to_index)
+    current_pos = obs[index[0]][0][0][:3]
+
+    distance_vec = np.array(current_pos) - np.array(save_pos)
+    fitness = np.sqrt(distance_vec[0]**2 + distance_vec[2]**2)
+
+    return fitness
