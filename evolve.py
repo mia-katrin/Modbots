@@ -166,8 +166,24 @@ def evolve(config, statement=None, show_figs=True, runNr=None):
             offspring = sort_to_chunks(offspring, nr_chunks=config.experiment.n_cores)
 
             fitnesses = toolbox.map(toolbox.evaluate, offspring)
+
+            damaged = False
             for ind, fit in zip(offspring, fitnesses):
                 ind.fitness = fit
+                if fit == 0.0:
+                    damaged = True
+
+            if damaged:
+                pool.close()
+                pool = multiprocessing.Pool(config.experiment.n_cores)
+                cs = int(np.ceil(float(config.ea.pop_size)/float(config.experiment.n_cores)))
+                toolbox.register("map", pool.map, chunksize=cs)
+
+                fitnesses = toolbox.map(toolbox.evaluate, offspring)
+                for ind, fit in zip(offspring, fitnesses):
+                    ind.fitness = fit
+                    if fit == 0.0:
+                        print("It did not solve the issue of fit=0.0")
 
             population = offspring
 

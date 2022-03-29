@@ -123,7 +123,7 @@ class Plotter:
             elif len(self.stats[key]) == 1:
                 plt.plot(self.stats[key][0])
             if key != "Population Heritage": plt.legend()
-            plt.xticks(np.arange(0,len(self.stats[key]), max(1, len(self.stats[key])//5, len(self.stats[key])//10 )))
+            plt.xticks(np.arange(0,len(self.stats["Diversity"][0]), max(1, len(self.stats["Diversity"][0])//5, len(self.stats["Diversity"][0])//10 )))
             plt.xlabel("Generation")
             plt.ylabel(key)
 
