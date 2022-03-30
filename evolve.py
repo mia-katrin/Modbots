@@ -170,11 +170,10 @@ def evolve(config, statement=None, show_figs=True, runNr=None):
             damaged = False
             for ind, fit in zip(offspring, fitnesses):
                 ind.fitness = fit
-                if fit == 0.0:
+                ind.body._nr_expressed_modules = -1
+                if fit == 0.0 and ind.get_nr_modules() > 1:
                     damaged = True
-
-            if damaged:
-                raise Exception("Fitness should never be a pure 0")
+                    print("Fitness should never be a pure 0, Ind:", ind.get_nr_modules())
 
             population = offspring
 
