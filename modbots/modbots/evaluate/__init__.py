@@ -142,6 +142,7 @@ def evaluate(ind, force_evaluate=True, record=False):
     ind.prepare_for_evaluation()
 
     env, side_channel, param_channel = get_env()
+    env.reset()
 
     side_channel.send_string(ind.body_to_str())
     param_channel.set_float_parameter("seed", 0.0)#env_seed)

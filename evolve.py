@@ -171,7 +171,7 @@ def evolve(config, statement=None, show_figs=True, runNr=None):
             for ind, fit in zip(offspring, fitnesses):
                 ind.fitness = fit
                 ind.body._nr_expressed_modules = -1
-                if fit == 0.0 and ind.get_nr_modules() > 1:
+                if fit == 0.0:
                     damaged = True
                     print("Fitness should never be a pure 0, Ind:", ind.get_nr_modules())
 
