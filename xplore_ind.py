@@ -48,8 +48,6 @@ else:
 # Evaluate
 set_env_variables(config=config)
 
-ind.body.root.children = [None, None, None]
-ind.body.root.scale = 0.9
 fitness = evaluate(ind, force_evaluate=True, record=args.record)
 print(f"We got fitness {fitness}")
 
