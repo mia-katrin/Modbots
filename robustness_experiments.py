@@ -173,6 +173,7 @@ def plot_leaves():
                 leaf.parent.children[index] = None
 
                 fitness = evaluate(ind, force_evaluate=True)
+                ind.fitness = fitness
                 ind.save_individual(path + f"/leaf{i}")
 
                 leaf.parent.children[index] = leaf
