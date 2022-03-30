@@ -113,7 +113,7 @@ def get_best_ind(run_folder):
             break
         index = i - 1
 
-    return Individual.unpack_ind(run_folder + f"/bestInd{index}", get_config(run_folder))
+    return Individual.unpack_ind(run_folder + f"/bestInd{index}", get_config_from_folder(run_folder))
 
 def get_leaves(ind, nr = False):
     leaves = []
@@ -128,42 +128,58 @@ def get_leaves(ind, nr = False):
             if not child is None:
                 leaf = False
                 stack.append(child)
+                child.parent = node
 
         if leaf:
             leaves.append(node)
 
     return len(leaves) if nr else leaves
 
-def plot_leaves():
-
-    data = []
-    labels = []
+def elites_dict():
+    elites = {}
 
     with open("runs500_folders.txt", "r") as file:
         folders = file.read().split("\n")[:-1]
 
-    path = "remote_results/experiments500/"
+    path = "experiments/"
 
-    for folder in folders:
+    for folder in tqdm(folders):
         config = get_config_from_folder(path + folder)
         brain = get_brain_type(config)
-        if brain not in labels:
-            labels.append(brain)
-            data.append([])
+        if brain not in elites:
+            elites[brain] = []
 
         ind = get_best_ind(path + folder)
-        orig = ind.get_nr_modules()
-
         prune_ind(ind)
-        ind.body._nr_expressed_modules = -1
-        new = ind.get_nr_modules()
+        elites[brain].append((folder, ind))
 
-        if orig - new > 0:
-            print(brain, orig - new)
+    return elites
+
+def plot_leaves():
+
+    elites = elites_dict()
+
+    for brain in elites.keys():
+        for i in range(len(elites[brain])):
+            folder, ind = elites[brain][i]
+
+            path = f"diffs/{folder}"
+            os.makedirs(path)
+
+            leaves = get_leaves(ind)
+
+            for i, leaf in enumerate(leaves):
+                index = leaf.parent.children.index(leaf)
+                leaf.parent.children[index] = None
+
+                fitness = evaluate(ind, force_evaluate=True)
+                ind.save_individual(path + f"/leaf{i}")
+
+                leaf.parent.children[index] = leaf
 
     close_env()
-    #boxplot(data, colors, transparents, labels)
+    #boxplot([diffs], colors, transparents, ["One"])
 
 if __name__ == "__main__":
     plot_leaves()
-    #plt.show()
+    plt.show()
