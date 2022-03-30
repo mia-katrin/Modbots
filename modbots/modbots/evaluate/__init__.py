@@ -129,10 +129,12 @@ def get_env():
 def close_env():
     global env
     global sc
+    global env_pid
     if env is not None:
         env.close()
         env = None
     sc = None
+    env_pid = None
 
 # Evaluate function uses variables of different env instances
 def evaluate(ind, force_evaluate=True, record=False):
