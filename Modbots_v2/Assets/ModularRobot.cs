@@ -445,12 +445,12 @@ public class ModularRobot : Agent
 
                     foreach (var offenseCollider in collidingBoxes)
                     {
-                        Debug.Log($"Collider {offenseCollider} is up for review against {child}. " +
-                            $"Offense: {offenseCollider.transform.position} {offenseCollider.bounds.extents}, " +
-                            $"Child: {collider.transform.position} {collider.bounds.extents}");
+                        //Debug.Log($"Collider {offenseCollider} is up for review against {child}. " +
+                        //    $"Offense: {offenseCollider.transform.position} {offenseCollider.bounds.extents}, " +
+                        //    $"Child: {collider.transform.position} {collider.bounds.extents}");
                         if (GetIndex(offenseCollider.transform) != GetIndex(child) && ! destroyedIndexes.Contains(GetIndex(offenseCollider.transform)))
                         {
-                            Debug.Log($"My ({GetIndex(child)}) {child} has collided with someones's ({GetIndex(offenseCollider.transform)}) {offenseCollider.gameObject} {offenseCollider.bounds.size} {collider.bounds.size} {offenseCollider.transform.position} {child.transform.position}");
+                            //Debug.Log($"My ({GetIndex(child)}) {child} has collided with someones's ({GetIndex(offenseCollider.transform)}) {offenseCollider.gameObject} {offenseCollider.bounds.size} {collider.bounds.size} {offenseCollider.transform.position} {child.transform.position}");
                             //GameManager.Instance.pythonCom.SendMessage($"{child} has collided with {offenseCollider.gameObject}");
                             didWeCollide = true;
                         }

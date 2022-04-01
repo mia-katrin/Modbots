@@ -66,6 +66,10 @@ public class GameManager : MonoBehaviour
         // every scene load, a modular robot is made (becuse it belongs to the scene)
         // it is responsible for enforcing its singleton-ness itself
         modularRobot.DestroyContents();
+
+        Resources.UnloadUnusedAssets();
+        System.GC.Collect();
+
         StartCoroutine(CreateRobot());
     }
 
@@ -85,7 +89,12 @@ public class GameManager : MonoBehaviour
         // Calling this forces that
         Physics.SyncTransforms();
         yield return new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
         if (currentGene.Length > 0) modularRobot.PruneCollisions();
+        for (int i = 0; i < warmupFixedUpdates; i++)
+        {
+            yield return new WaitForFixedUpdate();
+        }
         Physics.autoSimulation = true;
 
         string indexes = "Created modules: ";
