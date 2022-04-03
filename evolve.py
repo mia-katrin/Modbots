@@ -167,13 +167,14 @@ def evolve(config, statement=None, show_figs=True, runNr=None):
 
             fitnesses = toolbox.map(toolbox.evaluate, offspring)
 
-            damaged = False
+            count = 0
             for ind, fit in zip(offspring, fitnesses):
                 ind.fitness = fit
-                ind.body._nr_expressed_modules = -1
                 if fit == 0.0:
-                    damaged = True
-                    print("Fitness should never be a pure 0, Ind:", ind.get_nr_modules())
+                    count += 1
+
+            if count > 10:
+                print("10 Inds have shown 0.0 fitness")
 
             population = offspring
 
