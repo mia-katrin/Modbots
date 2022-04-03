@@ -81,27 +81,36 @@ public class ModuleParameterized : MonoBehaviour
             connectionSites.TrimExcess();
             //Debug.Log(connectionSites.Count);
 
-            Destroy(collider1.transform.GetChild(0).gameObject); // CS1
-            Destroy(collider1.transform.GetChild(1).gameObject); // CS2
-            // Leave connection site CS3 and ConnectionSite
-            Destroy(collider1.transform.GetChild(4).gameObject); // ConnectionSite (1)
-            Destroy(collider1.transform.GetChild(5).gameObject); // ConnectionSite (2)
-
             // Save children
             var childrenToKeep = new List<Transform>();
+            var childrenToDelete = new List<Transform>();
             for (int i = 0; i < collider1.transform.childCount; i++)
             {
-                if (i != 0 && i != 1 && i != 4 && i != 5)
+                if (i == 2 || i == 3)
+                {
                     childrenToKeep.Add(collider1.transform.GetChild(i));
+                }
+                else
+                {
+                    childrenToDelete.Add(collider1.transform.GetChild(i));
+                }
             }
 
             collider1.transform.DetachChildren();
+
+            foreach (var child in childrenToDelete)
+            {
+                Destroy(child.gameObject);
+            }
 
             // Reattach children
             foreach (var child in childrenToKeep)
             {
                 child.SetParent(collider1.transform);
             }
+
+            childrenToDelete.Clear();
+            childrenToKeep.Clear();
         }
 
         // Save local positions

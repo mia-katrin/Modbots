@@ -82,19 +82,17 @@ public class GameManager : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
 
-        if (currentGene.Length > 0) modularRobot.MakeRobot(currentGene);
         EnvironmentBuilder.Instance.BuildEnvironment();
+        Physics.SyncTransforms();
+        if (currentGene.Length > 0) modularRobot.MakeRobot(currentGene);
 
         // By default, newly spawned objects are not synced with the physics world before the next pyhsics frame
-        // Calling this forces that
+        // Calling this forces that, so we can do collision checks
         Physics.SyncTransforms();
         yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate();
         if (currentGene.Length > 0) modularRobot.PruneCollisions();
-        for (int i = 0; i < warmupFixedUpdates; i++)
-        {
-            yield return new WaitForFixedUpdate();
-        }
+        Physics.SyncTransforms();
+        yield return new WaitForFixedUpdate();
         Physics.autoSimulation = true;
 
         string indexes = "Created modules: ";
