@@ -217,9 +217,6 @@ def evaluate(ind, force_evaluate=True, record=False):
     fitness = np.sqrt(distance_vec[0]**2 + distance_vec[2]**2)
 
     if fitness == 0.0:
-        new_fit = evaluate(ind, force_evaluate=True, record=True)
-        with open("marker.txt") as file:
-            file.write(new_fit)
-            file.close()
+        evaluate(ind, force_evaluate=True, record=True)
 
     return fitness
