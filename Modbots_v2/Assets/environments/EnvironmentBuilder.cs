@@ -66,6 +66,16 @@ public class EnvironmentBuilder : MonoBehaviour
         }
     }
 
+    public bool FloorCollision(BoxCollider boxCollider)
+    {
+        // Find lowest point of collider
+        float yDim = boxCollider.bounds.size.y;
+        float yPos = boxCollider.transform.position.y;
+
+        // Find if lowest point is lower than floor
+        return yPos - yDim <= -3.0f;
+    }
+
     public bool CollisionCheck(BoxCollider boxCollider)
     {
         var envParameters = Academy.Instance.EnvironmentParameters;
@@ -74,13 +84,13 @@ public class EnvironmentBuilder : MonoBehaviour
         switch (envEnum)
         {
             case (0.0f): // Floor
-                return boxCollider.transform.position.y < -3.0f;
+                return FloorCollision(boxCollider);
             case (1.0f): // Corridor
-                return boxCollider.transform.position.y < -3.0f || corridor.CollisionCheck(boxCollider);
+                return FloorCollision(boxCollider) || corridor.CollisionCheck(boxCollider);
             case (2.0f): // Maze
-                return boxCollider.transform.position.y < -3.0f || maze.CollisionCheck(boxCollider);
+                return FloorCollision(boxCollider) || maze.CollisionCheck(boxCollider);
             case (3.0f): // Stairs
-                return boxCollider.transform.position.y < -3.0f;
+                return FloorCollision(boxCollider);
             default:
                 break;
         }
