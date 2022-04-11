@@ -20,6 +20,7 @@ with open("runs500_folders_modes.txt", "r") as file:
         if first:
             # Evaluate
             set_env_variables(config=config)
+            first = False
 
         fitness = evaluate(ind, force_evaluate=True, record=False)
 
