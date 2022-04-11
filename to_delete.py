@@ -7,6 +7,8 @@ from config_util import get_config_from_folder
 
 path = "experiments/"
 
+first = True
+
 with open("runs500_folders_modes.txt", "r") as file:
     for line in file:
         line = line.replace("\n", "")
@@ -15,14 +17,15 @@ with open("runs500_folders_modes.txt", "r") as file:
         config = get_config_from_folder(run_folder)
         ind = Individual.unpack_ind(run_folder + "/bestInd499", config)
 
-        # Evaluate
-        set_env_variables(config=config)
+        if first:
+            # Evaluate
+            set_env_variables(config=config)
 
         fitness = evaluate(ind, force_evaluate=True, record=False)
-
-        close_env()
 
         if fitness == ind.fitness:
             print(Fore.GREEN + "Fitness is fine")
         else:
             print(Fore.RED + "Fitness does not correspond")
+
+close_env()
