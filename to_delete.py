@@ -9,7 +9,7 @@ path = "experiments/"
 
 first = True
 
-with open("runs500_folders_modes.txt", "r") as file:
+with open("runs500_folders.txt", "r") as file:
     for line in file:
         line = line.replace("\n", "")
         run_folder = path + line
