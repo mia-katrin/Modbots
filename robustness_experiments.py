@@ -168,7 +168,9 @@ def plot_diffs_folder(base_folder):
     plt.ylabel("Fitness preserved")
 
 def disable_and_measure_ind(ind):
-    ind.disable_number = np.random.rand()*50
+    ind = copy.deepcopy(ind)
+
+    ind.disable_number = np.random.rand()
 
     def get_actions_new(observation):
         if ind.controller != None:
@@ -177,7 +179,9 @@ def disable_and_measure_ind(ind):
             actions[0][0] = 0.0
 
             # Dead random
-            # Insert code here
+            index = 1 + ind.disable_number * (len(actions[0])-2)
+            index = int(round(index))
+            actions[0][index] = 0.0
 
             return actions
         return np.zeros((1,50), dtype=float)
@@ -186,7 +190,7 @@ def disable_and_measure_ind(ind):
 
     fitness = evaluate(ind)
 
-    print(ind.fitness == fitness)
+    print(ind.fitness, fitness)
 
     return fitness
 
