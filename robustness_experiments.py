@@ -23,7 +23,7 @@ from modbots.plotting import plot_voxels
 from modbots.util import prune_ind
 from morphology_changes import get_morphology_diff
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
-from config_util import get_config_no_args, get_config_from_folder
+from config_util import get_config_no_args, get_config_from_folder, get_mode, get_brain_type
 
 colors = plt.cm.viridis(np.linspace(0, 1, 4))
 transparents = []
@@ -35,14 +35,11 @@ colors[-1] = [colors[-1][0], colors[-1][1]*0.9, colors[-1][2]*0.9, colors[-1][3]
 #transparents[-2][-1] = 0.35
 
 titles = {
-    "sine": "Sine",
-    "copy": "Copy CTRNN",
-    "dec_ctrnn": "Decentralized CTRNN",
-    "cen_ctrnn": "Centralized CTRNN"
+    "copy": "Copy",
+    "dec_ctrnn": "Dec.",
+    "cen_ctrnn": "Cen.",
+    "sine": "Sine"
 }
-
-config = get_config_no_args()
-set_env_variables(config=config)
 
 def boxplot(data, edge_color, fill_color, labels):
     bp = plt.boxplot(data, patch_artist=True, showmeans=True, labels=labels)
@@ -64,27 +61,6 @@ def boxplot(data, edge_color, fill_color, labels):
 
     return bp
 
-def get_brain_type(config):
-    if config.control.oscillatory:
-        return "sine"
-    elif config.control.ctrnn:
-        if config.control.decentral:
-            if config.control.copy_decentral:
-                return "copy_sine" if config.file_name[:-4].endswith("sine") else "copy"
-            return "dec_ctrnn_sine" if config.file_name[:-4].endswith("sine") else "dec_ctrnn"
-        return "cen_ctrnn"
-    else:
-        raise Exception("Failure")
-
-def get_mode(config):
-    if config.individual.variable_scale:
-        if config.individual.growing:
-            if config.individual.gradual:
-                return "gradual"
-            return "growing"
-        return "variable"
-    return "normal"
-
 def get_stat(run_folder, data_name="Fitness", stat="Maxs", bestKept=False):
     with open(run_folder+"/data", "rb") as file:
         data = pickle.load(file)
@@ -94,14 +70,6 @@ def get_stat(run_folder, data_name="Fitness", stat="Maxs", bestKept=False):
                 if i != 0 and line[i-1] > line[i]:
                     line[i] = line[i-1]
         return line
-
-def is_completed_run(run_folder):
-    try:
-        with open(run_folder + "/data", "rb") as file:
-            data = pickle.load(file)
-            return True
-    except:
-        return False
 
 def get_best_ind(run_folder):
     fitnesses = get_stat(run_folder, data_name="Fitness", stat="Maxs", bestKept = True)
@@ -141,7 +109,7 @@ def elites_dict():
     with open("runs500_folders.txt", "r") as file:
         folders = file.read().split("\n")[:-1]
 
-    path = "experiments/"
+    path = "remote_results/experiments500/"
 
     for folder in tqdm(folders):
         config = get_config_from_folder(path + folder)
@@ -155,32 +123,90 @@ def elites_dict():
 
     return elites
 
-def plot_leaves():
+def plot_diffs_folder(base_folder):
 
     elites = elites_dict()
+    brains = elites.keys()
 
-    for brain in elites.keys():
+    diffs = {}
+
+    for brain in brains:
+        diffs[brain] = {0:[], 5:[], 10:[]}
+
         for i in range(len(elites[brain])):
             folder, ind = elites[brain][i]
+            ind.body._nr_expressed_modules = -1
+            size = min(10, ind.get_nr_modules() - ind.get_nr_modules()%5)
 
-            path = f"diffs/{folder}"
-            os.makedirs(path)
+            path = f"{base_folder}/{folder}"
 
-            leaves = get_leaves(ind)
+            for file_ind in os.listdir(path):
+                with open(path + "/" + file_ind, "rb") as file:
+                    leaf_ind = pickle.load(file)
 
-            for i, leaf in enumerate(leaves):
-                index = leaf.parent.children.index(leaf)
-                leaf.parent.children[index] = None
+                    diffs[brain][size].append((leaf_ind.fitness, ind.fitness))
 
-                fitness = evaluate(ind, force_evaluate=True)
-                ind.fitness = fitness
-                ind.save_individual(path + f"/leaf{i}")
+    data = []
+    labels = []
+    for brain in brains:
+        for size in [0,5,10]:
+            up_to = "-" + str(size+5) if size != 10 else "+"
+            labels.append(titles[brain] + f" {size}{up_to}")
 
-                leaf.parent.children[index] = leaf
+            values = []
+            for (leaf_fit, ind_fit) in diffs[brain][size]:
+                values.append(leaf_fit/ind_fit)
+            data.append(values)
+
+    boxplot(data,
+        np.concatenate([[colors[i] for _ in range(3)] for i in range(4)]),
+        np.concatenate([[transparents[i] for _ in range(3)] for i in range(4)]),
+        labels)
+
+    plt.yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0], ["0%", "20%", "40%", "60%", "80%", "100%"])
+    plt.xticks(rotation = 45)
+    plt.ylabel("Fitness preserved")
+
+def disable_and_measure_ind(ind):
+    ind.disable_number = np.random.rand()*50
+
+    def get_actions_new(observation):
+        if ind.controller != None:
+            actions = ind.controller.get_actions(observation)
+            # Dead root
+            actions[0][0] = 0.0
+
+            # Dead random
+            # Insert code here
+
+            return actions
+        return np.zeros((1,50), dtype=float)
+
+    ind.get_actions = get_actions_new
+
+    fitness = evaluate(ind)
+
+    print(ind.fitness == fitness)
+
+    return fitness
+
+def disable_and_measure():
+    with open("runs500_folders.txt", "r") as file:
+        folders = file.read().split("\n")[:-1]
+
+    path = "remote_results/experiments500/"
+
+    config = get_config_no_args()
+    set_env_variables(config=config)
+
+    for folder in folders:
+        ind = get_best_ind(path + folder)
+        prune_ind(ind)
+        fitness = disable_and_measure_ind(ind)
 
     close_env()
-    #boxplot([diffs], colors, transparents, ["One"])
 
 if __name__ == "__main__":
-    plot_leaves()
-    plt.show()
+    #plot_diffs_folder("diffs")
+    #plt.show()
+    disable_and_measure()
