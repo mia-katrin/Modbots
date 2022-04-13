@@ -194,7 +194,7 @@ def disable_and_measure():
     with open("runs500_folders.txt", "r") as file:
         folders = file.read().split("\n")[:-1]
 
-    path = "remote_results/experiments500/"
+    path = "experiments/"
 
     config = get_config_no_args()
     set_env_variables(config=config)
