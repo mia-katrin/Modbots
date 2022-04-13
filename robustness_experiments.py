@@ -167,28 +167,15 @@ def plot_diffs_folder(base_folder):
     plt.xticks(rotation = 45)
     plt.ylabel("Fitness preserved")
 
-def disable_and_measure_ind(ind):
-    ind = copy.deepcopy(ind)
-
-    ind.disable_number = None
-
+def disable_and_measure_ind(ind, index):
     def get_actions_new(observation):
         if ind.controller != None:
             actions = ind.controller.get_actions(observation)
             # Dead root
             actions[0][0] = 0.0
 
-            # Is there a disable_number? Make one
-            if ind.disable_number == None:
-                indexes = []
-                for i in range(3,len(observation),3):
-                    if 0 != np.sum(observation[i:i+3]):
-                        indexes.append(i // 3)
-
-                ind.disable_number = np.random.choice(indexes)
-
             # Dead random
-            actions[0][ind.disable_number] = 0.0
+            actions[0][index] = 0.0
 
             return actions
         return np.zeros((1,50), dtype=float)
@@ -197,8 +184,6 @@ def disable_and_measure_ind(ind):
 
     fitness = evaluate(ind)
 
-    print(ind.fitness, fitness)
-
     return fitness
 
 def disable_and_measure():
@@ -206,14 +191,28 @@ def disable_and_measure():
         folders = file.read().split("\n")[:-1]
 
     path = "experiments/"
+    save_path = "diffs_disable/"
+    os.makedirs(save_path)
 
     config = get_config_no_args()
     set_env_variables(config=config)
 
     for folder in folders:
+        fitnesses = []
+
         ind = get_best_ind(path + folder)
         prune_ind(ind)
-        fitness = disable_and_measure_ind(ind)
+
+        ind.body._nr_expressed_modules = -1
+        nr_modules = ind.get_nr_modules()
+
+        for index in range(1, nr_modules):
+            ind_on_trial = copy.deepcopy(ind)
+            fitness = disable_and_measure_ind(ind_on_trial, index)
+            fitnesses.append(fitness)
+
+        with open(save_path + folder, "w") as file:
+            file.write(str(fitnesses))
 
     close_env()
 
