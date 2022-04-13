@@ -170,7 +170,7 @@ def plot_diffs_folder(base_folder):
 def disable_and_measure_ind(ind):
     ind = copy.deepcopy(ind)
 
-    ind.disable_number = np.random.rand()
+    ind.disable_number = None
 
     def get_actions_new(observation):
         if ind.controller != None:
@@ -178,10 +178,17 @@ def disable_and_measure_ind(ind):
             # Dead root
             actions[0][0] = 0.0
 
+            # Is there a disable_number? Make one
+            if ind.disable_number == None:
+                indexes = []
+                for i in range(3,len(observation),3):
+                    if 0 != np.sum(observation[i:i+3]):
+                        indexes.append(i // 3)
+
+                ind.disable_number = np.random.choice(indexes)
+
             # Dead random
-            index = 1 + ind.disable_number * (len(actions[0])-2)
-            index = int(round(index))
-            actions[0][index] = 0.0
+            actions[0][ind.disable_number] = 0.0
 
             return actions
         return np.zeros((1,50), dtype=float)
