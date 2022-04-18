@@ -370,7 +370,7 @@ def apply_and_measure(save_path, function):
         ind.body._nr_expressed_modules = -1
         nr_modules = ind.get_nr_modules()
 
-        for index in range(1, nr_modules):
+        for index in range(0, nr_modules):
             ind_on_trial = copy.deepcopy(ind)
             fitness = apply_and_measure_ind(ind_on_trial, index, function, config)
             if fitness != -1:
