@@ -396,4 +396,4 @@ if __name__ == "__main__":
     #plot_diffs_folder("diffs")
     #plot_diffs_disable_folder("diffs_disable")
     #plt.show()
-    apply_and_measure("diffs_add/", "add")
+    apply_and_measure("diffs_remove/", "remove")
