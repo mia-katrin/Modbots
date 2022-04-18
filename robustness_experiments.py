@@ -311,7 +311,7 @@ def cut_and_measure():
     with open("runs500_folders.txt", "r") as file:
         folders = file.read().split("\n")[:-1]
 
-    path = "remote_results/experiments500/"
+    path = "experiments/"
     save_path = "diffs_cut/"
     os.makedirs(save_path)
 
