@@ -16,11 +16,12 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.collections as clt
 import ptitprince as pt
+import ast
 
 from modbots.creature_types.configurable_individual import Individual
 from modbots.plotting.diversity_measure import get_image_of_pop
 from modbots.plotting import plot_voxels
-from modbots.util import prune_ind
+from modbots.util import prune_ind, traverse_get_list
 from morphology_changes import get_morphology_diff
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 from config_util import get_config_no_args, get_config_from_folder, get_mode, get_brain_type
@@ -32,7 +33,20 @@ colors[-1] = [colors[-1][0]*0.9, colors[-1][1]*0.9, colors[-1][2]*0.9, colors[-1
 for color in colors:
     transparents.append([color[0], color[1], color[2], 0.3])
 colors[-1] = [colors[-1][0], colors[-1][1]*0.9, colors[-1][2]*0.9, colors[-1][3]]
-#transparents[-2][-1] = 0.35
+
+colors = {
+    "copy": colors[0],
+    "dec_ctrnn": colors[1],
+    "cen_ctrnn": colors[2],
+    "sine": colors[3]
+}
+
+transparents = {
+    "copy": transparents[0],
+    "dec_ctrnn": transparents[1],
+    "cen_ctrnn": transparents[2],
+    "sine": transparents[3]
+}
 
 titles = {
     "copy": "Copy",
@@ -146,22 +160,75 @@ def plot_diffs_folder(base_folder):
 
                     diffs[brain][size].append((leaf_ind.fitness, ind.fitness))
 
-    data = []
+    plot_diff_dict_sizes(diffs)
+
+def plot_diffs_disable_folder(base_folder):
+
+    elites = elites_dict()
+    brains = elites.keys()
+
+    diffs_disable = {}
+
+    for brain in brains:
+        diffs_disable[brain] = {0:[], 5:[], 10:[]}
+
+        for i in range(len(elites[brain])):
+            folder, ind = elites[brain][i]
+            ind.body._nr_expressed_modules = -1
+            size = min(10, ind.get_nr_modules() - ind.get_nr_modules()%5)
+
+            path = f"{base_folder}/{folder}"
+
+            with open(path, "r") as file:
+                content = file.read().replace("\n", " ")
+                fitnesses = ast.literal_eval(content)
+                for fit in fitnesses:
+                    diffs_disable[brain][size].append((fit, ind.fitness))
+
+    plot_diff_dict_sizes(diffs_disable)
+
+def plot_diff_dict_sizes(diff_dict):
+    brains = diff_dict.keys()
+
+    data_percentage = []
+    data_full = []
     labels = []
+    colors_now = []
+    transparents_now = []
     for brain in brains:
         for size in [0,5,10]:
+            if (brain == "sine" or brain == "cen_ctrnn") and size == 10:
+                continue
+            colors_now.append(colors[brain])
+            transparents_now.append(transparents[brain])
+
             up_to = "-" + str(size+5) if size != 10 else "+"
             labels.append(titles[brain] + f" {size}{up_to}")
 
-            values = []
-            for (leaf_fit, ind_fit) in diffs[brain][size]:
-                values.append(leaf_fit/ind_fit)
-            data.append(values)
+            values_percentage = []
+            values_full = []
+            for (disable_fit, ind_fit) in diff_dict[brain][size]:
+                values_percentage.append(disable_fit/ind_fit)
+                values_full.append(disable_fit)
 
-    boxplot(data,
-        np.concatenate([[colors[i] for _ in range(3)] for i in range(4)]),
-        np.concatenate([[transparents[i] for _ in range(3)] for i in range(4)]),
+            data_percentage.append(values_percentage)
+            data_full.append(values_full)
+
+    fig = plt.figure()
+    fig.add_subplot(2,1,1)
+    boxplot(data_full,
+        colors_now,
+        transparents_now,
         labels)
+    plt.xticks([])
+    plt.ylabel("Fitness preserved")
+
+    fig.add_subplot(2,1,2)
+    boxplot(data_percentage,
+        colors_now,
+        transparents_now,
+        labels)
+
 
     plt.yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0], ["0%", "20%", "40%", "60%", "80%", "100%"])
     plt.xticks(rotation = 45)
@@ -216,7 +283,63 @@ def disable_and_measure():
 
     close_env()
 
+def cut_and_measure_ind(ind, index):
+    def traverse_get_list_altered_clone(node, node_list_out):
+        node_list_out.append(node)
+
+        for child in node.children:
+            if child is not None:
+                child.parent = node
+                traverse_get_list_altered_clone(child, node_list_out)
+
+    # Get all nodes with parent reference
+    all_nodes = []
+    traverse_get_list_altered_clone(ind.body.root, all_nodes)
+
+    # Cut away index node
+    to_remove = all_nodes[index]
+    parent = to_remove.parent
+    remove_index = parent.children.index(to_remove)
+    parent.children[remove_index] = None
+
+    # Eval
+    fitness = evaluate(ind)
+
+    return fitness
+
+def cut_and_measure():
+    with open("runs500_folders.txt", "r") as file:
+        folders = file.read().split("\n")[:-1]
+
+    path = "remote_results/experiments500/"
+    save_path = "diffs_cut/"
+    os.makedirs(save_path)
+
+    config = get_config_no_args()
+    set_env_variables(config=config)
+
+    for folder in folders:
+        fitnesses = []
+
+        ind = get_best_ind(path + folder)
+        prune_ind(ind)
+
+        ind.body._nr_expressed_modules = -1
+        nr_modules = ind.get_nr_modules()
+
+        for index in range(1, nr_modules):
+            ind_on_trial = copy.deepcopy(ind)
+            fitness = cut_and_measure_ind(ind_on_trial, index)
+            fitnesses.append(fitness)
+
+        with open(save_path + folder, "w") as file:
+            file.write(str(fitnesses))
+
+    close_env()
+
+
 if __name__ == "__main__":
     #plot_diffs_folder("diffs")
+    #plot_diffs_disable_folder("diffs_disable")
     #plt.show()
-    disable_and_measure()
+    cut_and_measure()
