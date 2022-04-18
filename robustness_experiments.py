@@ -345,8 +345,12 @@ def alter(config, function):
 
     # Body mutation
     config.mutation.angle = 0.0
-    config.mutation.scale = 0.0
     config.mutation.copy_branch = 0.0
+    if function != "scale":
+        config.mutation.scale = 0.0
+    elif function == "scale" and config.mutation.scale == 0.0:
+        config.mutation.scale = 0.2
+        config.individual.variable_scale = True
     if function != "add":
         config.mutation.add_node = 0.0
     if function != "remove":
@@ -396,4 +400,4 @@ if __name__ == "__main__":
     #plot_diffs_folder("diffs")
     #plot_diffs_disable_folder("diffs_disable")
     #plt.show()
-    apply_and_measure("diffs_remove/", "remove")
+    apply_and_measure("diffs_scale/", "scale")
