@@ -19,6 +19,7 @@ import ptitprince as pt
 import ast
 
 from modbots.creature_types.configurable_individual import Individual
+from modbots.creature_types.node import Node
 from modbots.plotting.diversity_measure import get_image_of_pop
 from modbots.plotting import plot_voxels
 from modbots.util import prune_ind, traverse_get_list
@@ -337,9 +338,51 @@ def cut_and_measure():
 
     close_env()
 
+def apply_and_measure_ind(ind, index, func, config):
+    all_nodes = []
+    traverse_get_list(ind.body.root, all_nodes)
+
+    res = func(all_nodes[index], config)
+
+    if res != None:
+        # Eval
+        fitness = evaluate(ind)
+        return fitness
+    return -1
+
+def apply_and_measure(save_path, function):
+    with open("runs500_folders_modes.txt", "r") as file:
+        folders = file.read().split("\n")[:-1]
+
+    path = "experiments/"
+    os.makedirs(save_path)
+
+    config = get_config_no_args()
+    set_env_variables(config=config)
+
+    for folder in folders:
+        fitnesses = []
+
+        config = get_config_from_folder(path + folder)
+        ind = Individual.unpack_ind(path + folder + "/bestInd499", config)
+        prune_ind(ind)
+
+        ind.body._nr_expressed_modules = -1
+        nr_modules = ind.get_nr_modules()
+
+        for index in range(1, nr_modules):
+            ind_on_trial = copy.deepcopy(ind)
+            fitness = apply_and_measure_ind(ind_on_trial, index, function, config)
+            if fitness != -1:
+                fitnesses.append(fitness)
+
+        with open(save_path + folder, "w") as file:
+            file.write(str(fitnesses))
+
+    close_env()
 
 if __name__ == "__main__":
     #plot_diffs_folder("diffs")
     #plot_diffs_disable_folder("diffs_disable")
     #plt.show()
-    cut_and_measure()
+    apply_and_measure("diffs_add/", Node.mutate_add_node)
