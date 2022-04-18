@@ -338,17 +338,30 @@ def cut_and_measure():
 
     close_env()
 
-def apply_and_measure_ind(ind, index, func, config):
-    all_nodes = []
-    traverse_get_list(ind.body.root, all_nodes)
+def alter(config, function):
+    # [MUTATION]
+    config.mutation.control = 0.0
+    config.mutation.body = config.mutation.body
 
-    res = func(all_nodes[index], config)
+    # Body mutation
+    config.mutation.angle = 0.0
+    config.mutation.scale = 0.0
+    config.mutation.copy_branch = 0.0
+    if function != "add":
+        config.mutation.add_node = 0.0
+    if function != "remove":
+        config.mutation.remove_node = 0.0
 
-    if res != None:
-        # Eval
-        fitness = evaluate(ind)
-        return fitness
-    return -1
+def apply_and_measure_ind(ind, function, config):
+    alter(config, function)
+
+    res = ind.body.mutate_maybe(config)
+    while res == None:
+        res = ind.body.mutate_maybe(config)
+
+    # Eval
+    fitness = evaluate(ind)
+    return fitness
 
 def apply_and_measure(save_path, function):
     with open("runs500_folders_modes.txt", "r") as file:
@@ -368,13 +381,11 @@ def apply_and_measure(save_path, function):
         prune_ind(ind)
 
         ind.body._nr_expressed_modules = -1
-        nr_modules = ind.get_nr_modules()
 
-        for index in range(0, nr_modules):
+        for i in range(5):
             ind_on_trial = copy.deepcopy(ind)
-            fitness = apply_and_measure_ind(ind_on_trial, index, function, config)
-            if fitness != -1:
-                fitnesses.append(fitness)
+            fitness = apply_and_measure_ind(ind_on_trial, function, config)
+            fitnesses.append(fitness)
 
         with open(save_path + folder, "w") as file:
             file.write(str(fitnesses))
@@ -385,4 +396,4 @@ if __name__ == "__main__":
     #plot_diffs_folder("diffs")
     #plot_diffs_disable_folder("diffs_disable")
     #plt.show()
-    apply_and_measure("diffs_add/", Node.mutate_add_node)
+    apply_and_measure("diffs_add/", "add")
