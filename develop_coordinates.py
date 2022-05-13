@@ -50,9 +50,9 @@ def plot_coordinates3D(coordinates):
 def unique_coordinates_count(coordinates):
     counts = {}
     for coordinate in coordinates:
-        coordinate = tuple(coordinate) # so it can be hashed and used as dict key
-        counts.setdefault(coordinate, 0) # add coordinate to dict
-        counts[coordinate] += 1 # increment count for coordinate
+        coordinate = tuple(coordinate)
+        counts.setdefault(coordinate, 0)
+        counts[coordinate] += 1
     uniques = list(counts.keys())
 
     return len(uniques)
