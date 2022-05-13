@@ -16,6 +16,8 @@ parser.add_argument(
     default=False
 )
 
+config = get_config_no_args()
+
 filename = None
 folder = None
 args = parser.parse_args()
@@ -55,9 +57,8 @@ else:
 
     print("Chose", filename)
 
-config = get_config_no_args()
-folder = folder.replace("_", "-")
-config.files.build_path = f"/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots-master-{folder}.app"
+    folder = folder.replace("_", "-")
+    config.files.build_path = f"/Users/mia-katrinkvalsund/Desktop/Skole/master_project/Modbots/Modbots-master-{folder}.app"
 
 side_channel = SideChannelPythonside()
 param_channel = EnvironmentParametersChannel()

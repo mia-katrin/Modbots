@@ -24,7 +24,7 @@ from modbots.plotting.diversity_measure import get_image_of_pop
 from modbots.plotting import plot_voxels
 from look_at_inds import prune_ind
 from morphology_changes import get_morphology_diff
-from config_util import get_config_from_folder
+from config_util import get_config_from_folder, get_mode, get_brain_type
 
 colors = plt.cm.viridis(np.linspace(0, 1, 4))
 transparents = []
@@ -42,26 +42,12 @@ titles = {
     "cen_ctrnn": "Centralized CTRNN"
 }
 
-def get_brain_type(config):
-    if config.control.oscillatory:
-        return "sine"
-    elif config.control.ctrnn:
-        if config.control.decentral:
-            if config.control.copy_decentral:
-                return "copy_sine" if config.file_name[:-4].endswith("sine") else "copy"
-            return "dec_ctrnn_sine" if config.file_name[:-4].endswith("sine") else "dec_ctrnn"
-        return "cen_ctrnn"
-    else:
-        raise Exception("Failure")
+GEN = 500
+DATAPOINTS = 64
+FROM_FILE = True
+ORIGINAL_64 = True
 
-def get_mode(config):
-    if config.individual.variable_scale:
-        if config.individual.growing:
-            if config.individual.gradual:
-                return "gradual"
-            return "growing"
-        return "variable"
-    return "normal"
+exp_folder = f"remote_results/experiments{GEN}"
 
 def get_stat(run_folder, data_name="Fitness", stat="Maxs", bestKept=False):
     try:
@@ -69,8 +55,8 @@ def get_stat(run_folder, data_name="Fitness", stat="Maxs", bestKept=False):
             data = pickle.load(file)
             line = data[data_name][stat]
             if bestKept:
-                for i in range(len(line)):
-                    if i != 0 and line[i-1] > line[i]:
+                for i in range(1,len(line)):
+                    if line[i-1] > line[i]:
                         line[i] = line[i-1]
             return line
     except:
@@ -95,41 +81,69 @@ def is_completed_run(run_folder):
     try:
         with open(run_folder + "/data", "rb") as file:
             data = pickle.load(file)
-            return True
+        with open(run_folder + f"/bestInd{GEN-1}", "rb") as file:
+            data = pickle.load(file)
+        return True
     except:
         return False
+
+def read_results_file():
+    results = {}
+
+    filename = "runs500_folders.txt" if ORIGINAL_64 else \
+               "runs500_folders_modes.txt"
+
+    with open(filename, "r") as file:
+        for line in file:
+            run_folder = exp_folder + "/" + line.replace("\n", "")
+
+            config = get_config_from_folder(run_folder)
+            brain = get_brain_type(config)
+            mode = get_mode(config)
+
+            if brain not in results:
+                results[brain] = {}
+            if mode not in results[brain]:
+                results[brain][mode] = []
+
+            results[brain][mode].append(run_folder)
+
+    return results
 
 def read_results():
     print("Getting runs...")
     results = {}
 
-    base = "remote_results"
-    for folder in os.listdir(base):
-        exp_folder = base + "/" + folder
-        if not os.path.isfile(exp_folder) and exp_folder.endswith("500"):
-            for folder in tqdm(os.listdir(exp_folder)):
-                run_folder = exp_folder + "/" + folder
-                if not os.path.isfile(run_folder):
-                    config = get_config_from_folder(run_folder)
-                    if config == None or not is_completed_run(run_folder):
+    if not (only_normal and original_64):
+        for folder in tqdm(os.listdir(exp_folder)):
+            run_folder = exp_folder + "/" + folder
+            if not os.path.isfile(run_folder):
+                config = get_config_from_folder(run_folder)
+                if config == None or not is_completed_run(run_folder):
+                    continue
+
+                mode = get_mode(config)
+                brain = get_brain_type(config)
+
+                # Do we have enough folders for this mode and brain?
+                if brain in results and mode in results[brain]:
+                    if len(results[brain][mode]) >= DATAPOINTS:
                         continue
 
-                    mode = get_mode(config)
-                    brain = get_brain_type(config)
+                # Some of my data has a mistake!! :D
+                if brain == "copy":
+                    if config.mutation.control == 0.32:
+                        continue
 
-                    # Some of my data has a mistake!! :D
-                    if brain == "copy":
-                        if config.mutation.control == 0.32:
-                            continue
+                if brain not in results.keys():
+                    results[brain] = {}
+                if mode not in results[brain].keys():
+                    results[brain][mode] = []
 
-                    if brain not in results.keys():
-                        results[brain] = {}
-                    if mode not in results[brain].keys():
-                        results[brain][mode] = []
+                results[brain][mode].append(
+                    run_folder
+                )
 
-                    results[brain][mode].append(
-                        run_folder
-                    )
     return results
 
 def print_count(results):
@@ -141,24 +155,21 @@ def print_count(results):
 
 def correlation_plots(results):
     print("Correlation plots...")
+    mode = "normal"
+
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2, sharex=True, sharey=True)
     #fig.suptitle("Correlation between fitness and nr modules of elites")
     axes = [ax1, ax2, ax3, ax4]
     for brain, ax, color in zip(results.keys(), axes, colors):
         x = []
         y = []
-        for mode in results[brain].keys():
-            times = 0
-            for folder in results[brain][mode]:
-                times += 1
-                if times > 64:
-                    break
-                for indNr in range(499, 500):
-                    fitness = get_bestInd_stat(folder, modules=False, indNr=indNr)
-                    nr_modules = get_bestInd_stat(folder, modules=True, indNr=indNr, expressed=True)
-                    if fitness != None and nr_modules != None:
-                        x.append(nr_modules)
-                        y.append(fitness)
+        for folder in results[brain][mode]:
+            for indNr in range(499, 500):
+                fitness = get_bestInd_stat(folder, modules=False, indNr=indNr)
+                nr_modules = get_bestInd_stat(folder, modules=True, indNr=indNr, expressed=True)
+                if fitness != None and nr_modules != None:
+                    x.append(nr_modules)
+                    y.append(fitness)
 
         if len(x) == 0 or len(y) == 0:
             continue
@@ -173,12 +184,12 @@ def correlation_plots(results):
 def plot_bestInd_modules(results):
     print("Nr Modules graphs...")
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2, sharex=True, sharey=True)
-    #fig.suptitle("Nr Modules graphs for all controllers")
+
     axes = [ax1, ax2, ax3, ax4]
     for brain, ax, transp, color in zip(results.keys(), axes, transparents, colors):
         averages = []
         times = 0
-        for mode in results[brain].keys():
+        for mode in ["normal"]:
             average = np.zeros(500)
             count = 0
             for folder in tqdm(results[brain][mode]):
@@ -208,38 +219,6 @@ def plot_bestInd_modules(results):
         if brain == "cen_ctrnn" or brain == "sine":
             ax.set_xlabel("Generation")
         ax.set_ylabel("Nr Modules")
-
-def plot_fitness_mode(results):
-    colors = plt.cm.viridis(np.linspace(0, 1, 4))
-    transparents = []
-    for color in colors:
-        transparents.append([color[0], color[1], color[2], 0.3])
-
-    print("Fitness graphs...")
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2)
-    fig.suptitle("Fitness graphs for all brains with modes")
-    axes = [ax1, ax2, ax3, ax4]
-    for brain, ax in tqdm(zip(results.keys(), axes)):
-        averages = []
-        for mode, color in zip(results[brain].keys(), transparents):
-            average = np.zeros(201)
-            count = 0
-            for folder in results[brain][mode]:
-                with open(folder + "/data", "rb") as file:
-                    data = pickle.load(file)
-                    average += np.array(data["Fitness"]["Maxs"])
-                    count += 1
-                    ax.plot(data["Fitness"]["Maxs"], color=color)
-            average /= count
-            averages.append(average)
-
-        for average, color, mode in zip(averages, colors, results[brain].keys()):
-            ax.plot(average, color=color, label=mode.title(), linewidth=2)
-
-        ax.title.set_text(brain.title())
-        ax.legend()
-        ax1.set_xlabel("Generation")
-        ax1.set_ylabel("Fitness")
 
 def plot_rain_brain(results):
     last_fitnesses = get_last_fitnesses(results, bestKept=True)
@@ -301,7 +280,7 @@ def plot_fitness_brain(results):
 
     # Get all fitness lines
     for brain in brains:
-        for mode in results[brain].keys():
+        for mode in ["normal"]:
             times = 0
             for folder in tqdm(results[brain][mode]):
                 times += 1
@@ -369,32 +348,6 @@ def plot_fitness_brain(results):
     plt.xlabel("Generation")
     plt.ylabel("Fitness")
 
-def plot_fitness_brain_separate(results):
-    print("Fitness graph...")
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2)
-    axes = [ax1, ax2, ax3, ax4]
-    fig.suptitle("Nr Modules graphs for all brains with modes")
-
-    brains = results.keys()
-    for brain, ax in tqdm(zip(brains, axes)):
-
-        for mode in results[brain].keys():
-            colors = plt.cm.viridis(np.linspace(0, 1, len(results[brain][mode])))
-            for folder, color in zip(results[brain][mode], colors):
-                with open(folder + "/data", "rb") as file:
-                    data = pickle.load(file)
-                    fitnesses = np.array(data["Fitness"]["Maxs"])
-                    """for i in range(len(fitnesses)):
-                        if i != 0 and fitnesses[i-1] > fitnesses[i]:
-                            fitnesses[i] = fitnesses[i-1]"""
-
-                    ax.plot(fitnesses, color=color)
-
-
-        ax.title.set_text(brain.title())
-        ax.set_xlabel("Generation")
-        ax.set_ylabel("Fitness")
-
 def get_last_fitnesses(results, bestKept=True, gen=-1):
     brains = results.keys()
     last_fitnesses = {}
@@ -402,7 +355,7 @@ def get_last_fitnesses(results, bestKept=True, gen=-1):
         last_fitnesses[brain] = []
 
     for brain in brains:
-        for mode in results[brain].keys():
+        for mode in ["normal"]:
             for folder in tqdm(results[brain][mode]):
                 fitnesses = get_stat(folder, data_name="Fitness", stat="Maxs", bestKept=bestKept)
                 last_fitnesses[brain].append(fitnesses[gen])
@@ -428,7 +381,7 @@ def get_last_nr_modules(results):
         last_nr_modules[brain] = []
 
     for brain in brains:
-        for mode in results[brain].keys():
+        for mode in ["normal"]:
             for folder in tqdm(results[brain][mode]):
                 bestInd = get_best_ind(folder)
                 prune_ind(bestInd)
@@ -510,6 +463,7 @@ def check_module_stats(results):
                 res = stats.mannwhitneyu(x=df[brain], y=df[brain2], alternative = 'two-sided')
                 print(f"Vs {brain2} p-value:".ljust(21), round(res.pvalue, 7))
 
+# Not checked after adding modes
 def find_bloaters(results):
     bloaters = {}
 
@@ -536,6 +490,7 @@ def find_bloaters(results):
 
     return bloaters
 
+# Not checked after adding modes
 def plot_bloating(results):
     print("Finding bloaters")
     bloaters = find_bloaters(results)
@@ -586,6 +541,7 @@ def plot_bloating(results):
         ax.plot(average_bloat/count, color = [0.9,0.9,0.1,1.0], linewidth=3)
         ax.plot(average_fit/count, color = [0.1,0.9,0.9,1.0], linewidth=3)
 
+# Not checked after adding modes
 def plot_morph_diffs_accum(results):
     totals = []
     for brain, transp in zip(results.keys(), transparents):
@@ -610,11 +566,57 @@ def plot_morph_diffs_accum(results):
 
     plt.legend()
 
+def plot_one_morph_change(results):
+    brains = results.keys()
+
+    step_size = 100
+    intervals = np.arange(0, GEN, step_size)
+
+    lines = {}
+    for brain in brains:
+        lines[brain] = []
+
+        times = 0
+        for folder in tqdm(results[brain]["normal"]):
+            times += 1
+            if times > 64:
+                break
+            diffs = get_morphology_diff(folder, only_module_nr=False)
+
+            added_diffs = []
+            for i in intervals:
+                added_diffs.append(np.sum(diffs[i:i+step_size]))
+
+            lines[brain].append(added_diffs)
+
+    # Get the "at least one" percentage
+    percentiles = {}
+    for brain in brains:
+        percentiles[brain] = np.zeros(len(intervals))
+
+        for i in range(len(intervals)):
+            lines[brain] = sorted(lines[brain], key=lambda x: x[i])
+
+            one = None
+            for j, line in enumerate(lines[brain]):
+                if line[i] >= 1:
+                    one = j
+                    break
+            percentiles[brain][i] = 0 if one == None else 1.0 - float(one) / 64.0
+
+    for i, brain, color in zip(range(len(brains)), brains, colors):
+        plt.plot(intervals, percentiles[brain], color=color, label=titles[brain])
+
+    plt.xticks(intervals, [f"{intervals[i]} - {intervals[i+1] if i+1 < len(intervals) else 500}" for i in range(len(intervals))])
+    plt.ylabel("Percentage with at least 1 change")
+    plt.xlabel("Generations")
+    plt.legend()
+
 def plot_morph_diffs(results):
     brains = results.keys()
 
     step_size = 100
-    intervals = np.arange(0, 500, step_size)
+    intervals = np.arange(0, GEN, step_size)
 
     lines = {}
     for brain in brains:
@@ -656,7 +658,7 @@ def plot_morph_diffs(results):
                     break
             print(brain, None if one == None else float(one) / 64.0)
 
-    width = 15
+    width = 7 if step_size == 50 else 15
     start = len(brains)*width / 2
     # Plotting percentiles
     for i, brain, transp in zip(range(len(brains)), brains, transparents):
@@ -729,8 +731,299 @@ def print_list(results):
                 print(folder)
         print()
 
+def empty_results_like(first_layer, second_layer, fill_example):
+    results_like = {}
+    for first in first_layer:
+        results_like[first] = {}
+        for second in second_layer:
+            results_like[first][second] = copy.deepcopy(fill_example)
+
+    return results_like
+
+def plot_fitness_mode(results):
+    modes = ["normal", "variable", "growing", "gradual"]
+    brains = ["copy", "dec_ctrnn", "cen_ctrnn", "sine"]
+
+    # Fill lines with dicts and lines
+    lines = empty_results_like(brains, modes, [])
+
+    # Fill lines with fitness lines
+    for brain in brains:
+        for mode in modes:
+            for folder in tqdm(results[brain][mode]):
+                lines[brain][mode].append(
+                    get_stat(
+                        folder,
+                        data_name="Fitness",
+                        stat="Maxs",
+                        bestKept=True
+                    )
+                )
+
+    # Get averages
+    averages = empty_results_like(brains, modes, np.zeros(GEN+1))
+    for brain in brains:
+        for mode in modes:
+            for line in lines[brain][mode]:
+                averages[brain][mode] += line
+            averages[brain][mode] /= len(lines[brain][mode])
+
+    # Get standard deviations
+    deviations = empty_results_like(brains, modes, [np.zeros(GEN+1), np.zeros(GEN+1)])
+    for brain in brains:
+        for mode in modes:
+            samples = len(lines[brain][mode])
+            for i, avg in enumerate(averages[brain][mode]):
+                std = 0
+                for line in lines[brain][mode]:
+                    std += (avg - line[i])**2
+                std /= samples
+                std = np.sqrt(std) / np.sqrt(samples)
+
+                deviations[brain][mode][0][i] = avg - std
+                deviations[brain][mode][1][i] = avg + std
+
+    # Get 0.25 and 0.75 percentiles
+    """percentiles = empty_results_like(brains, modes, [np.zeros(GEN+1), np.zeros(GEN+1)])
+    for brain in brains:
+        for mode in modes:
+            for i in range(501):
+                lines[brain][mode] = sorted(lines[brain][mode], key=lambda x: x[i])
+
+                index25 = int(round(len(lines[brain][mode])*25/100))
+                index75 = int(round(len(lines[brain][mode])*75/100))
+
+                percentiles[brain][mode][0][i] = lines[brain][mode][index25][i]
+                percentiles[brain][mode][1][i] = lines[brain][mode][index75][i]"""
+
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2, sharex=True)
+    axes = [ax1, ax2, ax3, ax4]
+    for brain, ax, transp, color in tqdm(zip(brains, axes, transparents, colors)):
+        """for mode, color in zip(modes, transparents):
+            for line in lines[brain][mode]:
+                ax.plot(line, color=color)"""
+
+        # Plotting deviations
+        for i, mode in enumerate(modes):
+            c_now = [
+                min(transp[0] + i*(0.1 - transp[0])/3, 1),
+                min(transp[1] + i*(0.1 - transp[1])/3, 1),
+                min(transp[2] + i*(0.1 - transp[2])/3, 1),
+                transp[3]]
+            print(c_now)
+            ax.fill_between(np.arange(0,501,1), deviations[brain][mode][0], deviations[brain][mode][1], color=c_now)
+
+        for i, mode in enumerate(modes):
+            c_now = [
+                min(color[0] + i*(0.1 - color[0])/3, 1),
+                min(color[1] + i*(0.1 - color[1])/3, 1),
+                min(color[2] + i*(0.1 - color[2])/3, 1),
+                color[3]]
+            ax.plot(averages[brain][mode], color=c_now, label=mode.title(), linewidth=2)
+
+        ax.title.set_text(brain.title())
+        ax.legend()
+        if brain == "sine" or brain == "cen_ctrnn":
+            ax.set_xlabel("Generation")
+        if brain == "cen_ctrnn" or brain == "copy":
+            ax.set_ylabel("Fitness")
+
+    # Plotting percentiles
+    """for brain, transp in zip(brains, transparents):
+        plt.fill_between(np.arange(0,501,1), percentiles[brain][0], percentiles[brain][1], color=transp)"""
+
+    # Plotting best runs
+    """for brain, color in zip(brains, colors):
+        plt.scatter([500],[lines[brain][-1][-1]], color=color)"""
+
+def get_last_fitnesses_modes(results, bestKept=True, gen=-1):
+    brains = list(results.keys())
+    modes = results[brains[0]].keys()
+
+    last_fitnesses = empty_results_like(brains, modes, [])
+
+    for brain in brains:
+        for mode in modes:
+            for folder in tqdm(results[brain][mode]):
+                fitnesses = get_stat(folder, data_name="Fitness", stat="Maxs", bestKept=bestKept)
+                last_fitnesses[brain][mode].append(fitnesses[gen])
+
+    return last_fitnesses
+
+def check_stats_modes(results):
+    brains = list(results.keys())
+    modes = results[brains[0]].keys()
+
+    last_fitnesses = get_last_fitnesses_modes(results, bestKept=True)
+    for brain in brains:
+        print()
+        print(brain, ":")
+
+        df = pd.DataFrame.from_dict(last_fitnesses[brain])
+
+        for mode in modes:
+            print(mode, ":")
+            for mode2 in modes:
+                if mode != mode2:
+                    res = stats.mannwhitneyu(x=df[mode], y=df[mode2], alternative = 'two-sided')
+                    print(f"Vs {mode2} p-value:".ljust(21), round(res.pvalue, 7))
+
+def record_centers(results):
+    from develop_coordinates import get_run_coor, plot_coordinates2D
+
+    coordinates = {}
+    for brain in results.keys():
+        coordinates[brain] = []
+        for folder in tqdm(results[brain]["normal"]):
+
+            fitnesses = get_stat(folder, data_name="Fitness", stat="Maxs", bestKept=False)
+            run_coors = get_run_coor(folder)
+
+            for indNr in range(0,500):
+                fit = fitnesses[indNr+1]
+                coor = run_coors[indNr]
+                coordinates[brain].append((coor, fit))
+
+        with open("centers_normal", "wb") as file:
+            pickle.dump(coordinates, file)
+
+def record_centers_modes(results):
+    from develop_coordinates import get_run_coor
+
+    coordinates = {}
+    for brain in results.keys():
+        coordinates[brain] = {}
+        for mode in results[brain].keys():
+            coordinates[brain][mode] = []
+            for folder in tqdm(results[brain][mode]):
+
+                fitnesses = get_stat(folder, data_name="Fitness", stat="Maxs", bestKept=False)
+                run_coors = get_run_coor(folder)
+
+                for indNr in range(0,500):
+                    fit = fitnesses[indNr+1]
+                    coor = run_coors[indNr]
+                    coordinates[brain][mode].append((coor, fit))
+
+            with open("centers_modes", "wb") as file:
+                pickle.dump(coordinates, file)
+
+def plot_centers():
+    from develop_coordinates import get_center_coor, plot_voxels
+    import matplotlib as mpl
+    """
+
+    with open("centers_normal", "rb") as file:
+        coordinates = pickle.load(file)
+
+    for i, brain in enumerate(coordinates.keys()):
+        plot_voxels(coordinates[brain], brain)"""
+
+    cmap = plt.cm.get_cmap("viridis", 90)
+
+    norm = mpl.colors.Normalize(vmin=0, vmax=30)
+    fig = plt.figure()
+    ax3 = fig.add_subplot(1,1,1)
+    cb1 = mpl.colorbar.ColorbarBase(
+        ax3, cmap=cmap,
+        norm=norm,
+        orientation='horizontal'
+    )
+    plt.xlabel("Fitness")
+
+def plot_centers_modes():
+    from develop_coordinates import return_collapse_fits_image, N, M, O
+    import matplotlib as mpl
+
+    with open("centers_modes", "rb") as file:
+        coordinates = pickle.load(file)
+
+    brains = ["copy", "dec_ctrnn", "cen_ctrnn", "sine"]
+    modes = ["normal", "variable", "growing", "gradual"]
+
+    cmap = plt.cm.get_cmap("viridis", 31).colors
+    fits = {}
+
+    for brain in tqdm(brains):
+        fits[brain] = {}
+        for mode in modes:
+            fitnesses = return_collapse_fits_image(coordinates[brain][mode])
+            img = np.zeros((N, O, 4))
+            for x in range(N):
+                for y in range(O):
+                    if fitnesses[x, y] > 0:
+                        img[x, y, :] = cmap[
+                            min(int(np.ceil(fitnesses[x, y])), 30)
+                        ]
+                    else:
+                        img[x, y, :] = [1,1,1,1]
+
+            fits[brain][mode] = img
+
+    minY = O
+    maxY = 0
+    x_lims = []
+
+    for brain in brains:
+        minX = N
+        maxX = 0
+        for mode in modes:
+            for x in range(N):
+                for y in range(O):
+                    if not np.all(fits[brain][mode][x,y] == 1):
+                        if x < minX:
+                            minX = x
+                        if y < minY:
+                            minY = y
+                        if x > maxX:
+                            maxX = x
+                        if y > maxY:
+                            maxY = y
+        x_lims.append((minX, maxX))
+
+    X_size = []
+    for x_lim in x_lims:
+        X_size.append(max(x_lim[1] - x_lim[0] + 1, 25))
+    Y = maxY - minY + 1
+
+    wall_size = 1
+    image = np.zeros((np.sum(X_size) + wall_size*3, Y*4, 4))
+
+    X_start = 0
+    for i, brain in enumerate(brains):
+        for j, mode in enumerate(modes):
+            diff = (X_size[i] - (x_lims[i][1]+1 - x_lims[i][0]))
+            rest1 = diff // 2
+            rest2 = diff // 2 + diff % 2
+
+            image[rest1 + X_start:X_start+X_size[i]-rest2, j*Y:(j+1)*Y, :] = fits[brain][mode][x_lims[i][0]:x_lims[i][1]+1,minY:maxY+1, :]
+        if i != 3:
+            X_start += X_size[i]
+            image[X_start:X_start+wall_size, ::2, :] = [0.8, 0.8, 0.8, 1]
+            X_start += wall_size
+
+    plt.imshow(image)
+    plt.xticks([Y/2 + Y*i for i in range(4)], modes)
+
+    y_pos = []
+    X_start = 0
+    for size in X_size:
+        y_pos.append(X_start + size // 2)
+        X_start += size + wall_size
+
+    plt.yticks(y_pos, brains)
+    plt.box(False)
+
+    plt.show()
 
 if __name__ == "__main__":
-    results = read_results()
+    results = None
+    if FROM_FILE:
+        results = read_results_file()
+    else:
+        results = read_results()
     plot_morph_diffs(results)
     plt.show()
+
+    """plot_centers()
+    plt.show()"""
