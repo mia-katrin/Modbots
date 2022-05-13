@@ -27,5 +27,9 @@ log_folder
 
 count_lines.py
 new_exp.sh
-remote_experiments/
-remote_results/
+remote_*
+
+modes_summary.txt
+setup-run-me-please.sh
+to_delete.py
+centers_*
