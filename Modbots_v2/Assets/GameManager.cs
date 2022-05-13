@@ -97,7 +97,15 @@ public class GameManager : MonoBehaviour
         {
             indexes += go.GetComponent<ModuleParameterized>().index + ",";
         }
-        //pythonCom.SendMessage(indexes);
+        pythonCom.SendMessage(indexes);
+
+        string coor = "Coordinates: ";
+        foreach (GameObject go in modularRobot.allModules)
+        {
+            coor += go.transform.GetChild(0).transform.position + ",";
+        }
+        pythonCom.SendMessage(coor);
+
         resetting = false;
     }
 
@@ -109,7 +117,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public bool robotElseModule = true;
+    public bool robotElseModule = false;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -123,12 +131,24 @@ public class GameManager : MonoBehaviour
             else
             {
                 modularRobot.DestroyContents();
-                GameObject module = Instantiate(ModularRobot.Instance.modulePrefab);
-                ModuleParameterized rootModule = module.GetComponent<ModuleParameterized>();
-                rootModule.SetIndex(0);
 
-                rootModule.SetSize(1f);
-                rootModule.RemoveFixedJoint();
+                for (int i = 0; i < 5; i++)
+                {
+                    GameObject module = Instantiate(ModularRobot.Instance.modulePrefab);
+                    ModuleParameterized rootModule = module.GetComponent<ModuleParameterized>();
+                    rootModule.SetIndex(0);
+                    rootModule.transform.position = new Vector3(2.5f - i,0, 0);
+
+                    rootModule.SetSize(0.1f + i*0.9f/2f);
+                    rootModule.RemoveFixedJoint();
+                }
+
+                //GameObject module = Instantiate(ModularRobot.Instance.modulePrefab);
+                //ModuleParameterized rootModule = module.GetComponent<ModuleParameterized>();
+                //rootModule.SetIndex(0);
+
+                //rootModule.SetSize(1f);
+                //rootModule.RemoveFixedJoint();
             }
 
             modularRobot.MaxStep = 10000000;

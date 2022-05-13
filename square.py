@@ -115,15 +115,18 @@ class SquareManager:
                     self.squares[brain_type][mode].print_fitnesses()
 
     def plot_all_individual(self, runs=False, nr_modules=False):
-        for i, brain_type in enumerate(self.squares.keys()):
-            fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex = False, sharey = False)
-            fig.suptitle(brain_type.title() + ("\nNumber of Completed Runs Averaged" if runs else "\nNumber of Modules in Elites Averaged" if nr_modules else "\nFitness averaged"))
+        brains = ["", "dec_ctrnn", "cen_ctrnn", "copy"]
+        modes = ["", "variable", "growing", "gradual"]
+
+        for mode in modes:
+            fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex = True, sharey = False)
+            fig.suptitle(mode.title())
 
             subplot_axes = (ax1, ax2, ax3, ax4)
 
-            for j, mode in enumerate(self.squares[brain_type].keys()):
+            for j, brain_type in enumerate(brains):
                 ax = subplot_axes[j]
-                ax.title.set_text(mode.title() if mode != "" else "Normal")
+                ax.title.set_text(titles[brain_type])
 
                 cs, bs = None, None
                 if runs:
@@ -137,16 +140,21 @@ class SquareManager:
                 ax.set_yticks(list(range(len(cs))))
                 ax.set_yticklabels(cs)
                 ax.set_xticks(list(range(len(bs))))
-                ax.set_xticklabels(bs)
-                """ax.tick_params(
-                    axis="x",
-                    labelbottom=True
-                )"""
+                ax.set_xticklabels(bs, rotation=45)
+
+                if brain_type == "copy" or brain_type == "cen_ctrnn":
+                    ax.set_xlabel("Morph. mut. rate")
+                if brain_type == "" or brain_type == "cen_ctrnn":
+                    ax.set_ylabel("Control mut. rate")
+
                 for i, row in enumerate(matrix):
                     for j, val in enumerate(row):
                         if val != 0:
                             ax.text(j, i, round(val), color='black', ha='center', va='center')
 
+        plt.subplots_adjust(
+            bottom=0.129,
+        )
         plt.show()
 
     def plot_all(self, runs=False, nr_modules=False):

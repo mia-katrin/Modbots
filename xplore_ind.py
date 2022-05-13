@@ -4,6 +4,7 @@ A file for exploring individuals, specifying configs, ind files, or random inds.
 from modbots.evaluate.sideChannelPythonside import SideChannelPythonside
 from modbots.evaluate import get_env, evaluate, close_env, set_env_variables
 from modbots.creature_types.configurable_individual import Individual
+from modbots.creature_types.node import Node
 
 import argparse
 
