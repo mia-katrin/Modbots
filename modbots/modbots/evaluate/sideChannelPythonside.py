@@ -17,11 +17,11 @@ class SideChannelPythonside(SideChannel):
         #print("[Unity]:", recieved)
 
         # If we recieved created modules
-        if "Created modules: " in recieved:
+        if "Created modules: " in recieved and len(recieved) > len("Created modules: "):
             self.created_modules = ast.literal_eval(recieved[len("Created modules: "):])
 
         # If we recieved coordinates
-        if recieved.startswith("Coordinates: "):
+        if recieved.startswith("Coordinates: ") and len(recieved) > len("Coordinates: "):
             self.coordinates = ast.literal_eval(recieved[len("Coordinates: "):])
 
     def send_string(self, data: str) -> None:
