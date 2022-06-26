@@ -26,8 +26,8 @@ To be added: Citation and BibTex citation
 | Node add          | 0.2   |
 | Node delete       | 0.2   |
 | Bias              | 0.8   | [-1.0, 1.0]                                          |
-| Activation        | 0.2   | sin \underline{\textbf{tanh}} sigmoid                |
-| Aggregation       | 0.1   | \underline{\textbf{sum}} min max mean median product maxabs |
+| Activation        | 0.2   | sin ~**tanh**~ sigmoid                |
+| Aggregation       | 0.1   | ~**sum**~ min max mean median product maxabs |
 | Weight            | 0.8   | [-1.0, 1.0]                                          |
 | Response          | 0.2   | [-1.5, 1.5]                                          |
 | Bias replace      | 0.1   |
