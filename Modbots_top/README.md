@@ -68,5 +68,5 @@ experiments:
 echo [YOUR CORES] > experiments/max_cores.txt
 ```
 
-And lastly, the example_config.cfg needs to be altered with your build_path and
-log_folder absolute adresses. 
+And lastly, the *example_config.cfg* needs to be altered with your *build_path* and
+*log_folder* absolute adresses. 
