@@ -15,6 +15,8 @@ To be added: Citation and BibTex citation
 
 The source code is found in the folder */Modbots_top*.
 
+The code for the controllers is found in */Modbots_top/modbots/modbots/controllers*.
+
 ## Gene mutation rates
 
 All probabilities are scaled by the current mutation rate (f.ex global_mut_rate/nr_modules).
