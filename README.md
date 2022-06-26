@@ -14,13 +14,13 @@ To be added: Citation and BibTex citation
 ```
 
 
-### Gene mutation rates
+## Gene mutation rates
 
 All probabilities are scaled by the current mutation rate (f.ex global_mut_rate/nr_modules).
 They were found through trial and error and are, for the CTRNN, close to the
 values that came from examples in the neat-python package.
 
-#### CTRNNs:
+### CTRNNs:
 
 | Mutation          | Prob. | Options/limits                                       |
 |-------------------|-------|------------------------------------------------------|
@@ -38,7 +38,7 @@ values that came from examples in the neat-python package.
 | Response replace  | 0.1   |
 | Weight replace    | 0.1   |
 
-#### Sine wave generator:
+### Sine wave generator:
 
 | Mutation          | Prob. | Options/limits      |
 |-------------------|-------|---------------------|
@@ -49,4 +49,4 @@ values that came from examples in the neat-python package.
 
 A fixed frequency was used to enable better synchronization. This was chosen
 after several initial experiments with this controller showed that it was prone
-to local optima solutions. 
+to local optima solutions.
