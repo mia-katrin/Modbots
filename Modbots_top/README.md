@@ -26,12 +26,18 @@ were not used in the thesis and therefore are not fully functionable.
 
 */defunct_tools*: Scripts to run runs and keep track of runs on servers.
 
-*/modbots*: A package containing the morphology, controllers, evaluation, utils, etc.
+*/modbots*: A package containing the body, controllers, evaluation, utils, etc.
 
 In this folder, the most important files are
 
-*/evolve.py*: A script that runs an evolution based on the config in this directory.
+*/evolve.py*: A script that runs an evolution based on the config file in this directory.
 It presupposes several directories and files.
 
 */xplore_ind.py*: A script that simulates a pickled individual, sent as an argument. Otherwise,
-it will use the */bestInd/ind* individual from your last evoltionary run. 
+it will use the */bestInd/ind* individual from your last evolutionary run. It also presupposes
+a config file.
+
+## If you intend to use this code
+
+Because it has been a part of a master thesis project, it was not formed to be easily
+used by others.
