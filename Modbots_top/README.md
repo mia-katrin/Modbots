@@ -39,5 +39,31 @@ a config file.
 
 ## If you intend to use this code
 
-Because it has been a part of a master thesis project, it was not formed to be easily
-used by others.
+Several structures are needed to run this. First of all, the requirements.txt should
+all be installed. Secondly, the modbots package must be installed:
+
+```
+pip3 install -r requirements.txt
+pip3 install -e modbots
+```
+
+I recommend installing modbots with editing (-e) so that if you make changes you
+do not need to reinstall.
+
+Then files to run and track experiments are needed:
+
+```
+mkdir log_folder
+mkdir experiments
+touch experiments/all_statements.txt
+echo "{}" > experiments/valid_intervals
+echo "0" > experiments/runNr.txt
+mkdir bestInd
+```
+
+And lastly, you must decide on the number of cores you want to be default for
+experiments:
+
+```
+echo [YOUR CORES] > experiments/max_cores.txt
+```
