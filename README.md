@@ -19,7 +19,7 @@ To be added: Citation and BibTex citation
 #### CTRNNs:
 
 $$
-\begin{tabular}{c|c|c}
+\begin{aligned}{c|c|c}
 \hline
 Mutation & Prob. & Options/limits  \\\hline
 Connection add & 0.2 \\
@@ -37,5 +37,5 @@ Bias replace & 0.1 \\
 Response replace & 0.1 \\
 Weight replace & 0.1 \\
 \hline
-\end{tabular}
+\end{aligned}
 $$
