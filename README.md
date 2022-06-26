@@ -18,8 +18,8 @@ To be added: Citation and BibTex citation
 
 #### CTRNNs:
 
-$$
-\begin{aligned}{c|c|c}
+md"""
+\begin{array}{c|c|c}
 \hline
 Mutation & Prob. & Options/limits  \\\hline
 Connection add & 0.2 \\
@@ -37,5 +37,5 @@ Bias replace & 0.1 \\
 Response replace & 0.1 \\
 Weight replace & 0.1 \\
 \hline
-\end{aligned}
-$$
+\end{array}
+"""
