@@ -61,9 +61,12 @@ echo "0" > experiments/runNr.txt
 mkdir bestInd
 ```
 
-And lastly, you must decide on the number of cores you want to be default for
+You must decide on the number of cores you want to be default for
 experiments:
 
 ```
 echo [YOUR CORES] > experiments/max_cores.txt
 ```
+
+And lastly, the example_config.cfg needs to be altered with your build_path and
+log_folder absolute adresses. 
