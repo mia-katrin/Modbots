@@ -73,4 +73,6 @@ echo [YOUR CORES] > experiments/max_cores.txt
 And lastly, the *example_config.cfg* needs to be altered with your *build_path* and
 *log_folder* absolute adresses. The *build_path* address is where you have your
 Build. If you use Linux, this will be
-*path/to/Modbots_top/LinuxBuild/LinuxBuild.x86_64*.
+*path/to/Modbots_top/LinuxBuild/LinuxBuild.x86_64*. In all other cases, you must
+yourself create the build using Unity Editor, the */Modbots_v2/Assets* folder,
+and using the ML-Agents package. 
