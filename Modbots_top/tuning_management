@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+
+""" Script for viewing tuning data """
+
+import argparse
+import os
+import numpy as np
+from tqdm import tqdm
+
+from square import SquareManager
+
+def refresh_treat_experiment_folder(exp_folder, squareManager):
+    """ Reads the expeeriment folder into the squareManager """
+    for dir in tqdm(os.listdir(exp_folder)):
+        run_folder = f"{exp_folder}/{dir}"
+        if not os.path.isfile(run_folder):
+            squareManager.add_run(run_folder)
+
+def refresh(squareManager):
+    """ Reads the tuning data into the squareManager """
+    base_dir = "remote_experiments"
+    for dir in os.listdir(base_dir):
+        exp_folder = f"{base_dir}/{dir}"
+
+        refresh_treat_experiment_folder(exp_folder, squareManager)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--nr_runs", "-n", action="store_true", default=False)
+    parser.add_argument("--nr_modules", "-nm", action="store_true", default=False)
+    parser.add_argument("--collapsed", "-c", action="store_true", default=False)
+    parser.add_argument("--individual", "-i", action="store_true", default=False)
+    args = parser.parse_args()
+
+    # Get the tuning data and put it in the squareManager
+    squareManager = SquareManager()
+    refresh(squareManager)
+
+    # Plot something
+    if args.individual:
+        if args.collapsed:
+            squareManager.plot_all_collapsed_individual()
+        else:
+            squareManager.plot_all_individual(runs=args.nr_runs, nr_modules=args.nr_modules)
+    else:
+        if args.collapsed:
+            squareManager.plot_all_collapsed()
+        else:
+            squareManager.plot_all(runs=args.nr_runs, nr_modules=args.nr_modules)
