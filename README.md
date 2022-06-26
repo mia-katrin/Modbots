@@ -22,7 +22,7 @@ To be added: Citation and BibTex citation
 |-------------------|-------|------------------------------------------------------|
 | Connection add    | 0.2   |
 | Connection delete | 0.2   |
-| Connection enable | 0.01  | \underline{	extbf{True}} False                       |
+| Connection enable | 0.01  | ***True*** False                       |
 | Node add          | 0.2   |
 | Node delete       | 0.2   |
 | Bias              | 0.8   | [-1.0, 1.0]                                          |
