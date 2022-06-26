@@ -18,24 +18,19 @@ To be added: Citation and BibTex citation
 
 #### CTRNNs:
 
-md"""
-\begin{array}{c|c|c}
-\hline
-Mutation & Prob. & Options/limits  \\\hline
-Connection add & 0.2 \\
-Connection delete & 0.2 \\
-Connection enable & 0.01 & \underline{\textbf{True}} False \\
-Node add & 0.2 \\
-Node delete & 0.2 \\
-Bias & 0.8 & [-1.0, 1.0] \\
-Activation & 0.2 & sin \underline{\textbf{tanh}} sigmoid \\
-Aggregation & 0.1 & \underline{\textbf{sum}} min max mean median product \\
-& & maxabs \\
-Weight & 0.8 & [-1.0, 1.0] \\
-Response & 0.2 & [-1.5, 1.5] \\
-Bias replace & 0.1 \\
-Response replace & 0.1 \\
-Weight replace & 0.1 \\
-\hline
-\end{array}
-"""
+| Mutation          | Prob. | Options/limits                                       |
+|-------------------|-------|------------------------------------------------------|
+| Connection add    | 0.2   |
+| Connection delete | 0.2   |
+| Connection enable | 0.01  | \underline{	extbf{True}} False                       |
+| Node add          | 0.2   |
+| Node delete       | 0.2   |
+| Bias              | 0.8   | [-1.0, 1.0]                                          |
+| Activation        | 0.2   | sin \underline{\textbf{tanh}} sigmoid                |
+| Aggregation       | 0.1   | \underline{\textbf{sum}} min max mean median product |
+|                   |       | maxabs                                               |
+| Weight            | 0.8   | [-1.0, 1.0]                                          |
+| Response          | 0.2   | [-1.5, 1.5]                                          |
+| Bias replace      | 0.1   |
+| Response replace  | 0.1   |
+| Weight replace    | 0.1   |
