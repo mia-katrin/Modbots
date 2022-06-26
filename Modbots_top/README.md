@@ -39,8 +39,9 @@ a config file.
 
 ## If you intend to use this code
 
-Several structures are needed to run this. First of all, the requirements.txt should
-all be installed. Secondly, the modbots package must be installed:
+Several structures are needed to run this, and the following commands are all run
+from */Modbots_top*. First of all, the requirements.txt should all be installed.
+Secondly, the modbots package must be installed:
 
 ```
 pip3 install -r requirements.txt
@@ -69,4 +70,6 @@ echo [YOUR CORES] > experiments/max_cores.txt
 ```
 
 And lastly, the *example_config.cfg* needs to be altered with your *build_path* and
-*log_folder* absolute adresses. 
+*log_folder* absolute adresses. The *build_path* address is where you have your
+Build. If you use Linux, this will be
+*path/to/Modbots_top/LinuxBuild/LinuxBuild.x86_64*.
