@@ -8,7 +8,7 @@ In Evolutionary Robotics, evolutionary algorithms are used to co-optimize morpho
 <img src="https://github.com/mia-katrin/Modbots/blob/master/gifs/crane.gif" alt="Crane" width="380" align="left" style="margin: 10px"/> <img src="https://github.com/mia-katrin/Modbots/blob/master/gifs/round.gif" alt="Round" width="380" align="left" style="margin: 10px"/>
 
 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-<br />
+<br /><br /><br /><br /><br /><br />
 
 The article can be found at:
 
