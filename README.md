@@ -5,11 +5,7 @@ In Evolutionary Robotics, evolutionary algorithms are used to co-optimize morpho
 
 <img src="https://github.com/mia-katrin/Modbots/blob/main/gifs/horse.gif" alt="Horse" width="380" align="left" style="margin: 10px"/>
 
-<img src="https://github.com/mia-katrin/Modbots/blob/main/gifs/spider.gif" alt="Spider" width="380" align="left" style="margin: 10px"/>
 
-<img src="https://github.com/mia-katrin/Modbots/blob/main/gifs/crane.gif" alt="Crane" width="380" align="left" style="margin: 10px"/> 
-
-<img src="https://github.com/mia-katrin/Modbots/blob/main/gifs/round.gif" alt="Round" width="380" align="left" style="margin: 10px"/>
 
 The article can be found at:
 
