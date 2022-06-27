@@ -5,8 +5,6 @@ In Evolutionary Robotics, evolutionary algorithms are used to co-optimize morpho
 
 <img src="https://github.com/mia-katrin/Modbots/blob/main/gifs/horse.gif" alt="Horse" width="380" align="left" style="margin: 10px"/>
 
-
-
 The article can be found at:
 
 *To be added*
@@ -20,6 +18,12 @@ To be added: Citation and BibTex citation
 The source code is found in the folder */Modbots_top*.
 
 The code for the controllers is found in */Modbots_top/modbots/modbots/controllers*.
+
+### Contributors
+
+**Authors:** Mia-Katrin Kvalsund, Kyrre Glette, Frank Veenstra
+
+This work was performed on the Fox resource, owned by the University of Oslo Center for Information Technology. This work was partially supported by the Research Council of Norway through its Centres of Excellence scheme, project number 262762.
 
 ## Gene mutation rates
 
