@@ -15,9 +15,29 @@ The article can be found at:
 http://arxiv.org/abs/2206.13366
 
 Cite as:
+```
+Kvalsund, M.-K., Glette, K., and Veenstra, F. (2022). Centralized and
+decentralized control in modular robots and their effect on morphology.
+```
 
 ```
-To be added: Citation and BibTex citation
+@misc{https://doi.org/10.48550/arxiv.2206.13366,
+  doi = {10.48550/ARXIV.2206.13366},
+
+  url = {https://arxiv.org/abs/2206.13366},
+
+  author = {Kvalsund, Mia-Katrin and Glette, Kyrre and Veenstra, Frank},
+
+  keywords = {Neural and Evolutionary Computing (cs.NE), FOS: Computer and information sciences, FOS: Computer and information sciences},
+
+  title = {Centralized and Decentralized Control in Modular Robots and Their Effect on Morphology},
+
+  publisher = {arXiv},
+
+  year = {2022},
+
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
 ```
 
 The source code is found in the folder */Modbots_top*. The code for the controllers is found in */Modbots_top/modbots/modbots/controllers*.
