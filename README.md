@@ -12,7 +12,7 @@ In Evolutionary Robotics, evolutionary algorithms are used to co-optimize morpho
 
 The article can be found at:
 
-[http://arxiv.org/abs/2206.13366](https://direct.mit.edu/isal/proceedings/isal/34/49/112308)
+[https://direct.mit.edu/isal/proceedings/isal/34/49/112308](https://direct.mit.edu/isal/proceedings/isal/34/49/112308)
 
 Cite as:
 ```
