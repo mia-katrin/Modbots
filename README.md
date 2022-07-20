@@ -16,27 +16,22 @@ http://arxiv.org/abs/2206.13366
 
 Cite as:
 ```
-Kvalsund, M.-K., Glette, K., and Veenstra, F. (2022). Centralized and
-decentralized control in modular robots and their effect on morphology.
+Mia-Katrin Kvalsund, Kyrre Glette, Frank Veenstra; July 18–22, 2022. "Centralized and Decentralized Control in Modular Robots and Their Effect on Morphology." Proceedings of the ALIFE 2022: The 2022 Conference on Artificial Life. ALIFE 2022: The 2022 Conference on Artificial Life. Online. (pp. 49). ASME. https://doi.org/10.1162/isal_a_00533
 ```
 
 ```
-@misc{https://doi.org/10.48550/arxiv.2206.13366,
-  doi = {10.48550/ARXIV.2206.13366},
-
-  url = {https://arxiv.org/abs/2206.13366},
-
-  author = {Kvalsund, Mia-Katrin and Glette, Kyrre and Veenstra, Frank},
-
-  keywords = {Neural and Evolutionary Computing (cs.NE), FOS: Computer and information sciences, FOS: Computer and information sciences},
-
-  title = {Centralized and Decentralized Control in Modular Robots and Their Effect on Morphology},
-
-  publisher = {arXiv},
-
-  year = {2022},
-
-  copyright = {arXiv.org perpetual, non-exclusive license}
+@proceedings{10.1162/isal_a_00533,
+    author = {Kvalsund, Mia-Katrin and Glette, Kyrre and Veenstra, Frank},
+    title = "{Centralized and Decentralized Control in Modular Robots and Their Effect on Morphology}",
+    volume = {ALIFE 2022: The 2022 Conference on Artificial Life},
+    series = {ALIFE 2022: The 2022 Conference on Artificial Life},
+    year = {2022},
+    month = {07},
+    abstract = "{In Evolutionary Robotics, evolutionary algorithms are used to co-optimize morphology and control. However, co-optimizing leads to different challenges: How do you optimize a controller for a body that often changes its number of inputs and outputs? Researchers must then make some choice between centralized or decentralized control. In this article, we study the effects of centralized and decentralized controllers on modular robot performance and morphologies. This is done by implementing one centralized and two decentralized continuous time recurrent neural network controllers, as well as a sine wave controller for a baseline. We found that a decentralized approach that was more independent of morphology size performed significantly better than the other approaches. It also worked well in a larger variety of morphology sizes. In addition, we highlighted the difficulties of implementing centralized control for a changing morphology, and saw that our centralized controller struggled more with early convergence than the other approaches. Our findings indicate that duplicated decentralized networks are beneficial when evolving both the morphology and control of modular robots. Overall, if these findings translate to other robot systems, our results and issues encountered can help future researchers make a choice of control method when co-optimizing morphology and control.}",
+    doi = {10.1162/isal_a_00533},
+    url = {https://doi.org/10.1162/isal\_a\_00533},
+    note = {49},
+    eprint = {https://direct.mit.edu/isal/proceedings-pdf/isal/34/49/2035449/isal\_a\_00533.pdf},
 }
 ```
 
